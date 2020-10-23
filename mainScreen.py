@@ -1,5 +1,6 @@
 import pygame
 import pygame_gui
+import PacMan
 
 pygame.init()
 
