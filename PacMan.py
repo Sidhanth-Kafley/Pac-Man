@@ -11,7 +11,7 @@ class PacMan(pygame.sprite.Sprite):
         super(PacMan, self).__init__()
         # size of each image
         size = (64, 64)
-        # set directional images
+        # set image streams for moving in respective directions
         self.images = images
         self.imagesRight = [self.images[1], self.images[0]]
         self.imagesLeft = [self.images[1], self.images[2]]

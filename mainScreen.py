@@ -23,18 +23,21 @@ def loadImages(path):
 
 
 def main():
-    pygame.display.set_caption('Main Screen')
+    # Initiate game and window
+    pygame.display.set_caption('Pac-Man')
     window = pygame.display.set_mode((MAX_WIDTH, MAX_HEIGHT))
     windowRect = window.get_rect()
-
     background = pygame.Surface((MAX_WIDTH, MAX_HEIGHT))
     background.fill(BACKGROUND_COLOR)
-
     manager = pygame_gui.UIManager((MAX_WIDTH, MAX_HEIGHT))
 
+    # create pacman object
     pacMan = PacMan(position=(100, 100), images=loadImages(path='Pac_Man_Sprites'))
-    pacManSprite = pygame.sprite.Group(pacMan)
 
+    # ADD GHOSTS TO THIS GROUP SO THEY ALL FOLLOW THE SAME BASIC GUIDELINES
+    allSprites = pygame.sprite.Group(pacMan)
+
+    # clock used for framerate
     clock = pygame.time.Clock()
     isRunning = True
 
@@ -42,6 +45,7 @@ def main():
         # times per second this loop runs
         time_delta = clock.tick(60) / 1000.0
 
+        # handles events
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 isRunning = False
@@ -67,9 +71,9 @@ def main():
         # ensures that the pacMan won't go off screen
         pacMan.rect.clamp_ip(windowRect)
         # update the sprite
-        pacManSprite.update()
+        allSprites.update()
         # update the image on screen
-        pacManSprite.draw(window)
+        allSprites.draw(window)
 
         pygame.display.update()
 
