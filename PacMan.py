@@ -9,6 +9,7 @@ class PacMan:
     rightMotion = False
     upMotion = False
     downMotion = False
+    location = [0, 0]
 
    # def __init__(self):
 

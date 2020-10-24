@@ -2,15 +2,18 @@ import pygame
 import pygame_gui
 import PacMan
 
+MAX_HEIGHT = 800
+MAX_WIDTH = 1000
+
 pygame.init()
 
-pygame.display.set_caption('Quick Start')
-window_surface = pygame.display.set_mode((800, 600))
+pygame.display.set_caption('Main Screen')
+window_surface = pygame.display.set_mode((MAX_WIDTH, MAX_HEIGHT))
 
-background = pygame.Surface((800, 600))
+background = pygame.Surface((MAX_WIDTH, MAX_HEIGHT))
 background.fill(pygame.Color('#000000'))
 
-manager = pygame_gui.UIManager((800, 600))
+manager = pygame_gui.UIManager((MAX_WIDTH, MAX_HEIGHT))
 
 hello_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((350, 275), (100, 50)),
                                             text='Say Hello',
@@ -25,10 +28,21 @@ while is_running:
         if event.type == pygame.QUIT:
             is_running = False
 
+        move = pygame.key.get_pressed()
+
         if event.type == pygame.USEREVENT:
             if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
                 if event.ui_element == hello_button:
                     print('Hello World!')
+            if event.user_type == pygame.KEYDOWN:
+                if event.key == pygame.K_LEFT:
+                    print("LEFT")
+                if event.key == pygame.K_RIGHT:
+                    print("RIGHT")
+                if event.key == pygame.K_UP:
+                    print("UP")
+                if event.key == pygame.K_DOWN:
+                    print("DOWN")
 
         manager.process_events(event)
 
