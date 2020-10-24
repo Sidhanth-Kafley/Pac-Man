@@ -1,79 +1,71 @@
 import pygame
 import pygame_gui
-import PacMan
 import sys
+import os
+from PacMan import PacMan
+pygame.init()
 
-MAX_HEIGHT = 800
-MAX_WIDTH = 1000
+MAX_HEIGHT = 480
+MAX_WIDTH = 720
+BACKGROUND_COLOR = pygame.Color('black')
+
+
+def loadImages(path):
+    images = []
+    for file in os.listdir(path):
+        image = pygame.image.load(path + os.sep + file).convert()
+        images.append(image)
+    return images
+
 
 def main():
-    pygame.init()
-
     pygame.display.set_caption('Main Screen')
-    windowSurface = pygame.display.set_mode((MAX_WIDTH, MAX_HEIGHT))
+    window = pygame.display.set_mode((MAX_WIDTH, MAX_HEIGHT))
 
     background = pygame.Surface((MAX_WIDTH, MAX_HEIGHT))
-    background.fill(pygame.Color('#000000'))
+    background.fill(BACKGROUND_COLOR)
 
     manager = pygame_gui.UIManager((MAX_WIDTH, MAX_HEIGHT))
 
-    # hello_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((350, 275), (100, 50)),
-    #                                             text='Say Hello',
-    #                                             manager=manager)
-
-    pacMan = PacMan(position=(100, 100), images=images)
+    pacMan = PacMan(position=(100, 100), images=loadImages(path='Pac_Man_Sprites'))
     pacManSprite = pygame.sprite.Group(pacMan)
-    pacManSprite.draw(windowSurface)
+    pacManSprite.draw(window)
 
     clock = pygame.time.Clock()
     isRunning = True
 
     while isRunning:
+        # updates at 60 FPS
         time_delta = clock.tick(60) / 1000.0
-
-
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 isRunning = False
-
-            #move = pygame.key.get_pressed()
-
-            if event.type == pygame.USEREVENT:
-                # if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
-                    # if event.ui_element == hello_button:
-                    #     print('Hello World!')
+            elif event.type == pygame.USEREVENT:
                 if event.user_type == pygame.KEYDOWN:
                     if event.key == pygame.K_LEFT:
-                        pacMan.setMotionDirection("left")
-                        pacManSprite.update()
-                        pacManSprite.draw(windowSurface)
-                        pygame.display.flip()
-
-
-
-                    if event.key == pygame.K_RIGHT:
-                        pacMan.setMotionDirection("right")
-                        pacManSprite.update()
-                        pacManSprite.draw(windowSurface)
-                        pygame.display.flip()
-                    if event.key == pygame.K_UP:
-                        pacMan.setMotionDirection("up")
-                        pacManSprite.update()
-                        pacManSprite.draw(windowSurface)
-                        pygame.display.flip()
-                    if event.key == pygame.K_DOWN:
-                        pacMan.setMotionDirection("down")
-                        pacManSprite.update()
-                        pacManSprite.draw(windowSurface)
-                        pygame.display.flip()
+                        pacMan.velocity.y = 0
+                        pacMan.velocity.x = -4
+                    elif event.key == pygame.K_RIGHT:
+                        pacMan.velocity.y = 0
+                        pacMan.velocity.x = 4
+                    elif event.key == pygame.K_UP:
+                        pacMan.velocity.x = 0
+                        pacMan.velocity.y = -4
+                    elif event.key == pygame.K_DOWN:
+                        pacMan.velocity.x = 0
+                        pacMan.velocity.y = 4
 
             manager.process_events(event)
 
-        manager.update(time_delta)
+        # update the sprite
+        pacManSprite.update()
+        # update the image on screen
+        pacManSprite.draw(window)
 
-        windowSurface.blit(background, (0, 0))
-        manager.draw_ui(windowSurface)
+        manager.update(time_delta)
+        window.blit(background, (0, 0))
+        manager.draw_ui(window)
 
         pygame.display.update()
 
