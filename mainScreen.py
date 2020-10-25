@@ -13,7 +13,7 @@ BACKGROUND_COLOR = pygame.Color('black')
 def loadImages(path):
     images = []
     for file in os.listdir(path):
-        image = pygame.image.load(path + os.sep + file).convert()
+        image = pygame.image.load(path + os.sep + file).convert_alpha()
         images.append(image)
     ims = []
     for x in images:
@@ -32,7 +32,11 @@ def main():
     manager = pygame_gui.UIManager((MAX_WIDTH, MAX_HEIGHT))
 
     # create pacman object
-    pacMan = PacMan(position=(100, 100), images=loadImages(path='Pac_Man_Sprites'))
+    images = loadImages(path='Pac_Man_Sprites')
+    pacMan = PacMan(position=(100, 100), images=images)
+
+    # health bar at the top of the screen
+    healthBar = pygame.transform.scale(images[0], (32, 32))
 
     # ADD GHOSTS TO THIS GROUP SO THEY ALL FOLLOW THE SAME BASIC GUIDELINES
     allSprites = pygame.sprite.Group(pacMan)
@@ -68,6 +72,20 @@ def main():
         manager.update(time_delta)
         window.blit(background, (0, 0))
         manager.draw_ui(window)
+
+        # display the health bar at the top
+        if PacMan.startingHealth - 1 == 2:
+            window.blit(healthBar, (20, MAX_HEIGHT - 50))
+            window.blit(healthBar, (50, MAX_HEIGHT - 50))
+        elif PacMan.startingHealth - 1 == 1:
+            window.blit(healthBar, (20, MAX_HEIGHT - 50))
+
+        # else:
+        #     displayGameOver()
+
+        # display score
+        window.blit(pacMan.renderScore(), (10, 10))
+
         # ensures that the pacMan won't go off screen
         pacMan.rect.clamp_ip(windowRect)
         # update the sprite
