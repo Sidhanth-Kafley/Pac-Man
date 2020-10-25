@@ -2,9 +2,11 @@ import pygame
 
 
 class PacMan(pygame.sprite.Sprite):
-    # all values subject to change
     startingHealth = 3
     powerUp = 1
+    eatenGhosts = 0
+    totalPoints = 0
+    ghostPoints = 200
 
     def __init__(self, position, images):
         # initialize super class
@@ -55,3 +57,17 @@ class PacMan(pygame.sprite.Sprite):
             self.powerUp = 1.5
         else:
             self.powerUp = 1
+
+    def eatGhost(self, ghost):
+        ghost.hit()
+        self.totalPoints += self.ghostPoints
+        self.ghostPoints = self.ghostPoints*2
+
+    def resetGhostPoints(self):
+        self.ghostPoints = 200
+
+    def renderScore(self):
+        fontName = pygame.font.match_font('arial')
+        font = pygame.font.Font(fontName, 24)
+        text = font.render(str(self.totalPoints), True, (25, 25, 166))
+        return text
