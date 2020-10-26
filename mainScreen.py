@@ -3,6 +3,7 @@ import pygame_gui
 import sys
 import os
 from PacMan import PacMan
+from ghost import Ghost
 pygame.init()
 
 MAX_HEIGHT = 700
@@ -29,14 +30,30 @@ def main():
     manager = pygame_gui.UIManager((MAX_WIDTH, MAX_HEIGHT))
 
     # create pacman object
-    images = loadImages(path='Pac_Man_Sprites')
+    images = loadImages(path='PacManSprites')
     pacMan = PacMan(position=(100, 100), images=images)
+
+    # create blue ghost object
+    blueGhostImages = loadImages(path='BlueGhostSprites')
+    blueGhost = Ghost('blue', position=(400, 200), images=blueGhostImages)
+
+    # create orange ghost object
+    orangeGhostImages = loadImages(path='OrangeGhostSprites')
+    orangeGhost = Ghost('orange', position=(350, 200), images=orangeGhostImages)
+
+    # create pink ghost object
+    pinkGhostImages = loadImages(path='PinkGhostSprites')
+    pinkGhost = Ghost('pink', position=(450, 200), images=pinkGhostImages)
+
+    # create red ghost object
+    redGhostImages = loadImages(path='RedGhostSprites')
+    redGhost = Ghost('red', position=(500, 200), images=redGhostImages)
 
     # health bar at the top of the screen
     healthBar = pygame.transform.scale(images[0], (32, 32))
 
     # ADD GHOSTS TO THIS GROUP SO THEY ALL FOLLOW THE SAME BASIC GUIDELINES
-    allSprites = pygame.sprite.Group(pacMan)
+    allSprites = pygame.sprite.Group(pacMan, blueGhost, orangeGhost, pinkGhost, redGhost)
 
     # clock used for framerate
     clock = pygame.time.Clock()

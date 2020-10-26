@@ -3,37 +3,57 @@ import pygame
 
 class Ghost(pygame.sprite.Sprite):
     hitPacMan = False
+    powerUpMode = False
 
-    def __init__(self, color):
+    def __init__(self, color, position, images):
         # initialize super class
         super(Ghost, self).__init__()
         self.color = color
 
         # need to set the size of the images
+        sizeOfImage = (64, 64)
+        # index for looping through images
+        self.index = 1
+        # set the images
+        self.images = images
+        self.imagesDown = [self.images[0]]
+        self.imagesLeft = [self.images[1]]
+        self.imagesRight = [self.images[2]]
+        self.imagesUp = [self.images[3]]
+
+        self.rect = pygame.Rect(position, sizeOfImage)
+
+        # set speed of the ghost
+        self.velocity = pygame.math.Vector2()
 
     def update(self):
-        pass
+        # TODO: FIX this function
+        if self.velocity.x > 0:
+            self.images = self.imagesRight
+        elif self.velocity.x < 0:
+            self.images = self.imagesLeft
+        elif self.velocity.y < 0:
+            self.images = self.imagesUp
+        elif self.velocity.y > 0:
+            self.images = self.imagesDown
 
-    # getters
+        # update the image
+        if self.index >= len(self.images):
+            self.index = 2
+        self.image = self.images[self.index]
+
+    # get the color of the ghost
     def getGhostColor(self):
         return self.color
 
-    def determineGhostSpites(self):
-        ghostColor = self.color
-        # determine what images to open based on the color of the ghost
-        GHOST_DOWN = pygame.image.load(ghostColor + 'Ghost_Down.png').convert_alpha()
-        GHOST_LEFT = pygame.image.load(ghostColor + 'Ghost_Left.png').convert_alpha()
-        GHOST_RIGHT = pygame.image.load(ghostColor + 'Ghost_Right.png').convert_alpha()
-        GHOST_UP = pygame.image.load(ghostColor + 'Ghost_Up.png').convert_alpha()
-
     # ghost hits pac-man
-    def touchesPacMan(self):
+    def hitPacMan(self):
         # pac-man loses a life
-        pass
+        self.hitPacMan = True
 
     # pac-man is in power-up mode and can eat the ghosts
     def powerUpMode(self):
-        pass
+        self.powerUpMode = True
 
     # ghosts randomly moving in maze
     def ghostMovements(self, movement):
