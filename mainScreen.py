@@ -14,12 +14,9 @@ def loadImages(path):
     images = []
     for file in os.listdir(path):
         image = pygame.image.load(path + os.sep + file).convert_alpha()
+        image = pygame.transform.scale(image, (64, 64))
         images.append(image)
-    ims = []
-    for x in images:
-        im = pygame.transform.scale(x, (64, 64))
-        ims.append(im)
-    return ims
+    return images
 
 
 def main():
