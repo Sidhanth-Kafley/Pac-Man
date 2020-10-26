@@ -1,39 +1,99 @@
 import pygame
 import pygame_gui
-
+import sys
+import os
+from PacMan import PacMan
 pygame.init()
 
-pygame.display.set_caption('Quick Start')
-window_surface = pygame.display.set_mode((800, 600))
+MAX_HEIGHT = 700
+MAX_WIDTH = 900
+BACKGROUND_COLOR = pygame.Color('black')
 
-background = pygame.Surface((800, 600))
-background.fill(pygame.Color('#000000'))
 
-manager = pygame_gui.UIManager((800, 600))
+def loadImages(path):
+    images = []
+    for file in os.listdir(path):
+        image = pygame.image.load(path + os.sep + file).convert_alpha()
+        image = pygame.transform.scale(image, (64, 64))
+        images.append(image)
+    return images
 
-hello_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((350, 275), (100, 50)),
-                                            text='Say Hello',
-                                            manager=manager)
 
-clock = pygame.time.Clock()
-is_running = True
+def main():
+    # Initiate game and window
+    pygame.display.set_caption('Pac-Man')
+    window = pygame.display.set_mode((MAX_WIDTH, MAX_HEIGHT))
+    windowRect = window.get_rect()
+    background = pygame.Surface((MAX_WIDTH, MAX_HEIGHT))
+    background.fill(BACKGROUND_COLOR)
+    manager = pygame_gui.UIManager((MAX_WIDTH, MAX_HEIGHT))
 
-while is_running:
-    time_delta = clock.tick(60) / 1000.0
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            is_running = False
+    # create pacman object
+    images = loadImages(path='Pac_Man_Sprites')
+    pacMan = PacMan(position=(100, 100), images=images)
 
-        if event.type == pygame.USEREVENT:
-            if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
-                if event.ui_element == hello_button:
-                    print('Hello World!')
+    # health bar at the top of the screen
+    healthBar = pygame.transform.scale(images[0], (32, 32))
 
-        manager.process_events(event)
+    # ADD GHOSTS TO THIS GROUP SO THEY ALL FOLLOW THE SAME BASIC GUIDELINES
+    allSprites = pygame.sprite.Group(pacMan)
 
-    manager.update(time_delta)
+    # clock used for framerate
+    clock = pygame.time.Clock()
+    isRunning = True
 
-    window_surface.blit(background, (0, 0))
-    manager.draw_ui(window_surface)
+    while isRunning:
+        # times per second this loop runs
+        time_delta = clock.tick(60) / 1000.0
 
-    pygame.display.update()
+        # handles events
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                isRunning = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_LEFT:
+                    pacMan.velocity.y = 0
+                    pacMan.velocity.x = (-10)*pacMan.powerUp
+                elif event.key == pygame.K_RIGHT:
+                    pacMan.velocity.y = 0
+                    pacMan.velocity.x = 10*pacMan.powerUp
+                elif event.key == pygame.K_UP:
+                    pacMan.velocity.x = 0
+                    pacMan.velocity.y = -10*pacMan.powerUp
+                elif event.key == pygame.K_DOWN:
+                    pacMan.velocity.x = 0
+                    pacMan.velocity.y = 10*pacMan.powerUp
+
+            manager.process_events(event)
+
+        manager.update(time_delta)
+        window.blit(background, (0, 0))
+        manager.draw_ui(window)
+
+        # display the health bar at the top
+        if PacMan.startingHealth - 1 == 2:
+            window.blit(healthBar, (20, MAX_HEIGHT - 50))
+            window.blit(healthBar, (50, MAX_HEIGHT - 50))
+        elif PacMan.startingHealth - 1 == 1:
+            window.blit(healthBar, (20, MAX_HEIGHT - 50))
+
+        # else:
+        #     displayGameOver()
+
+        # display score
+        window.blit(pacMan.renderScore(), (10, 10))
+
+        # ensures that the pacMan won't go off screen
+        pacMan.rect.clamp_ip(windowRect)
+        # update the sprite
+        allSprites.update()
+        # update the image on screen
+        allSprites.draw(window)
+
+        pygame.display.update()
+
+    sys.exit(0)
+
+
+if __name__ == '__main__':
+    main()
