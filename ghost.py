@@ -1,4 +1,5 @@
 import pygame
+import random
 
 
 class Ghost(pygame.sprite.Sprite):
@@ -27,7 +28,16 @@ class Ghost(pygame.sprite.Sprite):
         self.velocity = pygame.math.Vector2()
 
     def update(self):
-        # TODO: FIX this function
+        movements = random.randrange(10, 20)
+        spacesMoved = 0
+
+        if spacesMoved >= movements:
+            self.velocity.x = 6*random.random() - 3
+            self.velocity.y = 6*random.random() - 3
+            movements = random.randrange(10, 20)
+            spacesMoved = 0
+        spacesMoved += 1
+
         if self.velocity.x > 0:
             self.images = self.imagesRight
         elif self.velocity.x < 0:
@@ -56,14 +66,14 @@ class Ghost(pygame.sprite.Sprite):
         self.powerUpMode = True
 
     # ghosts randomly moving in maze
-    def ghostMovements(self, movement):
-        # determine what direction the ghost is moving and choose the correct image
-        if movement == 'xRight':
-            pass
-        elif movement == 'xLeft':
-            pass
-        elif movement == 'yUp':
-            pass
-        elif movement == 'yDown':
-            pass
+    # def ghostMovements(self, movement):
+    #     # determine what direction the ghost is moving and choose the correct image
+    #     if movement == 'xRight':
+    #         pass
+    #     elif movement == 'xLeft':
+    #         pass
+    #     elif movement == 'yUp':
+    #         pass
+    #     elif movement == 'yDown':
+    #         pass
 
