@@ -1,5 +1,6 @@
 import pygame
 import pygame_gui
+import time
 import sys
 import os
 from PacMan import PacMan
@@ -33,21 +34,26 @@ def main():
     images = loadImages(path='PacManSprites')
     pacMan = PacMan(position=(100, 100), images=images)
 
+    ghosts = []
     # create blue ghost object
     blueGhostImages = loadImages(path='BlueGhostSprites')
     blueGhost = Ghost('blue', position=(400, 200), images=blueGhostImages)
+    ghosts.append(blueGhost)
 
     # create orange ghost object
     orangeGhostImages = loadImages(path='OrangeGhostSprites')
     orangeGhost = Ghost('orange', position=(350, 200), images=orangeGhostImages)
+    ghosts.append(orangeGhost)
 
     # create pink ghost object
     pinkGhostImages = loadImages(path='PinkGhostSprites')
     pinkGhost = Ghost('pink', position=(450, 200), images=pinkGhostImages)
+    ghosts.append(pinkGhost)
 
     # create red ghost object
     redGhostImages = loadImages(path='RedGhostSprites')
     redGhost = Ghost('red', position=(500, 200), images=redGhostImages)
+    ghosts.append(redGhost)
 
     # health bar at the top of the screen
     healthBar = pygame.transform.scale(images[0], (32, 32))
@@ -60,8 +66,8 @@ def main():
     isRunning = True
 
     # start main background music
-    pygame.mixer.music.load("Music/PacManBeginning.wav")
-    pygame.mixer.music.play(-1)
+    backgroundMusic = pygame.mixer.Sound("Music/PacManBeginning.wav")
+    backgroundMusic.play(-1)
 
     while isRunning:
         # times per second this loop runs
@@ -86,6 +92,10 @@ def main():
                     pacMan.velocity.y = 10*pacMan.powerUp
 
             manager.process_events(event)
+
+        if pygame.sprite.spritecollide(pacMan, ghosts, False):
+            pacManDeath = pygame.mixer.Sound("Music/PacManDeath.wav")
+            pacManDeath.play(0)
 
         manager.update(time_delta)
         window.blit(background, (0, 0))
