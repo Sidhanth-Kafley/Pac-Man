@@ -4,12 +4,12 @@ import random
 
 class Ghost(pygame.sprite.Sprite):
     hitPacMan = False
-    powerUpMode = False
 
     def __init__(self, color, position, images):
         # initialize super class
         super(Ghost, self).__init__()
         self.color = color
+        self.powerUpMode = False
         self.position = position
         # set the size of the images
         sizeOfImage = (64, 64)
@@ -18,6 +18,7 @@ class Ghost(pygame.sprite.Sprite):
         self.index = 1
         # set the images
         self.images = images
+        self.powerUpImage = [self.images[4]]
         self.imagesDown = [self.images[0]]
         self.imagesLeft = [self.images[1]]
         self.imagesRight = [self.images[2]]
@@ -37,18 +38,8 @@ class Ghost(pygame.sprite.Sprite):
 
     # update the ghost (position, image, etc.)
     def update(self):
-        # movements = random.randrange(10, 20)
-        # spacesMoved = 0
-        #
-        # if spacesMoved >= movements:
-        #     self.velocity.x = 6*random.random() - 3
-        #     self.velocity.y = 6*random.random() - 3
-        #     movements = random.randrange(10, 20)
-        #     spacesMoved = 0
-        # spacesMoved += 1
-
-        #self.moveX = random.randint(-5, 5)
-        #self.moveY = random.randrange(-5, 5)
+        # self.moveX = random.randint(-5, 5)
+        # self.moveY = random.randrange(-5, 5)
 
         self.rect.x += self.moveX
         self.rect.y += self.moveY
@@ -57,8 +48,11 @@ class Ghost(pygame.sprite.Sprite):
         if self.rect.y > 700 or self.rect.x > 900:
             self.resetPosition()
 
+        # power up ghost
+        if self.powerUpMode:
+            self.index = 4
         # ghost moving down
-        if self.moveX == 0 and self.moveY > 0:
+        elif self.moveX == 0 and self.moveY > 0:
             self.index = 0
         # ghost moving left
         elif self.moveX < 0 and self.moveY == 0:
@@ -85,4 +79,5 @@ class Ghost(pygame.sprite.Sprite):
     # pac-man is in power-up mode and can eat the ghosts
     def powerUpMode(self):
         self.powerUpMode = True
+
 

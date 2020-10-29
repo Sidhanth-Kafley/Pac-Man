@@ -59,6 +59,10 @@ def main():
     clock = pygame.time.Clock()
     isRunning = True
 
+    # start main background music
+    pygame.mixer.music.load("Music/PacManBeginning.wav")
+    pygame.mixer.music.play(-1)
+
     while isRunning:
         # times per second this loop runs
         time_delta = clock.tick(60) / 1000.0
@@ -100,8 +104,13 @@ def main():
         # display score
         window.blit(pacMan.renderScore(), (10, 10))
 
-        # ensures that the pacMan won't go off screen
+        # ensures that the pacMan and ghosts won't go off screen
         pacMan.rect.clamp_ip(windowRect)
+        blueGhost.rect.clamp_ip(windowRect)
+        orangeGhost.rect.clamp_ip(windowRect)
+        pinkGhost.rect.clamp_ip(windowRect)
+        redGhost.rect.clamp_ip(windowRect)
+
         # update the sprite
         allSprites.update()
         # update the image on screen
@@ -109,6 +118,7 @@ def main():
 
         pygame.display.update()
 
+    pygame.mixer.music.stop()
     sys.exit(0)
 
 
