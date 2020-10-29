@@ -3,13 +3,13 @@ import random
 
 
 class Ghost(pygame.sprite.Sprite):
-    hitPacMan = False
 
     def __init__(self, color, position, images):
         # initialize super class
         super(Ghost, self).__init__()
         self.color = color
         self.powerUpMode = False
+        self.hitPacMan = False
         self.position = position
         # set the size of the images
         sizeOfImage = (64, 64)
@@ -24,9 +24,11 @@ class Ghost(pygame.sprite.Sprite):
         self.imagesRight = [self.images[2]]
         self.imagesUp = [self.images[3]]
 
+        # initialize variables
         self.rect = pygame.Rect(position, sizeOfImage)
         self.moveX = 0
         self.moveY = 0
+        self.direction = 'up'
 
         # set speed of the ghost
         self.velocity = pygame.math.Vector2()
@@ -40,13 +42,9 @@ class Ghost(pygame.sprite.Sprite):
     def update(self):
         # self.moveX = random.randint(-5, 5)
         # self.moveY = random.randrange(-5, 5)
-
+        self.moveGhosts()
         self.rect.x += self.moveX
         self.rect.y += self.moveY
-
-        # make sure the ghost doesn't leave the screen
-        if self.rect.y > 700 or self.rect.x > 900:
-            self.resetPosition()
 
         # power up ghost
         if self.powerUpMode:
@@ -79,5 +77,15 @@ class Ghost(pygame.sprite.Sprite):
     # pac-man is in power-up mode and can eat the ghosts
     def powerUpMode(self):
         self.powerUpMode = True
+
+    def moveGhosts(self):
+        if self.direction == 'right':
+            self.moveX = 5
+        elif self.direction == 'left':
+            self.moveX = -5
+        elif self.direction == 'down':
+            self.moveY = 5
+        elif self.direction == 'up':
+            self.moveY = -5
 
 
