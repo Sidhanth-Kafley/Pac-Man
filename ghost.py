@@ -23,6 +23,7 @@ class Ghost(pygame.sprite.Sprite):
         self.imagesLeft = [self.images[1]]
         self.imagesRight = [self.images[2]]
         self.imagesUp = [self.images[3]]
+        self.image = self.images[0]
 
         # initialize variables
         self.rect = pygame.Rect(position, sizeOfImage)
