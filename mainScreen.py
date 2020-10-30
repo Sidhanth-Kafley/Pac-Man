@@ -5,7 +5,6 @@ import sys
 import os
 from PacMan import PacMan
 from ghost import Ghost
-from Wall import Wall
 from Level import Level
 pygame.init()
 
@@ -65,7 +64,7 @@ def main():
     pacMan = PacMan(position=(MAX_WIDTH/2, MAX_HEIGHT/2), images=images)
     
     #create level object
-    level1 = Level(layoutFilename='Levels/level1alt.txt', wallSize=(16, 16))
+    level1 = Level(layoutFilename='Levels/level1alt.txt', wallSize=(24, 24), originPosition=(100, 100))
 
     ghosts = []
     # create blue ghost object
@@ -153,6 +152,10 @@ def main():
 
         # display score
         window.blit(pacMan.renderScore(24), (10, 10))
+
+        # inefficient collision, should be handled in PacMan obj instead
+        for wall in level1.walls:
+            wall.collision(pacMan)
 
         # ensures that the pacMan and ghosts won't go off screen
         pacMan.rect.clamp_ip(windowRect)

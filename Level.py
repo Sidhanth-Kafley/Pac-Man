@@ -10,12 +10,15 @@ class Level():
     powerUpPointPills = []
     layoutFile = 0
     wallSize = (16, 16)
+    originPosition = (0, 0)
 
-    def __init__(self, layoutFilename, wallSize):
+    def __init__(self, layoutFilename, wallSize, originPosition):
         # initialize super class
         super(Level, self).__init__()
         layoutFile = open(layoutFilename, 'r', encoding='utf8')
         rows = layoutFile.read().splitlines()
+        self.wallSize = wallSize
+        self.originPosition = originPosition
 
         # create level objects based on characters in file
         print(len(rows))
@@ -58,6 +61,6 @@ class Level():
 
     def appendWall(self, imageFilename, rowIndex, colIndex):
         image = pygame.image.load('WallSprites' + os.sep + imageFilename).convert_alpha()
-        tempWall = Wall(position=(colIndex * self.wallSize[0], rowIndex * self.wallSize[1]), size=(self.wallSize[0], self.wallSize[1]), image=image)
+        tempWall = Wall(position=((colIndex * self.wallSize[0]) + self.originPosition[0], (rowIndex * self.wallSize[1]) + self.originPosition[1]), size=(self.wallSize[0], self.wallSize[1]), image=image)
         self.walls.append(tempWall)
         self.layout[rowIndex].append(tempWall)
