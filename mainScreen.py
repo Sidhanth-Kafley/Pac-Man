@@ -1,5 +1,6 @@
 import pygame
 import pygame_gui
+import time
 import sys
 import os
 from PacMan import PacMan
@@ -57,21 +58,26 @@ def main():
     images = loadImages(path='PacManSprites')
     pacMan = PacMan(position=(100, 100), images=images)
 
+    ghosts = []
     # create blue ghost object
     blueGhostImages = loadImages(path='BlueGhostSprites')
     blueGhost = Ghost('blue', position=(400, 200), images=blueGhostImages)
+    ghosts.append(blueGhost)
 
     # create orange ghost object
     orangeGhostImages = loadImages(path='OrangeGhostSprites')
     orangeGhost = Ghost('orange', position=(350, 200), images=orangeGhostImages)
+    ghosts.append(orangeGhost)
 
     # create pink ghost object
     pinkGhostImages = loadImages(path='PinkGhostSprites')
     pinkGhost = Ghost('pink', position=(450, 200), images=pinkGhostImages)
+    ghosts.append(pinkGhost)
 
     # create red ghost object
     redGhostImages = loadImages(path='RedGhostSprites')
     redGhost = Ghost('red', position=(500, 200), images=redGhostImages)
+    ghosts.append(redGhost)
 
     # health bar at the top of the screen
     healthBar = pygame.transform.scale(images[2], (32, 32))
@@ -82,6 +88,10 @@ def main():
     # clock used for framerate
     clock = pygame.time.Clock()
     isRunning = True
+
+    # start main background music
+    backgroundMusic = pygame.mixer.Sound("Music/PacManBeginning.wav")
+    backgroundMusic.play(-1)
 
     while isRunning:
         # times per second this loop runs
@@ -107,6 +117,10 @@ def main():
 
             manager.process_events(event)
 
+        if pygame.sprite.spritecollide(pacMan, ghosts, False):
+            pacManDeath = pygame.mixer.Sound("Music/PacManDeath.wav")
+            pacManDeath.play(0)
+
         manager.update(time_delta)
         window.blit(background, (0, 0))
         manager.draw_ui(window)
@@ -124,12 +138,13 @@ def main():
         # display score
         window.blit(pacMan.renderScore(), (10, 10))
 
-        # ensures that the sprites won't go off screen
+        # ensures that the pacMan and ghosts won't go off screen
         pacMan.rect.clamp_ip(windowRect)
         blueGhost.rect.clamp_ip(windowRect)
-        redGhost.rect.clamp_ip(windowRect)
-        pinkGhost.rect.clamp_ip(windowRect)
         orangeGhost.rect.clamp_ip(windowRect)
+        pinkGhost.rect.clamp_ip(windowRect)
+        redGhost.rect.clamp_ip(windowRect)
+
         # update the sprite
         allSprites.update(time_delta)
         # update the image on screen
@@ -137,6 +152,7 @@ def main():
 
         pygame.display.update()
 
+    pygame.mixer.music.stop()
     sys.exit(0)
 
 
