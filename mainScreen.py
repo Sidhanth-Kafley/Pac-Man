@@ -28,19 +28,22 @@ def drawText(text, font, color, surface, x, y):
     textRect.topleft = (x, y)
     surface.blit(textObj, textRect)
 
-
 def main():
-    while True:
+    mainMenu()
+
+def mainMenu():
+    running = True
+    while running:
 
         screen.fill((BACKGROUND_COLOR))
-        drawText('main menu', titleFont, (255, 255, 255), screen, 270, 220)
+        drawText('main menu', titleFont, (255, 255, 255), screen, MAX_HEIGHT/2.5, MAX_WIDTH/4)
 
         # get mousePosition for collision detection
         mousePosition = pygame.mouse.get_pos()
 
         # create buttons
-        button_1 = pygame.Rect(270, 300, 250, 50)
-        button_2 = pygame.Rect(270, 400, 250, 50)
+        button_1 = pygame.Rect(MAX_HEIGHT/2.5, MAX_WIDTH/3.0, 250, 50)
+        button_2 = pygame.Rect(MAX_HEIGHT/2.5, MAX_WIDTH/2.4, 250, 50)
 
         # if button is clicked call corresponding functions
         if button_2.collidepoint((mousePosition[0], mousePosition[1])):
@@ -53,20 +56,20 @@ def main():
 
         # Draw buttons and add hover effect
 
-        if 270+250 > mousePosition[0] > 270 and 300+50 > mousePosition[1] > 300:
+        if MAX_HEIGHT/2.5+250 > mousePosition[0] > MAX_HEIGHT/2.5 and MAX_WIDTH/3.0+50 > mousePosition[1] > MAX_WIDTH/3.0:
             pygame.draw.rect(screen, (0, 190, 0), button_1)
         else:
             pygame.draw.rect(screen, (0, 255, 0), button_1)
 
-        drawText('start game', font, (255, 255, 255), screen, 290, 315)
+        drawText('start game', font, (255, 255, 255), screen, MAX_HEIGHT/2.3, MAX_WIDTH/2.9)
 
 
-        if 270+250 > mousePosition[0] > 270 and 400+50 > mousePosition[1] > 400:
+        if MAX_HEIGHT/2.5+250 > mousePosition[0] > MAX_HEIGHT/2.5 and MAX_WIDTH/2.4+50 > mousePosition[1] > MAX_WIDTH/2.4:
             pygame.draw.rect(screen, (0, 190, 0), button_2)
         else:
             pygame.draw.rect(screen, (0, 255, 0), button_2)
 
-        drawText('Credits', font, (255, 255, 255), screen, 290, 415)
+        drawText('Credits', font, (255, 255, 255), screen, MAX_HEIGHT/2.2, MAX_WIDTH/2.32)
 
         click = False
         for event in pygame.event.get():
@@ -124,25 +127,45 @@ def credits():
     isRunning = True
     while isRunning:
         screen.fill((BACKGROUND_COLOR))
-        drawText('Game made by', titleFont, (255, 255, 255), screen, 250, 250)
-        drawText('Jaden Varin', font, (255, 255, 255), screen, 300, 300)
-        drawText('Michelle Wehrle', font, (255, 255, 255), screen, 300, 340)
-        drawText('Sidhanth Kafley', font, (255, 255, 255), screen, 300, 380)
-        drawText('Cam Brow', font, (255, 255, 255), screen, 300, 420)
+        drawText('Game made by', titleFont, (255, 255, 255), screen, 300, 250)
+        drawText('Jaden Varin', font, (255, 255, 255), screen, 350, 340)
+        drawText('Michelle Wehrle', font, (255, 255, 255), screen, 350, 380)
+        drawText('Sidhanth Kafley', font, (255, 255, 255), screen, 350, 420)
+        drawText('Cam Brow', font, (255, 255, 255), screen, 350, 460)
 
+        mousePosition = pygame.mouse.get_pos()
+        button = pygame.Rect(350, 540, 250, 50)
+
+        if button.collidepoint((mousePosition[0], mousePosition[1])):
+            if click:
+                isRunning = False
+
+
+        if 270+250 > mousePosition[0] > 270 and 300+50 > mousePosition[1] > 300:
+            pygame.draw.rect(screen, (0, 190, 0), button)
+        else:
+            pygame.draw.rect(screen, (0, 255, 0), button)
+
+        drawText('Main Menu', font, (255, 255, 255), screen, 370, 555)
+
+        click = False
         for event in pygame.event.get():
             if event.type == QUIT:
-                pygame.quit()
-                sys.exit()
+                isRunning = False
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
                     isRunning = False
+            if event.type == MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    click = True
 
         pygame.display.update()
+        mainClock.tick(10)
 
 
 def game():
     # Initiate game and window
+    pygame.init()
     window = pygame.display.set_mode((MAX_WIDTH, MAX_HEIGHT))
     windowRect = window.get_rect()
     background = pygame.Surface((MAX_WIDTH, MAX_HEIGHT))
@@ -228,8 +251,8 @@ def game():
             window.blit(healthBar, (50, MAX_HEIGHT - 50))
         elif pacMan.startingHealth - 1 == 1:
             window.blit(healthBar, (20, MAX_HEIGHT - 50))
-        # elif pacMan.startingHealth == 0:
-        #     displayGameOver(pacMan, window)
+        elif pacMan.startingHealth == 0:
+             displayGameOver(pacMan, window)
 
         # display score
         window.blit(pacMan.renderScore(24), (10, 10))
@@ -255,12 +278,43 @@ def game():
 
 def displayGameOver(pacMan, window):
     # Make Button with x for exiting
-    text = pygame.font.SysFont('Arial', 35) .render('X', True, (25, 25, 166))
+    # text = pygame.font.SysFont('Arial', 35) .render('X', True, (25, 25, 166))
     # exit = pygame_gui.elements.ui_button()
     # display the score in the center of the screen
-    window.blit(pacMan.renderScore(50), (MAX_HEIGHT/2, MAX_WIDTH/2))
+
     # display button to play again
+    isRunning = True
+    while isRunning:
+        screen.fill((BACKGROUND_COLOR))
+        drawText('GameOver', titleFont, (255, 255, 255), screen, 340, 250)
+        window.blit(pacMan.renderScore(100), (440, 380))
+        mousePosition = pygame.mouse.get_pos()
+        button = pygame.Rect(340, 500, 250, 50)
 
+        if button.collidepoint((mousePosition[0], mousePosition[1])):
+            if click:
+                game()
 
+        if 270+250 > mousePosition[0] > 270 and 300+50 > mousePosition[1] > 300:
+            pygame.draw.rect(screen, (0, 190, 0), button)
+        else:
+            pygame.draw.rect(screen, (0, 255, 0), button)
+
+        drawText('Play again', font, (255, 255, 255), screen, 360, 515)
+
+        click = False
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == KEYDOWN:
+                if event.key == K_ESCAPE:
+                    isRunning = False
+            if event.type == MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    click = True
+
+        pygame.display.update()
+        mainClock.tick(10)
 if __name__ == '__main__':
     main()
