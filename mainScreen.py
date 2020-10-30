@@ -38,7 +38,9 @@ def main():
     wallImages = loadImages(path='WallSprites')
     wall1 = Wall(position=(100, 300), size=(16, 16), images=wallImages)
     wall2 = Wall(position=(116, 300), size=(16, 16), images=wallImages)
-    walls = [wall1, wall2]
+    wall3 = Wall(position=(132, 300), size=(16, 16), images=wallImages)
+    wall4 = Wall(position=(148, 300), size=(16, 16), images=wallImages)
+    walls = [wall1, wall2, wall3, wall4]
 
     # create blue ghost object
     blueGhostImages = loadImages(path='BlueGhostSprites')
@@ -109,6 +111,10 @@ def main():
 
         # ensures that the pacMan won't go off screen
         pacMan.rect.clamp_ip(windowRect)
+        wall1.collision(pacMan)
+        wall2.collision(pacMan)
+        wall3.collision(pacMan)
+        wall4.collision(pacMan)
         # update the sprite
         allSprites.update()
         # update the image on screen
