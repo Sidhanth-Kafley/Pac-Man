@@ -135,3 +135,9 @@ class PacMan(pygame.sprite.Sprite):
         self.rect = pygame.Rect(self.position, self.size)
         self.image = self.images[1]
         self.index = 0
+
+    def eatPill(self, pill):
+        pill.eat()
+        if pill.isPower():
+            self.setPowerUp()
+        self.totalPoints += 10
