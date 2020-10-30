@@ -1,15 +1,87 @@
 import pygame
 import pygame_gui
-import time
 import sys
 import os
 from PacMan import PacMan
 from ghost import Ghost
+from pygame.locals import *
+
 pygame.init()
 
 MAX_HEIGHT = 700
 MAX_WIDTH = 900
 BACKGROUND_COLOR = pygame.Color('black')
+
+mainClock = pygame.time.Clock()
+
+pygame.display.set_caption('Pac Man')
+screen = pygame.display.set_mode((MAX_WIDTH, MAX_HEIGHT), 0, 32)
+
+font = pygame.font.Font('8-BIT WONDER.TTF', 20)
+
+
+def drawText(text, font, color, surface, x, y):
+    textobj = font.render(text, 1, color)
+    textrect = textobj.get_rect()
+    textrect.topleft = (x, y)
+    surface.blit(textobj, textrect)
+
+
+click = False
+
+
+def main():
+    while True:
+
+        screen.fill((BACKGROUND_COLOR))
+        titleFont = pygame.font.Font('8-BIT WONDER.TTF', 30)
+        drawText('main menu', titleFont, (255, 255, 255), screen, 270, 220)
+
+        mousePosition = pygame.mouse.get_pos()
+
+        button_1 = pygame.Rect(270, 300, 250, 50)
+        button_2 = pygame.Rect(270, 400, 250, 50)
+
+        if button_2.collidepoint((mousePosition[0], mousePosition[1])):
+            if click:
+                credits()
+
+        if button_1.collidepoint((mousePosition[0], mousePosition[1])):
+            if click:
+                game()
+
+
+
+        if 270+250 > mousePosition[0] > 270 and 300+50 > mousePosition[1] > 300:
+            pygame.draw.rect(screen, (0, 190, 0), button_1)
+        else:
+            pygame.draw.rect(screen, (0, 255, 0), button_1)
+
+        drawText('start game', font, (255, 255, 255), screen, 290, 315)
+
+
+        if 270+250 > mousePosition[0] > 270 and 400+50 > mousePosition[1] > 400:
+            pygame.draw.rect(screen, (0, 190, 0), button_2)
+        else:
+            pygame.draw.rect(screen, (0, 255, 0), button_2)
+
+        drawText('Credits', font, (255, 255, 255), screen, 290, 415)
+
+        click = False
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == KEYDOWN:
+                if event.key == K_ESCAPE:
+                    pygame.quit()
+                    sys.exit()
+            if event.type == MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    click = True
+
+        pygame.display.update()
+        mainClock.tick(10)
 
 
 def loadImages(path):
@@ -21,9 +93,31 @@ def loadImages(path):
     return images
 
 
-def main():
+def credits():
+    isRunning = True
+    while isRunning:
+        screen.fill((BACKGROUND_COLOR))
+        titleFont = pygame.font.Font('8-BIT WONDER.TTF', 30)
+        drawText('Game made by', titleFont, (255, 255, 255), screen, 250, 250)
+        drawText('Jaden Varin', font, (255, 255, 255), screen, 300, 300)
+        drawText('Michelle Wehrle', font, (255, 255, 255), screen, 300, 340)
+        drawText('Sidhanth Kafley', font, (255, 255, 255), screen, 300, 380)
+        drawText('Cam Brow', font, (255, 255, 255), screen, 300, 420)
+
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == KEYDOWN:
+                if event.key == K_ESCAPE:
+                    isRunning = False
+
+        pygame.display.update()
+        mainClock.tick(10)
+
+
+def game():
     # Initiate game and window
-    pygame.display.set_caption('Pac-Man')
     window = pygame.display.set_mode((MAX_WIDTH, MAX_HEIGHT))
     windowRect = window.get_rect()
     background = pygame.Surface((MAX_WIDTH, MAX_HEIGHT))
@@ -91,6 +185,7 @@ def main():
                     pacMan.velocity.x = 0
                     pacMan.velocity.y = 10*pacMan.powerUp
 
+
             manager.process_events(event)
 
         if pygame.sprite.spritecollide(pacMan, ghosts, False):
@@ -130,6 +225,7 @@ def main():
 
     pygame.mixer.music.stop()
     sys.exit(0)
+    #mainClock.tick(10)
 
 
 if __name__ == '__main__':
