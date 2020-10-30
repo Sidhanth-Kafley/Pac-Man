@@ -13,7 +13,7 @@ class PacMan(pygame.sprite.Sprite):
         # initialize super class
         super(PacMan, self).__init__()
         # size of each image
-        self.size = (64, 64)
+        self.size = (40, 40)
         # set image streams for moving in respective directions
         self.images = images
         self.imagesRight = [self.images[4], self.images[2]]
@@ -56,20 +56,21 @@ class PacMan(pygame.sprite.Sprite):
             # moves the image on the screen according to the set velocity
             self.rect.move_ip(*self.velocity)
         else:
+            img = []
             if self.velocity.x > 0:
                 self.images = self.imagesDeath
             elif self.velocity.x < 0:
                 for x in self.imagesDeath:
-                    y = pygame.transform.rotate(x, 180)
-                    self.imagesDeath[self.imagesDeath.index(x)] = y
+                    img.append(pygame.transform.rotate(x, 180))
+                self.imagesDeath = img
             elif self.velocity.y < 0:
                 for x in self.imagesDeath:
-                    y = pygame.transform.rotate(x, 90)
-                    self.imagesDeath[self.imagesDeath.index(x)] = y
+                    img.append(pygame.transform.rotate(x, 90))
+                self.imagesDeath = img
             elif self.velocity.y > 0:
                 for x in self.imagesDeath:
-                    y = pygame.transform.rotate(x, 270)
-                    self.imagesDeath[self.imagesDeath.index(x)] = y
+                    img.append(pygame.transform.rotate(x, 270))
+                self.imagesDeath = img
             self.images = self.imagesDeath
             self.velocity.x = 0
             self.velocity.y = 0
@@ -109,7 +110,7 @@ class PacMan(pygame.sprite.Sprite):
         images = [0, 0, 0, 0, 0, 0, 0, 0]
         for file in os.listdir(path):
             image = pygame.image.load(path + os.sep + file).convert_alpha()
-            image = pygame.transform.scale(image, (64, 64))
+            image = pygame.transform.scale(image, self.size)
             if "1" in file:
                 images[0] = image
             elif "2" in file:
@@ -134,3 +135,9 @@ class PacMan(pygame.sprite.Sprite):
         self.rect = pygame.Rect(self.position, self.size)
         self.image = self.images[1]
         self.index = 0
+
+    def eatPill(self, pill):
+        pill.eat()
+        if pill.isPower():
+            self.setPowerUp()
+        self.totalPoints += 10

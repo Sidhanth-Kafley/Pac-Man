@@ -5,12 +5,16 @@ import os
 from PacMan import PacMan
 from ghost import Ghost
 from pygame.locals import *
+from pill import Pill
+from Wall import Wall
+from Level import Level
 
 pygame.init()
 
 MAX_HEIGHT = 800
 MAX_WIDTH = 1000
 BACKGROUND_COLOR = pygame.Color('black')
+
 mainClock = pygame.time.Clock()
 font = pygame.font.Font('8-BIT WONDER.TTF', 20)
 titleFont = pygame.font.Font('8-BIT WONDER.TTF', 30)
@@ -84,7 +88,9 @@ def mainMenu():
                 if event.button == 1:
                     click = True
 
-        pygame.display.update()
+
+SPRITE_SIZE = 48
+
 
 
 def loadImages(path):
@@ -93,7 +99,7 @@ def loadImages(path):
         images = [0, 0, 0, 0, 0]
         for file in os.listdir(path):
             image = pygame.image.load(path + os.sep + file).convert_alpha()
-            image = pygame.transform.scale(image, (64, 64))
+            image = pygame.transform.scale(image, (SPRITE_SIZE, SPRITE_SIZE))
             if 'Down' in file:
                 images[0] = image
             elif 'Left' in file:
@@ -108,7 +114,7 @@ def loadImages(path):
         images = [0, 0, 0, 0, 0]
         for file in os.listdir(path):
             image = pygame.image.load(path + os.sep + file).convert_alpha()
-            image = pygame.transform.scale(image, (64, 64))
+            image = pygame.transform.scale(image, (SPRITE_SIZE, SPRITE_SIZE))
             if 'Down' in file:
                 images[0] = image
             elif 'Left' in file:
@@ -172,9 +178,21 @@ def game():
     background.fill(BACKGROUND_COLOR)
     manager = pygame_gui.UIManager((MAX_WIDTH, MAX_HEIGHT))
 
+    pillImage = pygame.image.load("PointPill.png").convert_alpha()
+    pillImage = pygame.transform.scale(pillImage, (int(SPRITE_SIZE/3), int(SPRITE_SIZE/3)))
+    i = 0
+    pills = []
+    while i < 10:
+        pills.append(Pill(False, pillImage, (10 + i, 100)))
+        i += 1
+    pillGroup = pygame.sprite.Group(pills)
+
     # create pacman object
     images = loadImages(path='PacManSprites')
-    pacMan = PacMan(position=(100, 100), images=images)
+    pacMan = PacMan(position=(MAX_WIDTH/2, MAX_HEIGHT/2), images=images)
+    
+    #create level object
+    level1 = Level(layoutFilename='Levels/level1alt.txt', wallSize=(24, 24), originPosition=(100, 100))
 
     ghosts = []
     # create blue ghost object
@@ -197,11 +215,12 @@ def game():
     redGhost = Ghost('red', position=(500, 200), images=redGhostImages)
     ghosts.append(redGhost)
 
+
     # health bar at the top of the screen
-    healthBar = pygame.transform.scale(images[2], (32, 32))
+    healthBar = pygame.transform.scale(images[2], (int(SPRITE_SIZE/2), int(SPRITE_SIZE/2)))
 
     # ADD GHOSTS TO THIS GROUP SO THEY ALL FOLLOW THE SAME BASIC GUIDELINES
-    allSprites = pygame.sprite.Group(pacMan, blueGhost, orangeGhost, pinkGhost, redGhost)
+    allSprites = pygame.sprite.Group(pacMan, blueGhost, orangeGhost, pinkGhost, redGhost, level1.walls)
 
     # clock used for framerate
     clock = pygame.time.Clock()
@@ -237,9 +256,15 @@ def game():
             manager.process_events(event)
 
         if pygame.sprite.spritecollide(pacMan, ghosts, False):
-            pacManDeath = pygame.mixer.Sound("Music/PacManDeath.wav")
-            pacManDeath.play(0)
-            pacMan.deathAnimation()
+            if pacMan.powerUp == 1:
+                pacManDeath = pygame.mixer.Sound("Music/PacManDeath.wav")
+                pacManDeath.play(0)
+                pacMan.deathAnimation()
+            else:
+                pacManEatGhost = pygame.mixer.Sound("Music/PacManEatGhost.wav")
+                pacManEatGhost.play(0)
+                # CODE TO EAT THE GHOST GOES HERE
+                # pacMan.eatGhost(EATEN GHOST GOES HERE)
 
         manager.update(time_delta)
         window.blit(background, (0, 0))
@@ -257,6 +282,10 @@ def game():
         # display score
         window.blit(pacMan.renderScore(24), (10, 10))
 
+        # inefficient collision, should be handled in PacMan obj instead
+        for wall in level1.walls:
+            wall.collision(pacMan)
+
         # ensures that the pacMan and ghosts won't go off screen
         pacMan.rect.clamp_ip(windowRect)
         blueGhost.rect.clamp_ip(windowRect)
@@ -264,6 +293,7 @@ def game():
         pinkGhost.rect.clamp_ip(windowRect)
         redGhost.rect.clamp_ip(windowRect)
 
+        pillGroup.draw(window)
         # update the sprite
         allSprites.update()
         # update the image on screen

@@ -12,7 +12,7 @@ class Ghost(pygame.sprite.Sprite):
         self.hitPacMan = False
         self.position = position
         # set the size of the images
-        sizeOfImage = (64, 64)
+        sizeOfImage = (40, 40)
 
         # index for looping through images
         self.index = 1
@@ -88,5 +88,3 @@ class Ghost(pygame.sprite.Sprite):
             self.moveY = 5
         elif self.direction == 'up':
             self.moveY = -5
-
-

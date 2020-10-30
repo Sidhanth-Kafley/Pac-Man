@@ -2,7 +2,11 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+
       <module fileurl="file://$PROJECT_DIR$/.idea/CS-205-Pac-Man.iml" filepath="$PROJECT_DIR$/.idea/CS-205-Pac-Man.iml" />
+
+      <module fileurl="file://$PROJECT_DIR$/.idea/pac.iml" filepath="$PROJECT_DIR$/.idea/pac.iml" />
+
     </modules>
   </component>
 </project>
