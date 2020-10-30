@@ -63,7 +63,9 @@ def main():
     # create pacman object
     images = loadImages(path='PacManSprites')
     pacMan = PacMan(position=(MAX_WIDTH/2, MAX_HEIGHT/2), images=images)
-
+    
+    #create level object
+    level1 = Level(layoutFilename='Levels/level1alt.txt', wallSize=(16, 16))
 
     ghosts = []
     # create blue ghost object
