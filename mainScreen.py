@@ -29,7 +29,7 @@ screen = pygame.display.set_mode((MAX_WIDTH, MAX_HEIGHT), 0, 32)
 def drawText(text, font, color, surface, x, y):
     textObj = font.render(text, 1, color)
     textRect = textObj.get_rect()
-    textRect.topleft = (x, y)
+    textRect.topleft = (int(x), int(y))
     surface.blit(textObj, textRect)
 
 def main():
@@ -46,8 +46,8 @@ def mainMenu():
         mousePosition = pygame.mouse.get_pos()
 
         # create buttons
-        button_1 = pygame.Rect(MAX_HEIGHT/2.5, MAX_WIDTH/3.0, 250, 50)
-        button_2 = pygame.Rect(MAX_HEIGHT/2.5, MAX_WIDTH/2.4, 250, 50)
+        button_1 = pygame.Rect(int(MAX_HEIGHT/2.5), int(MAX_WIDTH/3.0), 250, 50)
+        button_2 = pygame.Rect(int(MAX_HEIGHT/2.5), int(MAX_WIDTH/2.4), 250, 50)
 
         # if button is clicked call corresponding functions
         if button_2.collidepoint((mousePosition[0], mousePosition[1])):
