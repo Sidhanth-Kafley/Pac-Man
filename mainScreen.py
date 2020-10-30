@@ -11,37 +11,38 @@ pygame.init()
 MAX_HEIGHT = 800
 MAX_WIDTH = 1000
 BACKGROUND_COLOR = pygame.Color('black')
-
 mainClock = pygame.time.Clock()
+font = pygame.font.Font('8-BIT WONDER.TTF', 20)
+titleFont = pygame.font.Font('8-BIT WONDER.TTF', 30)
+click = False
 
 pygame.display.set_caption('Pac Man')
 screen = pygame.display.set_mode((MAX_WIDTH, MAX_HEIGHT), 0, 32)
 
-font = pygame.font.Font('8-BIT WONDER.TTF', 20)
+# function to draw text onto the screen
 
 
 def drawText(text, font, color, surface, x, y):
-    textobj = font.render(text, 1, color)
-    textrect = textobj.get_rect()
-    textrect.topleft = (x, y)
-    surface.blit(textobj, textrect)
-
-
-click = False
+    textObj = font.render(text, 1, color)
+    textRect = textObj.get_rect()
+    textRect.topleft = (x, y)
+    surface.blit(textObj, textRect)
 
 
 def main():
     while True:
 
         screen.fill((BACKGROUND_COLOR))
-        titleFont = pygame.font.Font('8-BIT WONDER.TTF', 30)
         drawText('main menu', titleFont, (255, 255, 255), screen, 270, 220)
 
+        # get mousePosition for collision detection
         mousePosition = pygame.mouse.get_pos()
 
+        # create buttons
         button_1 = pygame.Rect(270, 300, 250, 50)
         button_2 = pygame.Rect(270, 400, 250, 50)
 
+        # if button is clicked call corresponding functions
         if button_2.collidepoint((mousePosition[0], mousePosition[1])):
             if click:
                 credits()
@@ -50,7 +51,7 @@ def main():
             if click:
                 game()
 
-
+        # Draw buttons and add hover effect
 
         if 270+250 > mousePosition[0] > 270 and 300+50 > mousePosition[1] > 300:
             pygame.draw.rect(screen, (0, 190, 0), button_1)
@@ -81,7 +82,6 @@ def main():
                     click = True
 
         pygame.display.update()
-        mainClock.tick(10)
 
 
 def loadImages(path):
@@ -124,7 +124,6 @@ def credits():
     isRunning = True
     while isRunning:
         screen.fill((BACKGROUND_COLOR))
-        titleFont = pygame.font.Font('8-BIT WONDER.TTF', 30)
         drawText('Game made by', titleFont, (255, 255, 255), screen, 250, 250)
         drawText('Jaden Varin', font, (255, 255, 255), screen, 300, 300)
         drawText('Michelle Wehrle', font, (255, 255, 255), screen, 300, 340)
@@ -140,7 +139,6 @@ def credits():
                     isRunning = False
 
         pygame.display.update()
-        mainClock.tick(10)
 
 
 def game():
