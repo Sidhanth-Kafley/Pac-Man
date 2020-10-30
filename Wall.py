@@ -5,25 +5,18 @@ class Wall(pygame.sprite.Sprite):
     size = (16, 16)
     colliding = False
 
-    def __init__(self, position, size, images):
+    def __init__(self, position, size, image):
         # initialize super class
         super(Wall, self).__init__()
         self.position = position
         self.size = size
-        tempImages = []
 
         # resize image scale with bounding box
-        for image in images:
-            tempImages.append(pygame.transform.scale(image, (size[0], size[1])))
-        images = tempImages
-        self.images = images
         self.index = 0
-        self.image = images[10]
+        self.image = pygame.transform.scale(image, (size[0], size[1]))
         self.rect = pygame.Rect(position, size)
 
     def collision(self, other):
-        #print(self.colliding)
-        #print(type(self) == Wall)
         if self.rect.colliderect(other.rect) and not self.colliding:
             other.velocity.x = 0
             other.velocity.y = 0

@@ -5,6 +5,7 @@ import os
 from PacMan import PacMan
 from ghost import Ghost
 from Wall import Wall
+from Level import Level
 pygame.init()
 
 MAX_HEIGHT = 700
@@ -35,12 +36,10 @@ def main():
     pacMan = PacMan(position=(100, 100), images=images)
 
     # create test wall object
-    wallImages = loadImages(path='WallSprites')
-    wall1 = Wall(position=(100, 300), size=(16, 16), images=wallImages)
-    wall2 = Wall(position=(116, 300), size=(16, 16), images=wallImages)
-    wall3 = Wall(position=(132, 300), size=(16, 16), images=wallImages)
-    wall4 = Wall(position=(148, 300), size=(16, 16), images=wallImages)
-    walls = [wall1, wall2, wall3, wall4]
+
+
+    # create test level object
+    level1 = Level(layoutFilename='Levels/level1alt.txt', wallSize=(16, 16))
 
     # create blue ghost object
     blueGhostImages = loadImages(path='BlueGhostSprites')
@@ -62,7 +61,7 @@ def main():
     healthBar = pygame.transform.scale(images[0], (32, 32))
 
     # ADD GHOSTS TO THIS GROUP SO THEY ALL FOLLOW THE SAME BASIC GUIDELINES
-    allSprites = pygame.sprite.Group(pacMan, blueGhost, orangeGhost, pinkGhost, redGhost, walls)
+    allSprites = pygame.sprite.Group(pacMan, blueGhost, orangeGhost, pinkGhost, redGhost, level1.walls)
 
     # clock used for framerate
     clock = pygame.time.Clock()
@@ -111,10 +110,6 @@ def main():
 
         # ensures that the pacMan won't go off screen
         pacMan.rect.clamp_ip(windowRect)
-        wall1.collision(pacMan)
-        wall2.collision(pacMan)
-        wall3.collision(pacMan)
-        wall4.collision(pacMan)
         # update the sprite
         allSprites.update()
         # update the image on screen
