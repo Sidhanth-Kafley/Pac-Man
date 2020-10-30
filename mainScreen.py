@@ -104,7 +104,7 @@ def main():
 
     while isRunning:
         # times per second this loop runs
-        time_delta = clock.tick(60) / 1000.0
+        time_delta = clock.tick(120) / 1000.0
 
         # handles events
         for event in pygame.event.get():
@@ -154,8 +154,8 @@ def main():
         window.blit(pacMan.renderScore(24), (10, 10))
 
         # inefficient collision, should be handled in PacMan obj instead
-        for wall in level1.walls:
-            wall.collision(pacMan)
+        #for wall in level1.walls:
+        #   wall.collision(pacMan)
 
         # ensures that the pacMan and ghosts won't go off screen
         pacMan.rect.clamp_ip(windowRect)
