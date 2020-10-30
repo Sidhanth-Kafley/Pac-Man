@@ -5,7 +5,10 @@ import sys
 import os
 from PacMan import PacMan
 from ghost import Ghost
+from pill import Pill
+from Wall import Wall
 from Level import Level
+
 pygame.init()
 
 MAX_HEIGHT = 800
@@ -58,6 +61,15 @@ def main():
     background = pygame.Surface((MAX_WIDTH, MAX_HEIGHT))
     background.fill(BACKGROUND_COLOR)
     manager = pygame_gui.UIManager((MAX_WIDTH, MAX_HEIGHT))
+
+    pillImage = pygame.image.load("PointPill.png").convert_alpha()
+    pillImage = pygame.transform.scale(pillImage, (int(SPRITE_SIZE/3), int(SPRITE_SIZE/3)))
+    i = 0
+    pills = []
+    while i < 10:
+        pills.append(Pill(False, pillImage, (10 + i, 100)))
+        i += 1
+    pillGroup = pygame.sprite.Group(pills)
 
     # create pacman object
     images = loadImages(path='PacManSprites')
@@ -164,6 +176,7 @@ def main():
         pinkGhost.rect.clamp_ip(windowRect)
         redGhost.rect.clamp_ip(windowRect)
 
+        pillGroup.draw(window)
         # update the sprite
         allSprites.update()
         # update the image on screen
