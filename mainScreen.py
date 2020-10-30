@@ -10,6 +10,7 @@ pygame.init()
 MAX_HEIGHT = 800
 MAX_WIDTH = 1000
 BACKGROUND_COLOR = pygame.Color('black')
+SPRITE_SIZE = 48
 
 
 def loadImages(path):
@@ -18,7 +19,7 @@ def loadImages(path):
         images = [0, 0, 0, 0, 0]
         for file in os.listdir(path):
             image = pygame.image.load(path + os.sep + file).convert_alpha()
-            image = pygame.transform.scale(image, (64, 64))
+            image = pygame.transform.scale(image, (SPRITE_SIZE, SPRITE_SIZE))
             if 'Down' in file:
                 images[0] = image
             elif 'Left' in file:
@@ -33,7 +34,7 @@ def loadImages(path):
         images = [0, 0, 0, 0, 0]
         for file in os.listdir(path):
             image = pygame.image.load(path + os.sep + file).convert_alpha()
-            image = pygame.transform.scale(image, (64, 64))
+            image = pygame.transform.scale(image, (SPRITE_SIZE, SPRITE_SIZE))
             if 'Down' in file:
                 images[0] = image
             elif 'Left' in file:
@@ -59,7 +60,7 @@ def main():
 
     # create pacman object
     images = loadImages(path='PacManSprites')
-    pacMan = PacMan(position=(100, 100), images=images)
+    pacMan = PacMan(position=(MAX_WIDTH/2, MAX_HEIGHT/2), images=images)
 
     ghosts = []
     # create blue ghost object
@@ -83,7 +84,7 @@ def main():
     ghosts.append(redGhost)
 
     # health bar at the top of the screen
-    healthBar = pygame.transform.scale(images[2], (32, 32))
+    healthBar = pygame.transform.scale(images[2], (int(SPRITE_SIZE/2), int(SPRITE_SIZE/2)))
 
     # ADD GHOSTS TO THIS GROUP SO THEY ALL FOLLOW THE SAME BASIC GUIDELINES
     allSprites = pygame.sprite.Group(pacMan, blueGhost, orangeGhost, pinkGhost, redGhost)
@@ -121,9 +122,15 @@ def main():
             manager.process_events(event)
 
         if pygame.sprite.spritecollide(pacMan, ghosts, False):
-            pacManDeath = pygame.mixer.Sound("Music/PacManDeath.wav")
-            pacManDeath.play(0)
-            pacMan.deathAnimation()
+            if pacMan.powerUp == 1:
+                pacManDeath = pygame.mixer.Sound("Music/PacManDeath.wav")
+                pacManDeath.play(0)
+                pacMan.deathAnimation()
+            else:
+                pacManEatGhost = pygame.mixer.Sound("Music/PacManEatGhost.wav")
+                pacManEatGhost.play(0)
+                # CODE TO EAT THE GHOST GOES HERE
+                # pacMan.eatGhost(EATEN GHOST GOES HERE)
 
         manager.update(time_delta)
         window.blit(background, (0, 0))
