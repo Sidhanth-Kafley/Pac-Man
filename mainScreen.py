@@ -66,9 +66,9 @@ def main():
     pillImage = pygame.transform.scale(pillImage, (int(SPRITE_SIZE/3), int(SPRITE_SIZE/3)))
     i = 0
     pills = []
-    while i < 10:
+    while i < 5000:
         pills.append(Pill(False, pillImage, (10 + i, 100)))
-        i += 1
+        i += 50
     pillGroup = pygame.sprite.Group(pills)
 
     # create pacman object
@@ -99,7 +99,6 @@ def main():
     redGhost = Ghost('red', position=(500, 200), images=redGhostImages)
     ghosts.append(redGhost)
 
-
     # health bar at the top of the screen
     healthBar = pygame.transform.scale(images[2], (int(SPRITE_SIZE/2), int(SPRITE_SIZE/2)))
 
@@ -112,11 +111,14 @@ def main():
 
     # start main background music
     backgroundMusic = pygame.mixer.Sound("Music/PacManBeginning.wav")
-    backgroundMusic.play(-1)
+    backgroundMusic.play(0)
+
+    # backgroundNoise = pygame.mixer.Sound("Music/PacMan.wav")
+    # backgroundNoise.play(-1)
 
     while isRunning:
         # times per second this loop runs
-        time_delta = clock.tick(60) / 1000.0
+        time_delta = clock.tick(10) / 1000.0
 
         # handles events
         for event in pygame.event.get():
@@ -148,6 +150,12 @@ def main():
                 pacManEatGhost.play(0)
                 # CODE TO EAT THE GHOST GOES HERE
                 # pacMan.eatGhost(EATEN GHOST GOES HERE)
+
+        if pygame.sprite.spritecollide(pacMan, pillGroup, False):
+            #pygame.sprite.
+            pacManChomp = pygame.mixer.Sound("Music/PacManChomp.wav")
+            pacManChomp.play(0)
+            pacMan.eatPill()
 
         manager.update(time_delta)
         window.blit(background, (0, 0))
