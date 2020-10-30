@@ -6,6 +6,9 @@ import os
 from PacMan import PacMan
 from ghost import Ghost
 from pill import Pill
+from Wall import Wall
+from Level import Level
+
 pygame.init()
 
 MAX_HEIGHT = 800
@@ -71,6 +74,9 @@ def main():
     # create pacman object
     images = loadImages(path='PacManSprites')
     pacMan = PacMan(position=(MAX_WIDTH/2, MAX_HEIGHT/2), images=images)
+    
+    #create level object
+    level1 = Level(layoutFilename='Levels/level1alt.txt', wallSize=(16, 16))
 
     ghosts = []
     # create blue ghost object
@@ -93,11 +99,12 @@ def main():
     redGhost = Ghost('red', position=(500, 200), images=redGhostImages)
     ghosts.append(redGhost)
 
+
     # health bar at the top of the screen
     healthBar = pygame.transform.scale(images[2], (int(SPRITE_SIZE/2), int(SPRITE_SIZE/2)))
 
     # ADD GHOSTS TO THIS GROUP SO THEY ALL FOLLOW THE SAME BASIC GUIDELINES
-    allSprites = pygame.sprite.Group(pacMan, blueGhost, orangeGhost, pinkGhost, redGhost)
+    allSprites = pygame.sprite.Group(pacMan, blueGhost, orangeGhost, pinkGhost, redGhost, level1.walls)
 
     # clock used for framerate
     clock = pygame.time.Clock()
