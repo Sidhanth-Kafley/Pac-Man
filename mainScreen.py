@@ -70,22 +70,22 @@ def main():
     ghosts = []
     # create blue ghost object
     blueGhostImages = loadImages(path='BlueGhostSprites')
-    blueGhost = Ghost('blue', position=(400, 200), images=blueGhostImages)
+    blueGhost = Ghost('blue', position=(255, 310), images=blueGhostImages)
     ghosts.append(blueGhost)
 
     # create orange ghost object
     orangeGhostImages = loadImages(path='OrangeGhostSprites')
-    orangeGhost = Ghost('orange', position=(350, 200), images=orangeGhostImages)
+    orangeGhost = Ghost('orange', position=(290, 310), images=orangeGhostImages)
     ghosts.append(orangeGhost)
 
     # create pink ghost object
     pinkGhostImages = loadImages(path='PinkGhostSprites')
-    pinkGhost = Ghost('pink', position=(450, 200), images=pinkGhostImages)
+    pinkGhost = Ghost('pink', position=(220, 310), images=pinkGhostImages)
     ghosts.append(pinkGhost)
 
     # create red ghost object
     redGhostImages = loadImages(path='RedGhostSprites')
-    redGhost = Ghost('red', position=(500, 200), images=redGhostImages)
+    redGhost = Ghost('red', position=(255, 250), images=redGhostImages)
     ghosts.append(redGhost)
 
 
