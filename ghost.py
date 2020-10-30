@@ -21,13 +21,14 @@ class Ghost(pygame.sprite.Sprite):
         self.imagesLeft = [self.images[1]]
         self.imagesRight = [self.images[2]]
         self.imagesUp = [self.images[3]]
+        self.image = self.images[0]
 
         self.rect = pygame.Rect(position, sizeOfImage)
 
         # set speed of the ghost
         self.velocity = pygame.math.Vector2()
 
-    def update(self):
+    def update(self, dt):
         movements = random.randrange(10, 20)
         spacesMoved = 0
 
@@ -49,7 +50,7 @@ class Ghost(pygame.sprite.Sprite):
 
         # update the image
         if self.index >= len(self.images):
-            self.index = 2
+            self.index = 0
         self.image = self.images[self.index]
 
     # get the color of the ghost

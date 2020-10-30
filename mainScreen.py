@@ -6,17 +6,41 @@ from PacMan import PacMan
 from ghost import Ghost
 pygame.init()
 
-MAX_HEIGHT = 700
-MAX_WIDTH = 900
+MAX_HEIGHT = 800
+MAX_WIDTH = 1000
 BACKGROUND_COLOR = pygame.Color('black')
 
 
 def loadImages(path):
     images = []
-    for file in os.listdir(path):
-        image = pygame.image.load(path + os.sep + file).convert_alpha()
-        image = pygame.transform.scale(image, (64, 64))
-        images.append(image)
+    if path == 'PacManSprites':
+        images = [0, 0, 0, 0, 0]
+        for file in os.listdir(path):
+            image = pygame.image.load(path + os.sep + file).convert_alpha()
+            image = pygame.transform.scale(image, (64, 64))
+            if 'Down' in file:
+                images[0] = image
+            elif 'Left' in file:
+                images[1] = image
+            elif 'Right' in file:
+                images[2] = image
+            elif 'Up' in file:
+                images[3] = image
+            elif 'Closed' in file:
+                images[4] = image
+    elif 'GhostSprites' in path:
+        images = [0, 0, 0, 0]
+        for file in os.listdir(path):
+            image = pygame.image.load(path + os.sep + file).convert_alpha()
+            image = pygame.transform.scale(image, (64, 64))
+            if 'Down' in file:
+                images[0] = image
+            elif 'Left' in file:
+                images[1] = image
+            elif 'Right' in file:
+                images[2] = image
+            elif 'Up' in file:
+                images[3] = image
     return images
 
 
@@ -50,7 +74,7 @@ def main():
     redGhost = Ghost('red', position=(500, 200), images=redGhostImages)
 
     # health bar at the top of the screen
-    healthBar = pygame.transform.scale(images[0], (32, 32))
+    healthBar = pygame.transform.scale(images[2], (32, 32))
 
     # ADD GHOSTS TO THIS GROUP SO THEY ALL FOLLOW THE SAME BASIC GUIDELINES
     allSprites = pygame.sprite.Group(pacMan, blueGhost, orangeGhost, pinkGhost, redGhost)
@@ -100,10 +124,14 @@ def main():
         # display score
         window.blit(pacMan.renderScore(), (10, 10))
 
-        # ensures that the pacMan won't go off screen
+        # ensures that the sprites won't go off screen
         pacMan.rect.clamp_ip(windowRect)
+        blueGhost.rect.clamp_ip(windowRect)
+        redGhost.rect.clamp_ip(windowRect)
+        pinkGhost.rect.clamp_ip(windowRect)
+        orangeGhost.rect.clamp_ip(windowRect)
         # update the sprite
-        allSprites.update()
+        allSprites.update(time_delta)
         # update the image on screen
         allSprites.draw(window)
 

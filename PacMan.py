@@ -15,11 +15,11 @@ class PacMan(pygame.sprite.Sprite):
         size = (64, 64)
         # set image streams for moving in respective directions
         self.images = images
-        self.imagesRight = [self.images[1], self.images[0]]
-        self.imagesLeft = [self.images[1], self.images[2]]
-        self.imagesUp = [self.images[1], self.images[4]]
-        self.imagesDown = [self.images[1], self.images[3]]
-        self.imagesStop = [self.images[1]]
+        self.imagesRight = [self.images[4], self.images[2]]
+        self.imagesLeft = [self.images[4], self.images[1]]
+        self.imagesUp = [self.images[4], self.images[3]]
+        self.imagesDown = [self.images[4], self.images[0]]
+        self.imagesStop = [self.images[4]]
         # index for looping through images
         self.index = 0
         # sets the object's position and size on the background
@@ -28,8 +28,10 @@ class PacMan(pygame.sprite.Sprite):
         self.velocity = pygame.math.Vector2()
         # sets the current image (closed circle to start)
         self.image = self.images[1]
+        self.animationTime = 0.05
+        self.currentTime = 0
 
-    def update(self):
+    def update(self, dt):
         # set the array of images to the appropriate direction
         if self.velocity.x > 0:
             self.images = self.imagesRight
@@ -43,9 +45,17 @@ class PacMan(pygame.sprite.Sprite):
             self.images = self.imagesStop
         # loop through the images of the index
         self.index += 1
-        if self.index >= len(self.images):
-            self.index = 0
-        self.image = self.images[self.index]
+        self.currentTime += dt
+
+        self.currentTime += dt
+        if self.currentTime >= self.animationTime:
+            self.currentTime = 0
+            # self.index =#(self.index + 1) % len(self.images)
+            # self.image = self.images[self.index]
+            if self.index >= len(self.images):
+                self.index = 0
+            self.image = self.images[self.index]
+
         # moves the image on the screen according to the set velocity
         self.rect.move_ip(*self.velocity)
 
