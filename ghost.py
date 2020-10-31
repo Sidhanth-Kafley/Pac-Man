@@ -43,7 +43,7 @@ class Ghost(pygame.sprite.Sprite):
     def update(self):
         # self.moveX = random.randint(-5, 5)
         # self.moveY = random.randrange(-5, 5)
-        #self.moveGhosts()
+        # self.moveGhosts()
         self.rect.x += self.moveX
         self.rect.y += self.moveY
 
