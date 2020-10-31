@@ -32,14 +32,16 @@ def drawText(text, font, color, surface, x, y):
     textRect.topleft = (int(x), int(y))
     surface.blit(textObj, textRect)
 
+
 def main():
     mainMenu()
+
 
 def mainMenu():
     running = True
     while running:
 
-        screen.fill((BACKGROUND_COLOR))
+        screen.fill(BACKGROUND_COLOR)
         drawText('main menu', titleFont, (255, 255, 255), screen, MAX_HEIGHT/2.5, MAX_WIDTH/4)
 
         # get mousePosition for collision detection
@@ -67,7 +69,6 @@ def mainMenu():
 
         drawText('start game', font, (255, 255, 255), screen, MAX_HEIGHT/2.3, MAX_WIDTH/2.9)
 
-
         if MAX_HEIGHT/2.5+250 > mousePosition[0] > MAX_HEIGHT/2.5 and MAX_WIDTH/2.4+50 > mousePosition[1] > MAX_WIDTH/2.4:
             pygame.draw.rect(screen, (0, 190, 0), button_2)
         else:
@@ -87,6 +88,7 @@ def mainMenu():
             if event.type == MOUSEBUTTONDOWN:
                 if event.button == 1:
                     click = True
+        pygame.display.update()
 
 
 SPRITE_SIZE = 48
@@ -145,7 +147,6 @@ def credits():
         if button.collidepoint((mousePosition[0], mousePosition[1])):
             if click:
                 isRunning = False
-
 
         if 270+250 > mousePosition[0] > 270 and 300+50 > mousePosition[1] > 300:
             pygame.draw.rect(screen, (0, 190, 0), button)
@@ -254,7 +255,6 @@ def game():
                     pacMan.velocity.x = 0
                     pacMan.velocity.y = 10*pacMan.powerUp
 
-
             manager.process_events(event)
 
         if pygame.sprite.spritecollide(pacMan, ghosts, False):
@@ -285,10 +285,10 @@ def game():
         elif pacMan.startingHealth - 1 == 1:
             window.blit(healthBar, (20, MAX_HEIGHT - 50))
         elif pacMan.startingHealth == 0:
-             displayGameOver(pacMan, window)
+            displayGameOver(pacMan, window)
 
         # display score
-        window.blit(pacMan.renderScore(24), (10, 10))
+        window.blit(pacMan.renderScore(32), (10, 10))
 
         # inefficient collision, should be handled in PacMan obj instead
         for wall in level1.walls:
@@ -315,11 +315,6 @@ def game():
 
 
 def displayGameOver(pacMan, window):
-    # Make Button with x for exiting
-    # text = pygame.font.SysFont('Arial', 35) .render('X', True, (25, 25, 166))
-    # exit = pygame_gui.elements.ui_button()
-    # display the score in the center of the screen
-
     # display button to play again
     isRunning = True
     while isRunning:
@@ -354,5 +349,7 @@ def displayGameOver(pacMan, window):
 
         pygame.display.update()
         mainClock.tick(10)
+
+
 if __name__ == '__main__':
     main()
