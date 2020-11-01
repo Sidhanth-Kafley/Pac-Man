@@ -13,7 +13,7 @@ class PacMan(pygame.sprite.Sprite):
         # initialize super class
         super(PacMan, self).__init__()
         # size of each image
-        self.size = (40, 40)
+        self.size = (36, 36)
         # set image streams for moving in respective directions
         self.images = images
         self.imagesRight = [self.images[4], self.images[2]]
@@ -137,7 +137,7 @@ class PacMan(pygame.sprite.Sprite):
         self.index = 0
 
     def eatPill(self, pill):
-        pill.eat()
         if pill.isPower():
             self.setPowerUp()
         self.totalPoints += 10
+        del pill
