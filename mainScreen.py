@@ -15,7 +15,6 @@ MAX_HEIGHT = 800
 MAX_WIDTH = 1000
 BACKGROUND_COLOR = pygame.Color('black')
 SPRITE_SIZE = 36
-WALL_COLOR = (19, 0, 212)
 
 click = False
 mainClock = pygame.time.Clock()
@@ -281,24 +280,6 @@ def game():
                 pacManEatGhost.play(0)
                 # CODE TO EAT THE GHOST GOES HERE
                 # pacMan.eatGhost(EATEN GHOST GOES HERE)
-        #if pygame.sprite.spritecollide(blueGhost, level1.walls, False):
-        #    pass
-        coordinatesAhead = blueGhost.getColorOfPixelsAhead()
-        coordinatesAhead2 = orangeGhost.getColorOfPixelsAhead()
-        coordinatesAhead3 = pinkGhost.getColorOfPixelsAhead()
-        coordinatesAhead4 = redGhost.getColorOfPixelsAhead()
-        colorAhead = screen.get_at(coordinatesAhead)
-        colorAhead2 = screen.get_at(coordinatesAhead2)
-        colorAhead3 = screen.get_at(coordinatesAhead3)
-        colorAhead4 = screen.get_at(coordinatesAhead4)
-        if colorAhead == WALL_COLOR:
-            blueGhost.ghostHitWall(False)
-        elif colorAhead2 == WALL_COLOR:
-            orangeGhost.ghostHitWall(False)
-        elif colorAhead3 == WALL_COLOR:
-            pinkGhost.ghostHitWall(False)
-        elif colorAhead4 == WALL_COLOR:
-            redGhost.ghostHitWall(False)
 
         if pygame.sprite.spritecollide(pacMan, pillGroup, False):
             #pygame.sprite.

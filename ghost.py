@@ -45,7 +45,7 @@ class Ghost(pygame.sprite.Sprite):
     def update(self):
         # if ghost can move, then move ghost
         if self.moving:
-            self.moveGhosts()
+            # self.moveGhosts()
             self.rect.x += self.moveX
             self.rect.y += self.moveY
 
