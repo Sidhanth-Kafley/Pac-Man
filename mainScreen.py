@@ -14,6 +14,7 @@ pygame.init()
 MAX_HEIGHT = 800
 MAX_WIDTH = 1000
 BACKGROUND_COLOR = pygame.Color('black')
+SPRITE_SIZE = 40
 
 mainClock = pygame.time.Clock()
 font = pygame.font.Font('8-BIT WONDER.TTF', 20)
@@ -23,9 +24,8 @@ click = False
 pygame.display.set_caption('Pac Man')
 screen = pygame.display.set_mode((MAX_WIDTH, MAX_HEIGHT), 0, 32)
 
+
 # function to draw text onto the screen
-
-
 def drawText(text, font, color, surface, x, y):
     textObj = font.render(text, 1, color)
     textRect = textObj.get_rect()
@@ -89,9 +89,6 @@ def mainMenu():
                 if event.button == 1:
                     click = True
         pygame.display.update()
-
-
-SPRITE_SIZE = 30  # 48
 
 
 def loadImages(path):
@@ -169,6 +166,26 @@ def credits():
         mainClock.tick(10)
 
 
+def wallCollide(xval, yval, playerRect, collideList, player):
+    for block in collideList:
+         playerRect.colliderect(block)
+        #     player.velocity.x = 0
+        #     player.velocity.y = 0
+            # break
+            # if xval < 0:
+            #     player.left = block.right
+            # elif xval > 0:
+            #     player.right = block.left
+            # break
+    # for block in collideList:
+    #     if playerRect.colliderect(block):
+            # if yval < 0:
+            #     player.top = block.bottom
+            # elif yval > 0:
+            #     player.bottom = block.top
+            # break
+
+
 def game():
     # Initiate game and window
     pygame.init()
@@ -179,7 +196,7 @@ def game():
     manager = pygame_gui.UIManager((MAX_WIDTH, MAX_HEIGHT))
 
     pillImage = pygame.image.load("PointPill.png").convert_alpha()
-    pillImage = pygame.transform.scale(pillImage, (int(SPRITE_SIZE/3), int(SPRITE_SIZE/3)))
+    pillImage = pygame.transform.scale(pillImage, (int(SPRITE_SIZE/3), int(SPRITE_SIZE/4)))
     i = 0
     pills = []
     while i < 5000:
@@ -189,6 +206,7 @@ def game():
 
     # create pacman object
     images = loadImages(path='PacManSprites')
+
     # pacMan = PacMan(position=(MAX_WIDTH/2, MAX_HEIGHT/2), images=images)
     pacMan = PacMan(position=(MAX_WIDTH/5, (MAX_HEIGHT/2)+5), images=images)
     
@@ -257,6 +275,8 @@ def game():
 
             manager.process_events(event)
 
+        wallCollide(pacMan.velocity.x, pacMan.velocity.y, pacMan.rect, level1.wallBlocks, pacMan)
+
         if pygame.sprite.spritecollide(pacMan, ghosts, False):
             if pacMan.powerUp == 1:
                 pacManDeath = pygame.mixer.Sound("Music/PacManDeath.wav")
@@ -273,7 +293,10 @@ def game():
             #pygame.sprite.
             pacManChomp = pygame.mixer.Sound("Music/PacManChomp.wav")
             pacManChomp.play(0)
-            pacMan.eatPill()
+            for x in pillGroup:
+                if pacMan.rect.colliderect(x.rect):
+                    pacMan.eatPill(x)
+                    pillGroup.remove(x)
 
         manager.update(time_delta)
         window.blit(background, (0, 0))
@@ -292,8 +315,8 @@ def game():
         window.blit(pacMan.renderScore(32), (10, 10))
 
         # inefficient collision, should be handled in PacMan obj instead
-        for wall in level1.walls:
-            wall.collision(pacMan)
+        # for wall in level1.walls:
+        #     wall.collision(pacMan)
 
         # ensures that the pacMan and ghosts won't go off screen
         pacMan.rect.clamp_ip(windowRect)

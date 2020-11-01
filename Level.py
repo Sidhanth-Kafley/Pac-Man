@@ -11,6 +11,7 @@ class Level():
     layoutFile = 0
     wallSize = (16, 16)
     originPosition = (0, 0)
+    wallBlocks = []
 
     def __init__(self, layoutFilename, wallSize, originPosition):
         # initialize super class
@@ -64,3 +65,4 @@ class Level():
         tempWall = Wall(position=((colIndex * self.wallSize[0]) + self.originPosition[0], (rowIndex * self.wallSize[1]) + self.originPosition[1]), size=(self.wallSize[0], self.wallSize[1]), image=image)
         self.walls.append(tempWall)
         self.layout[rowIndex].append(tempWall)
+        self.wallBlocks.append(tempWall.rect)
