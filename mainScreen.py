@@ -207,7 +207,6 @@ def game():
     # create pacman object
     images = loadImages(path='PacManSprites')
 
-    # pacMan = PacMan(position=(MAX_WIDTH/2, MAX_HEIGHT/2), images=images)
     pacMan = PacMan(position=(MAX_WIDTH/5, (MAX_HEIGHT/2)+5), images=images)
     
     #create level object
@@ -253,7 +252,7 @@ def game():
 
     while isRunning:
         # times per second this loop runs
-        time_delta = clock.tick(10) / 1000.0
+        time_delta = clock.tick_busy_loop(60) / 1000.0
 
         # handles events
         for event in pygame.event.get():
@@ -268,7 +267,7 @@ def game():
                     pacMan.velocity.x = 10*pacMan.powerUp
                 elif event.key == pygame.K_UP:
                     pacMan.velocity.x = 0
-                    pacMan.velocity.y = -10*pacMan.powerUp
+                    pacMan.velocity.y = (-10)*pacMan.powerUp
                 elif event.key == pygame.K_DOWN:
                     pacMan.velocity.x = 0
                     pacMan.velocity.y = 10*pacMan.powerUp
