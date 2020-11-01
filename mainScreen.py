@@ -135,7 +135,7 @@ def credits():
         drawText('Jaden Varin', font, (255, 255, 255), screen, 350, 340)
         drawText('Michelle Wehrle', font, (255, 255, 255), screen, 350, 380)
         drawText('Sidhanth Kafley', font, (255, 255, 255), screen, 350, 420)
-        drawText('Cam Brow', font, (255, 255, 255), screen, 350, 460)
+        drawText('Cam Brown', font, (255, 255, 255), screen, 350, 460)
 
         mousePosition = pygame.mouse.get_pos()
         button = pygame.Rect(350, 540, 250, 50)
@@ -206,30 +206,32 @@ def game():
 
     # create pacman object
     images = loadImages(path='PacManSprites')
-    pacMan = PacMan(position=(MAX_WIDTH/2, MAX_HEIGHT/2 + 75), images=images)
+
+    # pacMan = PacMan(position=(MAX_WIDTH/2, MAX_HEIGHT/2), images=images)
+    pacMan = PacMan(position=(MAX_WIDTH/5, (MAX_HEIGHT/2)+5), images=images)
     
     #create level object
-    level1 = Level(layoutFilename='Levels/level1alt.txt', wallSize=(24, 24), originPosition=(100, 100))
+    level1 = Level(layoutFilename='Levels/level1alt.txt', wallSize=(16, 16), originPosition=(200, 70))
 
     ghosts = []
     # create blue ghost object
     blueGhostImages = loadImages(path='BlueGhostSprites')
-    blueGhost = Ghost('blue', position=(255, 310), images=blueGhostImages)
+    blueGhost = Ghost('blue', position=(500, 390), images=blueGhostImages)
     ghosts.append(blueGhost)
 
     # create orange ghost object
     orangeGhostImages = loadImages(path='OrangeGhostSprites')
-    orangeGhost = Ghost('orange', position=(290, 310), images=orangeGhostImages)
+    orangeGhost = Ghost('orange', position=(465, 390), images=orangeGhostImages)
     ghosts.append(orangeGhost)
 
     # create pink ghost object
     pinkGhostImages = loadImages(path='PinkGhostSprites')
-    pinkGhost = Ghost('pink', position=(220, 310), images=pinkGhostImages)
+    pinkGhost = Ghost('pink', position=(430, 390), images=pinkGhostImages)
     ghosts.append(pinkGhost)
 
     # create red ghost object
     redGhostImages = loadImages(path='RedGhostSprites')
-    redGhost = Ghost('red', position=(255, 250), images=redGhostImages)
+    redGhost = Ghost('red', position=(465, 330), images=redGhostImages)
     ghosts.append(redGhost)
 
     # health bar at the top of the screen
@@ -285,7 +287,8 @@ def game():
                 pacManEatGhost.play(0)
                 # CODE TO EAT THE GHOST GOES HERE
                 # pacMan.eatGhost(EATEN GHOST GOES HERE)
-
+        #if pygame.sprite.spritecollide(blueGhost, level1.walls, False):
+        #    pass
         if pygame.sprite.spritecollide(pacMan, pillGroup, False):
             #pygame.sprite.
             pacManChomp = pygame.mixer.Sound("Music/PacManChomp.wav")
