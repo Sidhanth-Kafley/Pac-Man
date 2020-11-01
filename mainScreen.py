@@ -40,9 +40,6 @@ def main():
 
 def mainMenu():
     running = True
-    # start main background music
-    backgroundMusic = pygame.mixer.Sound("Music/PacManBeginning.wav")
-    backgroundMusic.play(0)
     
     while running:
 
@@ -94,7 +91,6 @@ def mainMenu():
                 if event.button == 1:
                     click = True
         pygame.display.update()
-    pygame.mixer.music.stop()
 
 
 def loadImages(path):
