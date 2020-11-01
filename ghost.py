@@ -1,11 +1,8 @@
 import pygame
 import random
-moving = True
 
 
 class Ghost(pygame.sprite.Sprite):
-    moving = True
-    direction = 'up'
 
     def __init__(self, color, position, images):
         # initialize super class
@@ -15,7 +12,7 @@ class Ghost(pygame.sprite.Sprite):
         self.hitPacMan = False
         self.position = position
         # set the size of the images
-        sizeOfImage = (40, 40)
+        sizeOfImage = (30, 30)
 
         # index for looping through images
         self.index = 1
@@ -32,9 +29,9 @@ class Ghost(pygame.sprite.Sprite):
         self.rect = pygame.Rect(position, sizeOfImage)
         self.moveX = 0
         self.moveY = 0
-        #self.direction = 'up'
+        self.direction = 'up'
         self.changeDirection = False
-        #self.moving = True
+        self.moving = True
 
         # set speed of the ghost
         self.velocity = pygame.math.Vector2()
@@ -46,15 +43,11 @@ class Ghost(pygame.sprite.Sprite):
 
     # update the ghost (position, image, etc.)
     def update(self):
-        # self.moveX = random.randint(-5, 5)
-        # self.moveY = random.randrange(-5, 5)
-        print(self.changeDirection)
-        if self.changeDirection:
-            self.chooseDirection()
-        self.moveGhosts()
-        #print(self.getColorOfPixelsAhead())
-        self.rect.x += self.moveX
-        self.rect.y += self.moveY
+        # if ghost can move, then move ghost
+        if self.moving:
+            self.moveGhosts()
+            self.rect.x += self.moveX
+            self.rect.y += self.moveY
 
         # power up ghost
         if self.powerUpMode:
@@ -79,6 +72,26 @@ class Ghost(pygame.sprite.Sprite):
     def getGhostColor(self):
         return self.color
 
+    # get the direction of the ghost
+    def getGhostDirection(self):
+        return self.direction
+
+    # get the x position of the ghost
+    def getXPosition(self):
+        return self.rect.x
+
+    # get the y position of the ghost
+    def getYPosition(self):
+        return self.rect.y
+
+    # set the x position of the ghost
+    def setXPosition(self, xPosition):
+        self.rect.x = xPosition
+
+    # set the y position of the ghost
+    def setYPosition(self, yPosition):
+        self.rect.y = yPosition
+
     # ghost hits pac-man
     def hitPacMan(self):
         # pac-man loses a life
@@ -88,9 +101,9 @@ class Ghost(pygame.sprite.Sprite):
     def powerUpMode(self):
         self.powerUpMode = True
 
+    # move ghosts in maze in the selected direction
     def moveGhosts(self):
-        #print(self.moving)
-        if moving:
+        if self.moving:
             if self.direction == 'right':
                 self.moveX = 5
             elif self.direction == 'left':
@@ -100,26 +113,12 @@ class Ghost(pygame.sprite.Sprite):
             elif self.direction == 'up':
                 self.moveY = -5
 
-        #self.moveX = random.choice([-2, 2])
-        #self.moveY = random.choice([-2, 2])
-
-    def getColorOfPixelsAhead(self, ahead=1):
-        rect = pygame.Rect(self.rect.x, self.rect.y, 40, 40)
-        xyAhead = []
-        if self.direction == 'right':
-            xyAhead = (rect.midright[0] + ahead, rect.midright[1])
-        elif self.direction == 'left':
-            xyAhead = (rect.midleft[0] - ahead, rect.midleft[1])
-        elif self.direction == 'down':
-            xyAhead = (rect.midbottom[0], rect.midbottom[1] + 1)
-        elif self.direction == 'up':
-            xyAhead = (rect.midtop[0], rect.midtop[1] - ahead)
-
-        return xyAhead
-
+    # ghost hit a wall
     def ghostHitWall(self, ghostStopMoving):
         self.moving = ghostStopMoving
         self.changeDirection = True
 
+    # ghost needs to choose a new direction
     def chooseDirection(self):
         self.direction = random.choice(['right', 'left', 'down', 'up'])
+        return self.direction
