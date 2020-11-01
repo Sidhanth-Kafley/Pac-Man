@@ -14,13 +14,14 @@ pygame.init()
 MAX_HEIGHT = 800
 MAX_WIDTH = 1000
 BACKGROUND_COLOR = pygame.Color('black')
-SPRITE_SIZE = 40
+SPRITE_SIZE = 36
 WALL_COLOR = (19, 0, 212)
 
+click = False
 mainClock = pygame.time.Clock()
 font = pygame.font.Font('8-BIT WONDER.TTF', 20)
 titleFont = pygame.font.Font('8-BIT WONDER.TTF', 30)
-click = False
+
 
 pygame.display.set_caption('Pac Man')
 screen = pygame.display.set_mode((MAX_WIDTH, MAX_HEIGHT), 0, 32)
@@ -197,21 +198,17 @@ def game():
     manager = pygame_gui.UIManager((MAX_WIDTH, MAX_HEIGHT))
 
     pillImage = pygame.image.load("PointPill.png").convert_alpha()
-    pillImage = pygame.transform.scale(pillImage, (int(SPRITE_SIZE/3), int(SPRITE_SIZE/4)))
-    i = 0
-    pills = []
-    while i < 5000:
-        pills.append(Pill(False, pillImage, (10 + i, 100)))
-        i += 50
-    pillGroup = pygame.sprite.Group(pills)
+    pillImage = pygame.transform.scale(pillImage, (int(SPRITE_SIZE/3), int(SPRITE_SIZE/3)))
 
     # create pacman object
     images = loadImages(path='PacManSprites')
 
     pacMan = PacMan(position=(MAX_WIDTH/5, (MAX_HEIGHT/2)+5), images=images)
     
-    #create level object
+    # create level object
     level1 = Level(layoutFilename='Levels/level1alt.txt', wallSize=(16, 16), originPosition=(200, 70))
+
+    pillGroup = pygame.sprite.Group(level1.pills)
 
     ghosts = []
     # create blue ghost object
@@ -235,7 +232,7 @@ def game():
     ghosts.append(redGhost)
 
     # health bar at the top of the screen
-    healthBar = pygame.transform.scale(images[2], (int(SPRITE_SIZE/2), int(SPRITE_SIZE/2)))
+    healthBar = pygame.transform.scale(images[2], (int(24), int(24)))
 
     # ADD GHOSTS TO THIS GROUP SO THEY ALL FOLLOW THE SAME BASIC GUIDELINES
     allSprites = pygame.sprite.Group(pacMan, blueGhost, orangeGhost, pinkGhost, redGhost, level1.walls)
@@ -247,9 +244,6 @@ def game():
     # start main background music
     backgroundMusic = pygame.mixer.Sound("Music/PacManBeginning.wav")
     backgroundMusic.play(0)
-
-    # backgroundNoise = pygame.mixer.Sound("Music/PacMan.wav")
-    # backgroundNoise.play(-1)
 
     while isRunning:
         # times per second this loop runs
@@ -359,13 +353,13 @@ def displayGameOver(pacMan, window):
     # display button to play again
     isRunning = True
     while isRunning:
-        screen.fill((BACKGROUND_COLOR))
+        screen.fill(BACKGROUND_COLOR)
         drawText('GameOver', titleFont, (255, 255, 255), screen, 340, 250)
         window.blit(pacMan.renderScore(100), (440, 380))
         mousePosition = pygame.mouse.get_pos()
         button = pygame.Rect(340, 500, 250, 50)
 
-        if button.collidepoint((mousePosition[0], mousePosition[1])):
+        if button.collidepoint(mousePosition[0], mousePosition[1]):
             if click:
                 game()
 
