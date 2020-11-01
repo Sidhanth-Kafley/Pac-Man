@@ -1,5 +1,6 @@
 import pygame
 import os
+from pill import Pill
 
 from Wall import Wall
 
@@ -20,6 +21,9 @@ class Level():
         rows = layoutFile.read().splitlines()
         self.wallSize = wallSize
         self.originPosition = originPosition
+        pillImage = pygame.image.load("PointPill.png").convert_alpha()
+        pillImage = pygame.transform.scale(pillImage, (int(20), int(20)))
+        self.pills = []
 
         # create level objects based on characters in file
         print(len(rows))
@@ -58,6 +62,10 @@ class Level():
                     self.appendWall('HorizontalIntersectionUp.png', i, j)
                 elif rows[i][j] == '_':
                     self.appendWall('Gate.png', i, j)
+                elif rows[i][j] == "*":
+                    self.pills.append(Pill(False, pillImage, ((j * self.wallSize[1]) + self.originPosition[0], (i * self.wallSize[0] + 13) + self.originPosition[1] - 7)))
+                elif rows[i][j] == "&":
+                    self.pills.append(Pill(True, pygame.transform.scale(pillImage, (50, 50)), ((j * self.wallSize[1]) + self.originPosition[0] - 10, (i * self.wallSize[0]) + self.originPosition[1] - 20)))
             self.layout.append([])
 
     def appendWall(self, imageFilename, rowIndex, colIndex):
