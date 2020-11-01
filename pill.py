@@ -5,7 +5,10 @@ class Pill(pygame.sprite.Sprite):
 
     def __init__(self, power, image, position):
         super(Pill, self).__init__()
-        self.size = (3, 3)
+        if not power:
+            self.size = (3, 3)
+        else:
+            self.size = (10, 10)
         self.powerPill = power
         self.position = position
         self.image = image

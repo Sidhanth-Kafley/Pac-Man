@@ -335,13 +335,13 @@ def displayGameOver(pacMan, window):
     # display button to play again
     isRunning = True
     while isRunning:
-        screen.fill((BACKGROUND_COLOR))
+        screen.fill(BACKGROUND_COLOR)
         drawText('GameOver', titleFont, (255, 255, 255), screen, 340, 250)
         window.blit(pacMan.renderScore(100), (440, 380))
         mousePosition = pygame.mouse.get_pos()
         button = pygame.Rect(340, 500, 250, 50)
 
-        if button.collidepoint((mousePosition[0], mousePosition[1])):
+        if button.collidepoint(mousePosition[0], mousePosition[1]):
             if click:
                 game()
 

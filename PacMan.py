@@ -15,7 +15,7 @@ class PacMan(pygame.sprite.Sprite):
     imagesDeath = []
     death = False
     index = 0
-    size = (36, 36)
+    size = (30, 30)
     velocity = pygame.math.Vector2()
 
     def __init__(self, position, images):
@@ -34,7 +34,6 @@ class PacMan(pygame.sprite.Sprite):
         # sets the current image (closed circle to start)
         self.image = self.images[1]
         self.loadDeathImages()
-
 
     def update(self):
         if not self.death:
