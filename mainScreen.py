@@ -15,6 +15,7 @@ MAX_HEIGHT = 800
 MAX_WIDTH = 1000
 BACKGROUND_COLOR = pygame.Color('black')
 SPRITE_SIZE = 40
+WALL_COLOR = (19, 0, 212)
 
 mainClock = pygame.time.Clock()
 font = pygame.font.Font('8-BIT WONDER.TTF', 20)
@@ -230,7 +231,7 @@ def game():
 
     # create red ghost object
     redGhostImages = loadImages(path='RedGhostSprites')
-    redGhost = Ghost('red', position=(465, 330), images=redGhostImages)
+    redGhost = Ghost('red', position=(465, 320), images=redGhostImages)
     ghosts.append(redGhost)
 
     # health bar at the top of the screen
@@ -288,6 +289,23 @@ def game():
                 # pacMan.eatGhost(EATEN GHOST GOES HERE)
         #if pygame.sprite.spritecollide(blueGhost, level1.walls, False):
         #    pass
+        coordinatesAhead = blueGhost.getColorOfPixelsAhead()
+        coordinatesAhead2 = orangeGhost.getColorOfPixelsAhead()
+        coordinatesAhead3 = pinkGhost.getColorOfPixelsAhead()
+        coordinatesAhead4 = redGhost.getColorOfPixelsAhead()
+        colorAhead = screen.get_at(coordinatesAhead)
+        colorAhead2 = screen.get_at(coordinatesAhead2)
+        colorAhead3 = screen.get_at(coordinatesAhead3)
+        colorAhead4 = screen.get_at(coordinatesAhead4)
+        if colorAhead == WALL_COLOR:
+            blueGhost.ghostHitWall(False)
+        elif colorAhead2 == WALL_COLOR:
+            orangeGhost.ghostHitWall(False)
+        elif colorAhead3 == WALL_COLOR:
+            pinkGhost.ghostHitWall(False)
+        elif colorAhead4 == WALL_COLOR:
+            redGhost.ghostHitWall(False)
+
         if pygame.sprite.spritecollide(pacMan, pillGroup, False):
             #pygame.sprite.
             pacManChomp = pygame.mixer.Sound("Music/PacManChomp.wav")

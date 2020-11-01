@@ -1,8 +1,11 @@
 import pygame
 import random
+moving = True
 
 
 class Ghost(pygame.sprite.Sprite):
+    moving = True
+    direction = 'up'
 
     def __init__(self, color, position, images):
         # initialize super class
@@ -29,7 +32,9 @@ class Ghost(pygame.sprite.Sprite):
         self.rect = pygame.Rect(position, sizeOfImage)
         self.moveX = 0
         self.moveY = 0
-        self.direction = 'up'
+        #self.direction = 'up'
+        self.changeDirection = False
+        #self.moving = True
 
         # set speed of the ghost
         self.velocity = pygame.math.Vector2()
@@ -43,7 +48,11 @@ class Ghost(pygame.sprite.Sprite):
     def update(self):
         # self.moveX = random.randint(-5, 5)
         # self.moveY = random.randrange(-5, 5)
-        # self.moveGhosts()
+        print(self.changeDirection)
+        if self.changeDirection:
+            self.chooseDirection()
+        self.moveGhosts()
+        #print(self.getColorOfPixelsAhead())
         self.rect.x += self.moveX
         self.rect.y += self.moveY
 
@@ -80,11 +89,37 @@ class Ghost(pygame.sprite.Sprite):
         self.powerUpMode = True
 
     def moveGhosts(self):
+        #print(self.moving)
+        if moving:
+            if self.direction == 'right':
+                self.moveX = 5
+            elif self.direction == 'left':
+                self.moveX = -5
+            elif self.direction == 'down':
+                self.moveY = 5
+            elif self.direction == 'up':
+                self.moveY = -5
+
+        #self.moveX = random.choice([-2, 2])
+        #self.moveY = random.choice([-2, 2])
+
+    def getColorOfPixelsAhead(self, ahead=1):
+        rect = pygame.Rect(self.rect.x, self.rect.y, 40, 40)
+        xyAhead = []
         if self.direction == 'right':
-            self.moveX = 5
+            xyAhead = (rect.midright[0] + ahead, rect.midright[1])
         elif self.direction == 'left':
-            self.moveX = -5
+            xyAhead = (rect.midleft[0] - ahead, rect.midleft[1])
         elif self.direction == 'down':
-            self.moveY = 5
+            xyAhead = (rect.midbottom[0], rect.midbottom[1] + 1)
         elif self.direction == 'up':
-            self.moveY = -5
+            xyAhead = (rect.midtop[0], rect.midtop[1] - ahead)
+
+        return xyAhead
+
+    def ghostHitWall(self, ghostStopMoving):
+        self.moving = ghostStopMoving
+        self.changeDirection = True
+
+    def chooseDirection(self):
+        self.direction = random.choice(['right', 'left', 'down', 'up'])
