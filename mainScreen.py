@@ -50,31 +50,31 @@ def mainMenu():
         mousePosition = pygame.mouse.get_pos()
 
         # create buttons
-        button_1 = pygame.Rect(int(MAX_HEIGHT/2.5), int(MAX_WIDTH/3.0), 250, 50)
-        button_2 = pygame.Rect(int(MAX_HEIGHT/2.5), int(MAX_WIDTH/2.4), 250, 50)
+        button1 = pygame.Rect(int(MAX_HEIGHT/2.5), int(MAX_WIDTH/3.0), 250, 50)
+        button2 = pygame.Rect(int(MAX_HEIGHT/2.5), int(MAX_WIDTH/2.4), 250, 50)
 
         # if button is clicked call corresponding functions
-        if button_2.collidepoint((mousePosition[0], mousePosition[1])):
+        if button2.collidepoint((mousePosition[0], mousePosition[1])):
             if click:
                 credits()
 
-        if button_1.collidepoint((mousePosition[0], mousePosition[1])):
+        if button1.collidepoint((mousePosition[0], mousePosition[1])):
             if click:
                 game()
 
         # Draw buttons and add hover effect
 
         if MAX_HEIGHT/2.5+250 > mousePosition[0] > MAX_HEIGHT/2.5 and MAX_WIDTH/3.0+50 > mousePosition[1] > MAX_WIDTH/3.0:
-            pygame.draw.rect(screen, (0, 190, 0), button_1)
+            pygame.draw.rect(screen, (0, 190, 0), button1)
         else:
-            pygame.draw.rect(screen, (0, 255, 0), button_1)
+            pygame.draw.rect(screen, (0, 255, 0), button1)
 
         drawText('start game', font, (255, 255, 255), screen, MAX_HEIGHT/2.3, MAX_WIDTH/2.9)
 
         if MAX_HEIGHT/2.5+250 > mousePosition[0] > MAX_HEIGHT/2.5 and MAX_WIDTH/2.4+50 > mousePosition[1] > MAX_WIDTH/2.4:
-            pygame.draw.rect(screen, (0, 190, 0), button_2)
+            pygame.draw.rect(screen, (0, 190, 0), button2)
         else:
-            pygame.draw.rect(screen, (0, 255, 0), button_2)
+            pygame.draw.rect(screen, (0, 255, 0), button2)
 
         drawText('Credits', font, (255, 255, 255), screen, MAX_HEIGHT/2.2, MAX_WIDTH/2.32)
 
