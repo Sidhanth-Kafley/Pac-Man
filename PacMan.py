@@ -57,7 +57,7 @@ class PacMan(pygame.sprite.Sprite):
             self.rect.move_ip(*self.velocity)
         else:
             if self.velocity.x > 0:
-                self.images = self.deathRight
+                self.imagesDeath = self.deathRight
             elif self.velocity.x < 0:
                 self.imagesDeath = self.deathLeft
             elif self.velocity.y < 0:
