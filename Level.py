@@ -26,9 +26,7 @@ class Level():
         self.pills = []
 
         # create level objects based on characters in file
-        print(len(rows))
         for i in range(len(rows)):
-            print(rows[i])
             for j in range(len(rows[i])):
                 if rows[i][j] == ' ':
                     self.layout[i].append('')
