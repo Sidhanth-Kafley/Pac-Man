@@ -98,7 +98,7 @@ class Ghost(pygame.sprite.Sprite):
         self.hitPacMan = True
 
     # pac-man is in power-up mode and can eat the ghosts
-    def powerUpMode(self):
+    def setPowerUpMode(self):
         self.powerUpMode = True
 
     # move ghosts in maze in the selected direction
