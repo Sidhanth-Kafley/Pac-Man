@@ -279,16 +279,19 @@ def game():
             else:
                 pacManEatGhost = pygame.mixer.Sound("Music/PacManEatGhost.wav")
                 pacManEatGhost.play(0)
-                # CODE TO EAT THE GHOST GOES HERE
-                # pacMan.eatGhost(EATEN GHOST GOES HERE)
+                for x in ghosts:
+                    if pacMan.rect.colliderect(x.rect):
+                        pacMan.eatGhost(x)
 
         if pygame.sprite.spritecollide(pacMan, pillGroup, False):
-            #pygame.sprite.
+            # pygame.sprite.
             pacManChomp = pygame.mixer.Sound("Music/PacManChomp.wav")
             pacManChomp.play(0)
             for x in pillGroup:
                 if pacMan.rect.colliderect(x.rect):
-                    pacMan.eatPill(x)
+                    if pacMan.eatPill(x):
+                        for ghost in ghosts:
+                            ghost.setPowerUpMode()
                     pillGroup.remove(x)
 
         manager.update(time_delta)

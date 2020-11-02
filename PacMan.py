@@ -84,7 +84,7 @@ class PacMan(pygame.sprite.Sprite):
             self.powerUp = 1
 
     def eatGhost(self, ghost):
-        ghost.hit()
+        # ghost.hit()
         self.totalPoints += self.ghostPoints
         self.ghostPoints = self.ghostPoints*2
 
@@ -138,5 +138,7 @@ class PacMan(pygame.sprite.Sprite):
     def eatPill(self, pill):
         if pill.isPower():
             self.setPowerUp()
+            return True
         self.totalPoints += 10
         del pill
+        return False
