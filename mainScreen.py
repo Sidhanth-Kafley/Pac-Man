@@ -40,6 +40,8 @@ def main():
 
 def mainMenu():
     running = True
+    global click
+    click = False
     
     while running:
 
