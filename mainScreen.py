@@ -168,8 +168,8 @@ def credits():
         mainClock.tick(10)
 
 
-def wallCollide(xval, yval, playerRect, collideList, player):
-    for block in collideList:
+def wallCollide(xval, yval, playerRect, wallsList, player):
+    for block in wallsList:
          playerRect.colliderect(block)
         #     player.velocity.x = 0
         #     player.velocity.y = 0
@@ -249,6 +249,10 @@ def game():
         # times per second this loop runs
         time_delta = clock.tick_busy_loop(60) / 1000.0
 
+        # determine if a wall is colliding
+        colliding_wall = pacMan.rect.collidelistall(level1.walls)
+        print(colliding_wall)
+
         # handles events
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -256,16 +260,16 @@ def game():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
                     pacMan.velocity.y = 0
-                    pacMan.velocity.x = (-10)*pacMan.powerUp
+                    pacMan.velocity.x = (-4)*pacMan.powerUp
                 elif event.key == pygame.K_RIGHT:
                     pacMan.velocity.y = 0
-                    pacMan.velocity.x = 10*pacMan.powerUp
+                    pacMan.velocity.x = 4*pacMan.powerUp
                 elif event.key == pygame.K_UP:
                     pacMan.velocity.x = 0
-                    pacMan.velocity.y = (-10)*pacMan.powerUp
+                    pacMan.velocity.y = (-4)*pacMan.powerUp
                 elif event.key == pygame.K_DOWN:
                     pacMan.velocity.x = 0
-                    pacMan.velocity.y = 10*pacMan.powerUp
+                    pacMan.velocity.y = 4*pacMan.powerUp
 
             manager.process_events(event)
 
@@ -310,7 +314,7 @@ def game():
         # display score
         window.blit(pacMan.renderScore(32), (10, 10))
 
-        # inefficient collision, should be handled in PacMan obj instead
+        # inefficient collision for testing, should be handled in PacMan movement code instead
         # for wall in level1.walls:
         #     wall.collision(pacMan)
 
