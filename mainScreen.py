@@ -336,6 +336,7 @@ def game():
 
 def displayGameOver(pacMan, window):
     # display button to play again
+    click = False
     isRunning = True
     while isRunning:
         screen.fill(BACKGROUND_COLOR)
