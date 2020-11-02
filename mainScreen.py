@@ -64,8 +64,8 @@ def mainMenu():
             if click:
                 game()
 
-        # Draw buttons and add hover effect
-        #Got logic for button hovering from pythonprogramming.net
+        # draw buttons and add hover effect
+        # got logic for button hovering from pythonprogramming.net
         if MAX_HEIGHT/2.5+250 > mousePosition[0] > MAX_HEIGHT/2.5 and MAX_WIDTH/3.0+50 > mousePosition[1] > MAX_WIDTH/3.0:
             pygame.draw.rect(screen, (0, 190, 0), button1)
         else:
@@ -169,27 +169,6 @@ def credits():
         pygame.display.update()
         mainClock.tick(10)
 
-
-def wallCollide(xval, yval, playerRect, wallsList, player):
-    for block in wallsList:
-         playerRect.colliderect(block)
-        #     player.velocity.x = 0
-        #     player.velocity.y = 0
-            # break
-            # if xval < 0:
-            #     player.left = block.right
-            # elif xval > 0:
-            #     player.right = block.left
-            # break
-    # for block in collideList:
-    #     if playerRect.colliderect(block):
-            # if yval < 0:
-            #     player.top = block.bottom
-            # elif yval > 0:
-            #     player.bottom = block.top
-            # break
-
-
 def game():
     # Initiate game and window
     pygame.init()
@@ -252,8 +231,20 @@ def game():
         time_delta = clock.tick_busy_loop(60) / 1000.0
 
         # determine if a wall is colliding
-        colliding_wall = pacMan.rect.collidelistall(level1.walls)
-        print(colliding_wall)
+        collidingWallTop = False
+        collidingWallBottom = False
+        collidingWallLeft = False
+        collidingWallRight = False
+        collidingWalls = pacMan.rect.collidelistall(level1.walls)
+        for wallIndex in collidingWalls:
+            if level1.walls[wallIndex].rect.left >= pacMan.rect.right:
+                collidingWallRight = True
+            elif level1.walls[wallIndex].rect.right <= pacMan.rect.left:
+                collidingWallLeft = True
+            elif level1.walls[wallIndex].rect.top >= pacMan.rect.bottom:
+                collidingWallBottom = True
+            elif level1.walls[wallIndex].rect.bottom <= pacMan.rect.top:
+                collidingWallTop = True
 
         # handles events
         for event in pygame.event.get():
@@ -275,7 +266,14 @@ def game():
 
             manager.process_events(event)
 
-        wallCollide(pacMan.velocity.x, pacMan.velocity.y, pacMan.rect, level1.wallBlocks, pacMan)
+        #if collidingWallRight:
+         #   pacMan.velocity.x = min(0, (-4)*pacMan.powerUp)
+        #elif collidingWallLeft:
+         #   pacMan.velocity.x = max(0, 4 * pacMan.powerUp)
+        #elif collidingWallTop:
+         #   pacMan.velocity.y = max(0, 4 * pacMan.powerUp)
+        #elif collidingWallBottom:
+         #   pacMan.velocity.x = min(0, (-4) * pacMan.powerUp)
 
         if pygame.sprite.spritecollide(pacMan, ghosts, False):
             if pacMan.powerUp == 1:
