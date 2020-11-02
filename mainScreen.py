@@ -168,8 +168,8 @@ def credits():
         mainClock.tick(10)
 
 
-def wallCollide(xval, yval, playerRect, collideList, player):
-    for block in collideList:
+def wallCollide(xval, yval, playerRect, wallsList, player):
+    for block in wallsList:
          playerRect.colliderect(block)
         #     player.velocity.x = 0
         #     player.velocity.y = 0
@@ -248,6 +248,10 @@ def game():
     while isRunning:
         # times per second this loop runs
         time_delta = clock.tick_busy_loop(60) / 1000.0
+
+        # determine if a wall is colliding
+        colliding_wall = pacMan.rect.collidelistall(level1.walls)
+        print(colliding_wall)
 
         # handles events
         for event in pygame.event.get():
