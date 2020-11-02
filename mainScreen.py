@@ -256,16 +256,16 @@ def game():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
                     pacMan.velocity.y = 0
-                    pacMan.velocity.x = (-10)*pacMan.powerUp
+                    pacMan.velocity.x = (-4)*pacMan.powerUp
                 elif event.key == pygame.K_RIGHT:
                     pacMan.velocity.y = 0
-                    pacMan.velocity.x = 10*pacMan.powerUp
+                    pacMan.velocity.x = 4*pacMan.powerUp
                 elif event.key == pygame.K_UP:
                     pacMan.velocity.x = 0
-                    pacMan.velocity.y = (-10)*pacMan.powerUp
+                    pacMan.velocity.y = (-4)*pacMan.powerUp
                 elif event.key == pygame.K_DOWN:
                     pacMan.velocity.x = 0
-                    pacMan.velocity.y = 10*pacMan.powerUp
+                    pacMan.velocity.y = 4*pacMan.powerUp
 
             manager.process_events(event)
 
@@ -310,7 +310,7 @@ def game():
         # display score
         window.blit(pacMan.renderScore(32), (10, 10))
 
-        # inefficient collision, should be handled in PacMan obj instead
+        # inefficient collision for testing, should be handled in PacMan movement code instead
         # for wall in level1.walls:
         #     wall.collision(pacMan)
 
