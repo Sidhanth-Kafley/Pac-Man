@@ -63,7 +63,7 @@ def mainMenu():
                 game()
 
         # Draw buttons and add hover effect
-
+        #Got logic for button hovering from pythonprogramming.net
         if MAX_HEIGHT/2.5+250 > mousePosition[0] > MAX_HEIGHT/2.5 and MAX_WIDTH/3.0+50 > mousePosition[1] > MAX_WIDTH/3.0:
             pygame.draw.rect(screen, (0, 190, 0), button1)
         else:
