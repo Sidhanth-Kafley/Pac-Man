@@ -23,6 +23,8 @@ class Level():
         self.originPosition = originPosition
         pillImage = pygame.image.load("PointPill.png").convert_alpha()
         pillImage = pygame.transform.scale(pillImage, (int(20), int(20)))
+        powerPillImage = pygame.image.load("PowerUpPointPill.png").convert_alpha()
+        powerPillImage = pygame.transform.scale(powerPillImage, (int(20), int(20)))
         self.pills = []
 
         # create level objects based on characters in file
@@ -63,7 +65,7 @@ class Level():
                 elif rows[i][j] == "*":
                     self.pills.append(Pill(False, pillImage, ((j * self.wallSize[1]) + self.originPosition[0], (i * self.wallSize[0] + 13) + self.originPosition[1] - 7)))
                 elif rows[i][j] == "&":
-                    self.pills.append(Pill(True, pygame.transform.scale(pillImage, (50, 50)), ((j * self.wallSize[1]) + self.originPosition[0] - 10, (i * self.wallSize[0]) + self.originPosition[1] - 20)))
+                    self.pills.append(Pill(True, powerPillImage, ((j * self.wallSize[1]) + self.originPosition[0], (i * self.wallSize[0]) + self.originPosition[1])))
             self.layout.append([])
 
     def appendWall(self, imageFilename, rowIndex, colIndex):
