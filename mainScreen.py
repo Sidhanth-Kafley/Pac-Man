@@ -184,7 +184,7 @@ def game():
     # create pacman object
     images = loadImages(path='PacManSprites')
 
-    pacMan = PacMan(position=(MAX_WIDTH/5, (MAX_HEIGHT/2)+4), images=images)
+    pacMan = PacMan(position=(MAX_WIDTH/5 + 177, (MAX_HEIGHT/2)+4), images=images)
     
     # create level object
     level1 = Level(layoutFilename='Levels/level1alt.txt', wallSize=(16, 16), originPosition=(200, 69))
@@ -237,26 +237,29 @@ def game():
         collidingWallLeft = False
         collidingWallRight = False
 
-        # create a new rect to detect collisions with pacMan that is slightly larger than pacMan's rect,
+        # Create a new rect to detect collisions with pacMan that is slightly larger than pacMan's rect,
         # because the collidelistall function tests if rects overlap, not if they touch.
         pacManCollisionRect = Rect((pacMan.rect.top - 1, pacMan.rect.left - 1), (pacMan.rect.width + 2, pacMan.rect.height + 4))
+
         pacManCollisionRect.x = pacMan.rect.x
         pacManCollisionRect.y = pacMan.rect.y
 
-        collidingWalls = pacManCollisionRect.collidelistall(level1.walls)
+        # This list contains every wall that pacMan is colliding with, but may also contain some he doesn't.
+        potentialCollidingWalls = pacManCollisionRect.collidelistall(level1.walls)
         greenColor = Color(0, 255, 0, a=100)
         for wall in level1.walls:
             pygame.draw.rect(background, greenColor, wall.rect)
 
-        for wallIndex in collidingWalls:
-            if level1.walls[wallIndex].rect.left - 1 == pacManCollisionRect.right:
-                collidingWallRight = True
-            elif level1.walls[wallIndex].rect.right + 1 == pacManCollisionRect.left:
-                collidingWallLeft = True
-            elif level1.walls[wallIndex].rect.top + 1 == pacManCollisionRect.bottom:
-                collidingWallBottom = True
-            elif level1.walls[wallIndex].rect.bottom - 1 == pacManCollisionRect.top:
-                collidingWallTop = True
+        for wallIndex in potentialCollidingWalls:
+            if pacMan.rect.colliderect(level1.walls[wallIndex]):
+                if pacMan.velocity.x < 0:
+                    pacMan.rect.left = level1.walls[wallIndex].rect.right
+                if pacMan.velocity.x > 0:
+                    pacMan.rect.right = level1.walls[wallIndex].rect.left
+                if pacMan.velocity.y < 0:
+                    pacMan.rect.top = level1.walls[wallIndex].rect.bottom
+                if pacMan.velocity.y > 0:
+                    pacMan.rect.bottom = level1.walls[wallIndex].rect.top
 
         # handles events
         for event in pygame.event.get():
@@ -287,13 +290,13 @@ def game():
                 pygame.draw.rect(background, purpleColor, level1.walls[wallIndex].rect)
 
         if collidingWallRight:
-            pacMan.velocity.x = min(0, (-4)*pacMan.powerUp)
-        elif collidingWallLeft:
-            pacMan.velocity.x = max(0, 4 * pacMan.powerUp)
-        elif collidingWallTop:
-            pacMan.velocity.y = max(0, 4 * pacMan.powerUp)
-        elif collidingWallBottom:
-            pacMan.velocity.x = min(0, (-4) * pacMan.powerUp)
+            pacMan.velocity.x = min(0, max(pacMan.velocity.x, (-4) * pacMan.powerUp))
+        if collidingWallLeft:
+            pacMan.velocity.x = max(0, min(pacMan.velocity.x, 4 * pacMan.powerUp))
+        if collidingWallTop:
+            pacMan.velocity.y = max(0, min(pacMan.velocity.y, 4 * pacMan.powerUp))
+        if collidingWallBottom:
+            pacMan.velocity.y = min(0, max(pacMan.velocity.y, (-4) * pacMan.powerUp))
 
         if pygame.sprite.spritecollide(pacMan, ghosts, False):
             if pacMan.powerUp == 1:
