@@ -163,7 +163,7 @@ def credits():
             if click:
                 isRunning = False
 
-        if 270+250 > mousePosition[0] > 270 and 300+50 > mousePosition[1] > 300:
+        if 350+250 > mousePosition[0] > 350 and 540+50 > mousePosition[1] > 540:
             pygame.draw.rect(screen, (0, 190, 0), button)
         else:
             pygame.draw.rect(screen, (0, 255, 0), button)
@@ -368,7 +368,7 @@ def displayGameOver(pacMan, window):
             if click:
                 game()
 
-        if 270+250 > mousePosition[0] > 270 and 300+50 > mousePosition[1] > 300:
+        if 340+250 > mousePosition[0] > 340 and 500+50 > mousePosition[1] > 500:
             pygame.draw.rect(screen, (0, 190, 0), button)
         else:
             pygame.draw.rect(screen, (0, 255, 0), button)
