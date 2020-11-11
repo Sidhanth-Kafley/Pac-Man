@@ -8,12 +8,19 @@ class PacMan(pygame.sprite.Sprite):
     eatenGhosts = 0
     totalPoints = 0
     ghostPoints = 200
+    deathDown = []
+    deathUp = []
+    deathLeft = []
+    deathRight = []
+    imagesDeath = []
+    death = False
+    index = 0
+    size = (30, 30)
+    velocity = pygame.math.Vector2()
 
     def __init__(self, position, images):
         # initialize super class
         super(PacMan, self).__init__()
-        # size of each image
-        self.size = (40, 40)
         # set image streams for moving in respective directions
         self.images = images
         self.imagesRight = [self.images[4], self.images[2]]
@@ -21,19 +28,12 @@ class PacMan(pygame.sprite.Sprite):
         self.imagesUp = [self.images[4], self.images[3]]
         self.imagesDown = [self.images[4], self.images[0]]
         self.imagesStop = [self.images[4]]
-        # index for looping through images
-        self.index = 0
         # sets the object's position and size on the background
         self.position = position
         self.rect = pygame.Rect(position, self.size)
-        # set direction and speed of the pac man
-        self.velocity = pygame.math.Vector2()
         # sets the current image (closed circle to start)
         self.image = self.images[1]
-        # self.animationTime = 0.05
-        # self.currentTime = 0
-        self.death = False
-        self.imagesDeath = []
+        self.loadDeathImages()
 
     def update(self):
         if not self.death:
@@ -56,21 +56,14 @@ class PacMan(pygame.sprite.Sprite):
             # moves the image on the screen according to the set velocity
             self.rect.move_ip(*self.velocity)
         else:
-            img = []
             if self.velocity.x > 0:
-                self.images = self.imagesDeath
+                self.imagesDeath = self.deathRight
             elif self.velocity.x < 0:
-                for x in self.imagesDeath:
-                    img.append(pygame.transform.rotate(x, 180))
-                self.imagesDeath = img
+                self.imagesDeath = self.deathLeft
             elif self.velocity.y < 0:
-                for x in self.imagesDeath:
-                    img.append(pygame.transform.rotate(x, 90))
-                self.imagesDeath = img
+                self.imagesDeath = self.deathUp
             elif self.velocity.y > 0:
-                for x in self.imagesDeath:
-                    img.append(pygame.transform.rotate(x, 270))
-                self.imagesDeath = img
+                self.imagesDeath = self.deathDown
             self.images = self.imagesDeath
             self.velocity.x = 0
             self.velocity.y = 0
@@ -91,7 +84,7 @@ class PacMan(pygame.sprite.Sprite):
             self.powerUp = 1
 
     def eatGhost(self, ghost):
-        ghost.hit()
+        # ghost.hit()
         self.totalPoints += self.ghostPoints
         self.ghostPoints = self.ghostPoints*2
 
@@ -106,6 +99,8 @@ class PacMan(pygame.sprite.Sprite):
 
     def deathAnimation(self):
         self.death = True
+
+    def loadDeathImages(self):
         path = "PacManDeath"
         images = [0, 0, 0, 0, 0, 0, 0, 0]
         for file in os.listdir(path):
@@ -127,7 +122,11 @@ class PacMan(pygame.sprite.Sprite):
                 images[6] = image
             elif "8" in file:
                 images[7] = image
-        self.imagesDeath = images
+        for x in images:
+            self.deathLeft.append(pygame.transform.rotate(x, 180))
+            self.deathUp.append(pygame.transform.rotate(x, 90))
+            self.deathDown.append(pygame.transform.rotate(x, 270))
+            self.deathRight.append(x)
 
     def newLife(self):
         self.death = False
@@ -135,3 +134,11 @@ class PacMan(pygame.sprite.Sprite):
         self.rect = pygame.Rect(self.position, self.size)
         self.image = self.images[1]
         self.index = 0
+
+    def eatPill(self, pill):
+        if pill.isPower():
+            self.setPowerUp()
+            return True
+        self.totalPoints += 10
+        del pill
+        return False

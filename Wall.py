@@ -13,7 +13,7 @@ class Wall(pygame.sprite.Sprite):
 
         # resize image scale with bounding box
         self.index = 0
-        self.image = pygame.transform.scale(image, (size[0], size[1]))
+        self.image = pygame.transform.scale(image, (size[0] - 8, size[1] - 8))
         self.rect = pygame.Rect(position, size)
 
     def collision(self, other):
