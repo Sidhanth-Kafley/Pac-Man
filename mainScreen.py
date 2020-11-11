@@ -14,7 +14,8 @@ pygame.init()
 MAX_HEIGHT = 800
 MAX_WIDTH = 1000
 BACKGROUND_COLOR = pygame.Color('black')
-SPRITE_SIZE = 36
+CELL_SIZE = 16
+SPRITE_SIZE = 2*CELL_SIZE
 
 click = False
 mainClock = pygame.time.Clock()
@@ -178,38 +179,35 @@ def game():
     background.fill(BACKGROUND_COLOR)
     manager = pygame_gui.UIManager((MAX_WIDTH, MAX_HEIGHT))
 
-    pillImage = pygame.image.load("PointPill.png").convert_alpha()
-    pillImage = pygame.transform.scale(pillImage, (int(SPRITE_SIZE/3), int(SPRITE_SIZE/3)))
-
     # create pacman object
     images = loadImages(path='PacManSprites')
 
-    pacMan = PacMan(position=(MAX_WIDTH/5 + 177, (MAX_HEIGHT/2)+4), images=images)
+    pacMan = PacMan(position=(MAX_WIDTH/5, (MAX_HEIGHT/2)), size=(2*CELL_SIZE, 2*CELL_SIZE), images=images)
     
     # create level object
-    level1 = Level(layoutFilename='Levels/level1alt.txt', wallSize=(16, 16), originPosition=(200, 69))
+    level1 = Level(layoutFilename='Levels/level1alt.txt', wallSize=(CELL_SIZE, CELL_SIZE), originPosition=(int(MAX_WIDTH/5), int(MAX_HEIGHT/12) - 2))
 
     pillGroup = pygame.sprite.Group(level1.pills)
 
     ghosts = []
     # create blue ghost object
     blueGhostImages = loadImages(path='BlueGhostSprites')
-    blueGhost = Ghost('blue', position=(500, 390), images=blueGhostImages)
+    blueGhost = Ghost('blue', position=(500, 390), size=(2*CELL_SIZE, 2*CELL_SIZE), images=blueGhostImages)
     ghosts.append(blueGhost)
 
     # create orange ghost object
     orangeGhostImages = loadImages(path='OrangeGhostSprites')
-    orangeGhost = Ghost('orange', position=(465, 390), images=orangeGhostImages)
+    orangeGhost = Ghost('orange', position=(465, 390), size=(2*CELL_SIZE, 2*CELL_SIZE), images=orangeGhostImages)
     ghosts.append(orangeGhost)
 
     # create pink ghost object
     pinkGhostImages = loadImages(path='PinkGhostSprites')
-    pinkGhost = Ghost('pink', position=(430, 390), images=pinkGhostImages)
+    pinkGhost = Ghost('pink', position=(430, 390), size=(2*CELL_SIZE, 2*CELL_SIZE), images=pinkGhostImages)
     ghosts.append(pinkGhost)
 
     # create red ghost object
     redGhostImages = loadImages(path='RedGhostSprites')
-    redGhost = Ghost('red', position=(465, 320), images=redGhostImages)
+    redGhost = Ghost('red', position=(465, 320), size=(2*CELL_SIZE, 2*CELL_SIZE), images=redGhostImages)
     ghosts.append(redGhost)
 
     # health bar at the top of the screen
@@ -284,9 +282,9 @@ def game():
         purpleColor = Color(255, 0, 255, a=100)
         whiteColor = Color(255, 255, 255, a=100)
         pygame.draw.rect(background, redColor, pacMan.rect)
-        pygame.draw.rect(background, whiteColor, pacManCollisionRect)
-        if collidingWalls != -1 and collidingWalls != []:
-            for wallIndex in collidingWalls:
+        #pygame.draw.rect(background, whiteColor, pacManCollisionRect)
+        if potentialCollidingWalls != -1 and potentialCollidingWalls != []:
+            for wallIndex in potentialCollidingWalls:
                 pygame.draw.rect(background, purpleColor, level1.walls[wallIndex].rect)
 
         if collidingWallRight:
