@@ -10,9 +10,11 @@ class Level():
     pointPills = []
     powerUpPointPills = []
     layoutFile = 0
-    wallSize = (16, 16)
+    wallSize = (4, 4)
     originPosition = (0, 0)
     wallBlocks = []
+    levelWidth = 0
+    levelHeight = 0
 
     def __init__(self, layoutFilename, wallSize, originPosition):
         # initialize super class
@@ -21,10 +23,12 @@ class Level():
         rows = layoutFile.read().splitlines()
         self.wallSize = wallSize
         self.originPosition = originPosition
+        self.levelHeight = wallSize[1] * len(rows)
+        self.levelWidth = wallSize[0] * len(rows[0])
         pillImage = pygame.image.load("PointPill.png").convert_alpha()
-        pillImage = pygame.transform.scale(pillImage, (int(20), int(20)))
+        pillImage = pygame.transform.scale(pillImage, (int(wallSize[0]), int(wallSize[1])))
         powerPillImage = pygame.image.load("PowerUpPointPill.png").convert_alpha()
-        powerPillImage = pygame.transform.scale(powerPillImage, (int(20), int(20)))
+        powerPillImage = pygame.transform.scale(powerPillImage, (int(wallSize[0]), int(wallSize[1])))
         self.pills = []
         self.layoutFilename = layoutFilename
 
@@ -64,7 +68,7 @@ class Level():
                 elif rows[i][j] == '_':
                     self.appendWall('Gate.png', i, j)
                 elif rows[i][j] == "*":
-                    self.pills.append(Pill(False, pillImage, ((j * self.wallSize[1]) + self.originPosition[0], (i * self.wallSize[0] + 13) + self.originPosition[1] - 7)))
+                    self.pills.append(Pill(False, pillImage, ((j * self.wallSize[1]) + self.originPosition[0] + int(wallSize[0]/2), (i * self.wallSize[0]) + self.originPosition[1] + int(self.wallSize[0])/2)))
                 elif rows[i][j] == "&":
                     self.pills.append(Pill(True, powerPillImage, ((j * self.wallSize[1]) + self.originPosition[0], (i * self.wallSize[0]) + self.originPosition[1])))
             self.layout.append([])
