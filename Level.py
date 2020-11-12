@@ -26,6 +26,7 @@ class Level():
         powerPillImage = pygame.image.load("PowerUpPointPill.png").convert_alpha()
         powerPillImage = pygame.transform.scale(powerPillImage, (int(20), int(20)))
         self.pills = []
+        self.layoutFilename = layoutFilename
 
         # create level objects based on characters in file
         for i in range(len(rows)):
@@ -74,3 +75,7 @@ class Level():
         self.walls.append(tempWall)
         self.layout[rowIndex].append(tempWall)
         self.wallBlocks.append(tempWall.rect)
+
+    def copy(self):
+        wallCopy = Level(self.layoutFilename, self.wallSize, self.originPosition)
+        return wallCopy
