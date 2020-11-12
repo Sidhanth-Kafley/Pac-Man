@@ -27,7 +27,10 @@ class Level():
         self.levelWidth = wallSize[0] * len(rows[0])
         pillImage = pygame.image.load("PointPill.png").convert_alpha()
         pillImage = pygame.transform.scale(pillImage, (int(wallSize[0]), int(wallSize[1])))
+        powerPillImage = pygame.image.load("PowerUpPointPill.png").convert_alpha()
+        powerPillImage = pygame.transform.scale(powerPillImage, (int(wallSize[0]), int(wallSize[1])))
         self.pills = []
+        self.layoutFilename = layoutFilename
 
         # create level objects based on characters in file
         for i in range(len(rows)):
@@ -67,7 +70,7 @@ class Level():
                 elif rows[i][j] == "*":
                     self.pills.append(Pill(False, pillImage, ((j * self.wallSize[1]) + self.originPosition[0] + int(wallSize[0]/2), (i * self.wallSize[0]) + self.originPosition[1] + int(self.wallSize[0])/2)))
                 elif rows[i][j] == "&":
-                    self.pills.append(Pill(True, pygame.transform.scale(pillImage, (wallSize[0]*2, wallSize[1]*2)), ((j * self.wallSize[1]) + self.originPosition[0], (i * self.wallSize[0]) + self.originPosition[1] - int(self.wallSize[1]/2))))
+                    self.pills.append(Pill(True, powerPillImage, ((j * self.wallSize[1]) + self.originPosition[0], (i * self.wallSize[0]) + self.originPosition[1])))
             self.layout.append([])
 
     def appendWall(self, imageFilename, rowIndex, colIndex):
@@ -76,3 +79,7 @@ class Level():
         self.walls.append(tempWall)
         self.layout[rowIndex].append(tempWall)
         self.wallBlocks.append(tempWall.rect)
+
+    def copy(self):
+        wallCopy = Level(self.layoutFilename, self.wallSize, self.originPosition)
+        return wallCopy

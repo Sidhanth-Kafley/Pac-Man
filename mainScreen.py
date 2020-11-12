@@ -213,7 +213,6 @@ def game():
     # health bar at the top of the screen
     healthBar = pygame.transform.scale(images[2], (int(24), int(24)))
 
-    # ADD GHOSTS TO THIS GROUP SO THEY ALL FOLLOW THE SAME BASIC GUIDELINES
     allSprites = pygame.sprite.Group(pacMan, blueGhost, orangeGhost, pinkGhost, redGhost, level1.walls)
 
     # clock used for framerate
