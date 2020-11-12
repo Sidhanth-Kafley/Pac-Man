@@ -7,7 +7,26 @@ class HighScores():
     def __init__(self, newScore, usersInitial):
         self.newScore = newScore
         self.usersInitial = usersInitial
-        self.scoresTuple = (self.usersInitial, self.newScore)
+
+        self.connectDatabase()
+
+        connection = sqlite3.connect('HighScores.db')
+        # create cursor object
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM highScores")
+
+        idCheck = cursor.fetchall()
+        # if there is nothing in the database, then id is 1
+        if idCheck is None:
+            idCount = 1
+        # otherwise, increment id by 1
+        else:
+            idCount = 0
+            for id in idCheck:
+                idCount = int(id[0])
+            idCount += 1
+
+        self.scoresTuple = (idCount, self.usersInitial, self.newScore)
         self.scoresArray = []
         self.scoresArray.append(self.scoresTuple)
 
@@ -26,13 +45,7 @@ class HighScores():
             exists = True
 
         # Prep the database by cleaning it
-        cursor.execute("CREATE TABLE IF NOT EXISTS highScores (userInitials VARCHAR(64), scores VARCHAR(64))")
-        #cursor.executescript("""DROP TABLE IF EXISTS "scores";
-         #                       CREATE TABLE "scores" (userInitials VARCHAR(64),
-                                                         #  scores VARCHAR(64));""")
-        # put array into database
-        #cursor.execute("INSERT INTO scores (userInitials, scores) VALUES ()")
-        #cursor.executemany("INSERT INTO scores (userInitials, scores) VALUES (?, ?);", self.scoresArray)
+        cursor.execute("CREATE TABLE IF NOT EXISTS highScores (id VARCHAR(64), userInitials VARCHAR(64), scores VARCHAR(64))")
 
         # commit databases
         connection.commit()
@@ -42,10 +55,35 @@ class HighScores():
         cursor = connection.cursor()
 
         # add user's initials and score to the database
-        cursor.executemany("INSERT INTO highScores (userInitials, scores) VALUES (?, ?);", self.scoresArray)
+        cursor.executemany("INSERT INTO highScores (id, userInitials, scores) VALUES (?, ?, ?);", self.scoresArray)
         connection.commit()
 
     def determineNewHighScore(self):
+        connection = sqlite3.connect('HighScores.db')
+        cursor = connection.cursor()
+
+        # sort database so that highest scores are at the top
+        cursor.execute("SELECT * FROM highScores ORDER BY scores DESC")
+        orderedData = cursor.fetchall()
+        idCount = 1
+
+        # update the database to be in order (with the highest score at the top)
+        for data in orderedData:
+            # get the user's initials
+            value1 = data[1]
+            # get the user's score
+            value2 = data[2]
+            # update the database with new id
+            updateData = ('''UPDATE highScores SET userInitials = ?, scores = ? WHERE id = ?''')
+            cursor.execute(updateData, (value1, value2, idCount))
+
+            # increase the id count
+            idCount += 1
+            # commit to database
+            connection.commit()
+
+    def getTop5HighScores(self):
+        # connect to the database
         connection = sqlite3.connect('HighScores.db')
         cursor = connection.cursor()
 
@@ -53,22 +91,15 @@ class HighScores():
         cursor.execute("SELECT * FROM highScores")
         scoresData = cursor.fetchall()
 
-        highScore = 0
-        for score in scoresData:
-            # if the score is greater than the current high score,
-            # then it is the new high score
-            convertedScore = int(score[1])
-            if convertedScore > highScore:
-                highScore = convertedScore
-            print(score[1])
+        # high score 1
+        highScore1 = scoresData[0]
+        # high score 2
+        highScore2 = scoresData[1]
+        # high score 3
+        highScore3 = scoresData[2]
+        # high score 4
+        highScore4 = scoresData[3]
+        # high score 5
+        highScore5 = scoresData[4]
 
-        # sort database so that highest scores are at the top
-        cursor.execute("SELECT * FROM highScores ORDER BY scores DESC")
-        orderedData = cursor.fetchall()
-        updateData = ('''UPDATE highScores SET userInitials = ?, score = ? WHERE id = ?''')
-        idCount = 1
-        #for score in orderedData:
-        #    cursor.execute(updateData, (score[0], score[1], idCount))
-        #    idCount += 1
-        connection.commit()
-
+        return highScore1
