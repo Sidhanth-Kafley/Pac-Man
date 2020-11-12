@@ -1,6 +1,7 @@
 import pygame
-import sqlite3, csv
+import sqlite3
 from sqlite3 import Error
+
 
 class HighScores():
 
@@ -8,14 +9,19 @@ class HighScores():
         self.newScore = newScore
         self.usersInitial = usersInitial
 
+        # initially connect to the database and create table
+        # (if it hasn't already been created)
         self.connectDatabase()
 
+        # create connection to database
         connection = sqlite3.connect('HighScores.db')
         # create cursor object
         cursor = connection.cursor()
-        cursor.execute("SELECT * FROM highScores")
 
+        # get all data from the database
+        cursor.execute("SELECT * FROM highScores")
         idCheck = cursor.fetchall()
+
         # if there is nothing in the database, then id is 1
         if idCheck is None:
             idCount = 1
@@ -26,6 +32,7 @@ class HighScores():
                 idCount = int(id[0])
             idCount += 1
 
+        # add info to tuple, then array
         self.scoresTuple = (idCount, self.usersInitial, self.newScore)
         self.scoresArray = []
         self.scoresArray.append(self.scoresTuple)
@@ -36,21 +43,17 @@ class HighScores():
         # create cursor object
         cursor = connection.cursor()
 
-        # determine if data tables have already been created
-        exists = False
+        # create highScores table in the database
         cursor.execute('''SELECT count(name) FROM sqlite_master WHERE type='table' AND name='highScores' ''')
 
-        # if there is a table, then the data has already been loaded
-        if cursor.fetchone()[0] == 1:
-            exists = True
-
-        # Prep the database by cleaning it
+        # add the id, userInitials, and scores columns to the table
         cursor.execute("CREATE TABLE IF NOT EXISTS highScores (id VARCHAR(64), userInitials VARCHAR(64), scores VARCHAR(64))")
 
         # commit databases
         connection.commit()
 
     def addScoreToDB(self):
+        # create connection to database
         connection = sqlite3.connect('HighScores.db')
         cursor = connection.cursor()
 
@@ -59,6 +62,7 @@ class HighScores():
         connection.commit()
 
     def determineNewHighScore(self):
+        # create connection to database
         connection = sqlite3.connect('HighScores.db')
         cursor = connection.cursor()
 

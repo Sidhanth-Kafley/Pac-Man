@@ -8,6 +8,7 @@ from pygame.locals import *
 from pill import Pill
 from Wall import Wall
 from Level import Level
+from highScores import HighScores
 
 pygame.init()
 
