@@ -2,7 +2,7 @@ import pygame
 
 class Wall(pygame.sprite.Sprite):
     position = (0, 0)
-    size = (16, 16)
+    size = (4, 4)
     colliding = False
 
     def __init__(self, position, size, image):
