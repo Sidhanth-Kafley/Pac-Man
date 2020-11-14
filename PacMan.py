@@ -15,14 +15,15 @@ class PacMan(pygame.sprite.Sprite):
     imagesDeath = []
     death = False
     index = 0
-    size = (30, 30)
+    size = (8, 8)
     velocity = pygame.math.Vector2()
 
-    def __init__(self, position, images):
+    def __init__(self, position, size, images):
         # initialize super class
         super(PacMan, self).__init__()
         # set image streams for moving in respective directions
         self.images = images
+        self.size = size
         self.imagesRight = [self.images[4], self.images[2]]
         self.imagesLeft = [self.images[4], self.images[1]]
         self.imagesUp = [self.images[4], self.images[3]]

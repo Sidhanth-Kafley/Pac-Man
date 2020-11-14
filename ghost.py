@@ -4,15 +4,13 @@ import random
 
 class Ghost(pygame.sprite.Sprite):
 
-    def __init__(self, color, position, images):
+    def __init__(self, color, position, size, images):
         # initialize super class
         super(Ghost, self).__init__()
         self.color = color
         self.powerUpMode = False
         self.hitPacMan = False
         self.position = position
-        # set the size of the images
-        sizeOfImage = (30, 30)
 
         # index for looping through images
         self.index = 1
@@ -26,7 +24,7 @@ class Ghost(pygame.sprite.Sprite):
         self.image = self.images[0]
 
         # initialize variables
-        self.rect = pygame.Rect(position, sizeOfImage)
+        self.rect = pygame.Rect(position, size)
         self.moveX = 0
         self.moveY = 0
         self.direction = 'up'
