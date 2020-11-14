@@ -5,10 +5,7 @@ from sqlite3 import Error
 
 class HighScores():
 
-    def __init__(self, newScore, usersInitial):
-        self.newScore = newScore
-        self.usersInitial = usersInitial
-
+    def __init__(self):
         # initially connect to the database and create table
         # (if it hasn't already been created)
         self.connectDatabase()
@@ -20,25 +17,25 @@ class HighScores():
             cursor = connection.cursor()
 
             # get all data from the database
-            cursor.execute("SELECT * FROM highScores")
-            idCheck = cursor.fetchall()
-
-            # if there is nothing in the database, then id is 1
-            if idCheck is None:
-                idCount = 1
-            # otherwise, increment id by 1
-            else:
-                idCount = 0
-                for id in idCheck:
-                    idCount = int(id[0])
-                idCount += 1
-
-            # add info to tuple, then array
-            self.scoresTuple = (idCount, self.usersInitial, self.newScore)
-            self.scoresArray = []
-            self.scoresArray.append(self.scoresTuple)
-
-            connection.close()
+            # cursor.execute("SELECT * FROM highScores")
+            # idCheck = cursor.fetchall()
+            #
+            # # if there is nothing in the database, then id is 1
+            # if idCheck is None:
+            #     idCount = 1
+            # # otherwise, increment id by 1
+            # else:
+            #     idCount = 0
+            #     for id in idCheck:
+            #         idCount = int(id[0])
+            #     idCount += 1
+            #
+            # # add info to tuple, then array
+            # self.scoresTuple = (idCount, self.usersInitial, self.newScore)
+            # self.scoresArray = []
+            # self.scoresArray.append(self.scoresTuple)
+            #
+            # connection.close()
 
         except Error as error:
             print('Cannot connect to database. The following error occurred: ', error)
@@ -64,11 +61,33 @@ class HighScores():
         except Error as error:
             print('Cannot connect to database. The following error occurred: ', error)
 
-    def addScoreToDB(self):
+    def addScoreToDB(self, newScore, usersInitial):
         try:
             # create connection to database
             connection = sqlite3.connect('HighScores.db')
             cursor = connection.cursor()
+
+            self.newScore = newScore
+            self.usersInitial = usersInitial
+
+            # get all data from the database
+            cursor.execute("SELECT * FROM highScores")
+            idCheck = cursor.fetchall()
+
+            # if there is nothing in the database, then id is 1
+            if idCheck is None:
+                idCount = 1
+            # otherwise, increment id by 1
+            else:
+                idCount = 0
+                for id in idCheck:
+                    idCount = int(id[0])
+                idCount += 1
+
+            # add info to tuple, then array
+            self.scoresTuple = (idCount, self.usersInitial, self.newScore)
+            self.scoresArray = []
+            self.scoresArray.append(self.scoresTuple)
 
             # add user's initials and score to the database
             cursor.executemany("INSERT INTO highScores (id, userInitials, scores) VALUES (?, ?, ?);", self.scoresArray)

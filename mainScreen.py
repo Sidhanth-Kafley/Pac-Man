@@ -22,6 +22,7 @@ SPRITE_SIZE = 2*CELL_SIZE
 click = False
 mainClock = pygame.time.Clock()
 font = pygame.font.Font('8-BIT WONDER.TTF', 20)
+font2 = pygame.font.Font(None, 40)
 titleFont = pygame.font.Font('8-BIT WONDER.TTF', 30)
 
 
@@ -361,7 +362,6 @@ def game():
             window.blit(healthBar, (20, MAX_HEIGHT - 50))
         elif pacMan.startingHealth == 0:
             displayGameOver(pacMan, window)
-        pacMan.startingHealth = 0 # delete!!!! TODO
         # display score
         window.blit(pacMan.renderScore(32), (10, 10))
 
@@ -472,9 +472,28 @@ def creativeMode():
 def leaderBoards():
     click = False
     isRunning = True
+
+    # get high scores and make sure they are in order
+    topHighScores = HighScores()
+    topHighScores.determineNewHighScore()
+    dictOfScores = topHighScores.getTop5HighScores()
+
     while isRunning:
         screen.fill(BACKGROUND_COLOR)
         drawText('Leaderboards', titleFont, (255, 255, 255), screen, 300, 50)
+
+        # display the top 5 scores
+        scoreXCoord = 400
+        scoreYCoord = 200
+
+        for key in dictOfScores:
+            initial = dictOfScores[key][1]
+            userScore = dictOfScores[key][2]
+            highScoreDisplay = initial + '       ' + str(userScore)
+            drawText(highScoreDisplay, font2, (255, 255, 255), screen, scoreXCoord, scoreYCoord)
+            # need to make sure scores are spaced out
+            scoreYCoord += 75
+
         mousePosition = pygame.mouse.get_pos()
         button4 = pygame.Rect(700, 700, 250, 50)
 

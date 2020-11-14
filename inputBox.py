@@ -36,8 +36,8 @@ class InputBox():
         if event.type == pygame.KEYDOWN:
             if self.active:
                 if event.key == pygame.K_RETURN:
-                    newScore = HighScores(self.score, self.text)
-                    newScore.addScoreToDB()
+                    newScore = HighScores()
+                    newScore.addScoreToDB(self.score, self.text)
                     self.text = ''
                 # if the user hits the backspace key, then remove the last character
                 elif event.key == pygame.K_BACKSPACE:
