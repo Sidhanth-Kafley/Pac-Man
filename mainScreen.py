@@ -57,6 +57,7 @@ def mainMenu():
         button1 = pygame.Rect(int(MAX_HEIGHT / 2.5), int(MAX_WIDTH / 3.0), 250, 50)
         button3 = pygame.Rect(int(MAX_HEIGHT / 2.5), int(MAX_WIDTH / 2.4), 250, 50)
         button2 = pygame.Rect(int(MAX_HEIGHT / 2.5), int(MAX_WIDTH / 2.0), 250, 50)
+        button4 = pygame.Rect(int(MAX_HEIGHT / 2.5), int(MAX_WIDTH / 1.7), 250, 50)
 
         # if button is clicked call corresponding functions
         if button2.collidepoint((mousePosition[0], mousePosition[1])):
@@ -66,6 +67,10 @@ def mainMenu():
         if button3.collidepoint((mousePosition[0], mousePosition[1])):
             if click:
                 creativeMode()
+
+        if button4.collidepoint((mousePosition[0], mousePosition[1])):
+            if click:
+                leaderBoards()
 
         if button1.collidepoint((mousePosition[0], mousePosition[1])):
             if click:
@@ -96,6 +101,14 @@ def mainMenu():
             pygame.draw.rect(screen, (0, 255, 0), button2)
 
         drawText('Credits', font, (255, 255, 255), screen, MAX_HEIGHT / 2.2, MAX_WIDTH / 1.95)
+
+        if MAX_HEIGHT / 2.5 + 250 > mousePosition[0] > MAX_HEIGHT / 2.5 and MAX_WIDTH / 1.7 + 50 > mousePosition[
+            1] > MAX_WIDTH / 1.7:
+            pygame.draw.rect(screen, (0, 190, 0), button4)
+        else:
+            pygame.draw.rect(screen, (0, 255, 0), button4)
+
+        drawText('Leaderboards', font, (255, 255, 255), screen, MAX_HEIGHT / 2.5, MAX_WIDTH / 1.67)
 
         click = False
         for event in pygame.event.get():
@@ -418,6 +431,41 @@ def creativeMode():
     while isRunning:
         screen.fill(BACKGROUND_COLOR)
         drawText('Creative Mode', titleFont, (255, 255, 255), screen, 300, 50)
+        mousePosition = pygame.mouse.get_pos()
+        button4 = pygame.Rect(700, 700, 250, 50)
+
+        if button4.collidepoint(mousePosition[0], mousePosition[1]):
+            if click:
+                isRunning = False
+
+        if 700 + 250 > mousePosition[0] > 700 and 700 + 50 > mousePosition[1] > 700:
+            pygame.draw.rect(screen, (0, 190, 0), button4)
+        else:
+            pygame.draw.rect(screen, (0, 255, 0), button4)
+
+        drawText('Main menu', font, (255, 255, 255), screen, 725, 715)
+        click = False
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == KEYDOWN:
+                if event.key == K_ESCAPE:
+                    isRunning = False
+            if event.type == MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    click = True
+
+        pygame.display.update()
+        mainClock.tick(10)
+
+
+def leaderBoards():
+    click = False
+    isRunning = True
+    while isRunning:
+        screen.fill(BACKGROUND_COLOR)
+        drawText('Leaderboards', titleFont, (255, 255, 255), screen, 300, 50)
         mousePosition = pygame.mouse.get_pos()
         button4 = pygame.Rect(700, 700, 250, 50)
 
