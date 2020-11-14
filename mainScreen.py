@@ -9,6 +9,7 @@ from pill import Pill
 from Wall import Wall
 from Level import Level
 from highScores import HighScores
+from inputBox import InputBox
 
 pygame.init()
 
@@ -360,7 +361,7 @@ def game():
             window.blit(healthBar, (20, MAX_HEIGHT - 50))
         elif pacMan.startingHealth == 0:
             displayGameOver(pacMan, window)
-
+        pacMan.startingHealth = 0 # delete!!!! TODO
         # display score
         window.blit(pacMan.renderScore(32), (10, 10))
 
@@ -392,6 +393,8 @@ def displayGameOver(pacMan, window):
     # display button to play again
     click = False
     isRunning = True
+    highScoreInputBox = InputBox(365, 150, 140, 32, pacMan.getTotalPoints())
+
     while isRunning:
         screen.fill(BACKGROUND_COLOR)
         drawText('GameOver', titleFont, (255, 255, 255), screen, 340, 250)
@@ -421,6 +424,11 @@ def displayGameOver(pacMan, window):
             if event.type == MOUSEBUTTONDOWN:
                 if event.button == 1:
                     click = True
+
+            highScoreInputBox.handleEvent(event)
+
+        highScoreInputBox.update()
+        highScoreInputBox.draw(screen)
 
         pygame.display.update()
         mainClock.tick(10)

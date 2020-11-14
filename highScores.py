@@ -127,26 +127,20 @@ class HighScores():
                 top5HighScores["No Scores"] = 0
 
             elif sizeOfArray == 1:
-                # high score 1
                 highScore1 = scoresData[0]
                 # add to dictionary
                 top5HighScores["1"] = highScore1
 
             elif sizeOfArray == 2:
-                # high score 1
                 highScore1 = scoresData[0]
-                # high score 2
                 highScore2 = scoresData[1]
                 # add to dictionary
                 top5HighScores["1"] = highScore1
                 top5HighScores["2"] = highScore2
 
             elif sizeOfArray == 3:
-                # high score 1
                 highScore1 = scoresData[0]
-                # high score 2
                 highScore2 = scoresData[1]
-                # high score 3
                 highScore3 = scoresData[2]
 
                 # add to dictionary
@@ -155,13 +149,9 @@ class HighScores():
                 top5HighScores["3"] = highScore3
 
             elif sizeOfArray == 4:
-                # high score 1
                 highScore1 = scoresData[0]
-                # high score 2
                 highScore2 = scoresData[1]
-                # high score 3
                 highScore3 = scoresData[2]
-                # high score 4
                 highScore4 = scoresData[3]
 
                 # add to dictionary
@@ -171,15 +161,10 @@ class HighScores():
                 top5HighScores["4"] = highScore4
 
             else:
-                # high score 1
                 highScore1 = scoresData[0]
-                # high score 2
                 highScore2 = scoresData[1]
-                # high score 3
                 highScore3 = scoresData[2]
-                # high score 4
                 highScore4 = scoresData[3]
-                # high score 5
                 highScore5 = scoresData[4]
 
                 # add to dictionary

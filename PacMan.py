@@ -167,3 +167,6 @@ class PacMan(pygame.sprite.Sprite):
            # if self.rect.colliderect(level1.walls[wallIndex]):
 
         return True
+
+    def getTotalPoints(self):
+        return self.totalPoints
