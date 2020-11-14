@@ -170,6 +170,7 @@ def credits():
         pygame.display.update()
         mainClock.tick(10)
 
+
 def game():
     # Initiate game and window
     pygame.init()
@@ -263,16 +264,16 @@ def game():
             if event.type == pygame.QUIT:
                 isRunning = False
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LEFT and not collidingWallLeft:
+                if event.key == pygame.K_LEFT and pacMan.checkMove("left", potentialCollidingWalls, level1):# collidingWallLeft:
                     pacMan.velocity.y = 0
                     pacMan.velocity.x = (-4)*pacMan.powerUp
-                elif event.key == pygame.K_RIGHT and not collidingWallRight:
+                elif event.key == pygame.K_RIGHT and pacMan.checkMove("right", potentialCollidingWalls, level1):# collidingWallRight:
                     pacMan.velocity.y = 0
                     pacMan.velocity.x = 4*pacMan.powerUp
-                elif event.key == pygame.K_UP and not collidingWallTop:
+                elif event.key == pygame.K_UP and pacMan.checkMove("up", potentialCollidingWalls, level1):# collidingWallTop:
                     pacMan.velocity.x = 0
                     pacMan.velocity.y = (-4)*pacMan.powerUp
-                elif event.key == pygame.K_DOWN and not collidingWallBottom:
+                elif event.key == pygame.K_DOWN and pacMan.checkMove("down", potentialCollidingWalls, level1):# collidingWallBottom:
                     pacMan.velocity.x = 0
                     pacMan.velocity.y = 4*pacMan.powerUp
 
@@ -281,7 +282,7 @@ def game():
         purpleColor = Color(255, 0, 255, a=100)
         whiteColor = Color(255, 255, 255, a=100)
         pygame.draw.rect(background, redColor, pacMan.rect)
-        #pygame.draw.rect(background, whiteColor, pacManCollisionRect)
+        # pygame.draw.rect(background, whiteColor, pacManCollisionRect)
         if potentialCollidingWalls != -1 and potentialCollidingWalls != []:
             for wallIndex in potentialCollidingWalls:
                 pygame.draw.rect(background, purpleColor, level1.walls[wallIndex].rect)
