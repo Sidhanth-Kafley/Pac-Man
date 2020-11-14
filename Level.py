@@ -70,7 +70,7 @@ class Level():
                 elif rows[i][j] == "*":
                     self.pills.append(Pill(False, pillImage, ((j * self.wallSize[1]) + self.originPosition[0] + int(wallSize[0]/2), (i * self.wallSize[0]) + self.originPosition[1] + int(self.wallSize[0])/2)))
                 elif rows[i][j] == "&":
-                    self.pills.append(Pill(True, powerPillImage, ((j * self.wallSize[1]) + self.originPosition[0], (i * self.wallSize[0]) + self.originPosition[1])))
+                    self.pills.append(Pill(True, powerPillImage, ((j * self.wallSize[1]) + self.originPosition[0] + 5, (i * self.wallSize[0]) + self.originPosition[1])))
             self.layout.append([])
 
     def appendWall(self, imageFilename, rowIndex, colIndex):
