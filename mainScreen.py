@@ -2,6 +2,7 @@ import pygame
 import pygame_gui
 import sys
 import os
+import LevelEditor
 from PacMan import PacMan
 from ghost import Ghost
 from pygame.locals import *
@@ -66,7 +67,7 @@ def mainMenu():
 
         if button3.collidepoint((mousePosition[0], mousePosition[1])):
             if click:
-                creativeMode()
+                LevelEditor.mainEditor()
 
         if button4.collidepoint((mousePosition[0], mousePosition[1])):
             if click:
@@ -257,7 +258,7 @@ def game():
         # times per second this loop runs
 
         time_delta = clock.tick_busy_loop(60) / 1000.0
-
+        pygame.display.set_caption("fps: " + str(clock.get_fps()))
         # determine if a wall is colliding
         collidingWallTop = False
         collidingWallBottom = False
@@ -410,41 +411,6 @@ def displayGameOver(pacMan, window):
 
         drawText('Play again', font, (255, 255, 255), screen, 360, 515)
 
-        click = False
-        for event in pygame.event.get():
-            if event.type == QUIT:
-                pygame.quit()
-                sys.exit()
-            if event.type == KEYDOWN:
-                if event.key == K_ESCAPE:
-                    isRunning = False
-            if event.type == MOUSEBUTTONDOWN:
-                if event.button == 1:
-                    click = True
-
-        pygame.display.update()
-        mainClock.tick(10)
-
-
-def creativeMode():
-    click = False
-    isRunning = True
-    while isRunning:
-        screen.fill(BACKGROUND_COLOR)
-        drawText('Creative Mode', titleFont, (255, 255, 255), screen, 300, 50)
-        mousePosition = pygame.mouse.get_pos()
-        button4 = pygame.Rect(700, 700, 250, 50)
-
-        if button4.collidepoint(mousePosition[0], mousePosition[1]):
-            if click:
-                isRunning = False
-
-        if 700 + 250 > mousePosition[0] > 700 and 700 + 50 > mousePosition[1] > 700:
-            pygame.draw.rect(screen, (0, 190, 0), button4)
-        else:
-            pygame.draw.rect(screen, (0, 255, 0), button4)
-
-        drawText('Main menu', font, (255, 255, 255), screen, 725, 715)
         click = False
         for event in pygame.event.get():
             if event.type == QUIT:

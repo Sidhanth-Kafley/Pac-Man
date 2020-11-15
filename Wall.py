@@ -4,6 +4,7 @@ class Wall(pygame.sprite.Sprite):
     position = (0, 0)
     size = (4, 4)
     colliding = False
+    drag = False
 
     def __init__(self, position, size, image):
         # initialize super class

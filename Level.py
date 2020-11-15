@@ -1,10 +1,10 @@
 import pygame
 import os
 from pill import Pill
-
 from Wall import Wall
 
-class Level():
+
+class Level(pygame.sprite.Sprite):
     layout = [[]]
     walls = []
     pointPills = []
