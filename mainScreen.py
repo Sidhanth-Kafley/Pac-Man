@@ -254,6 +254,8 @@ def game():
     backgroundMusic = pygame.mixer.Sound("Music/PacManBeginning.wav")
     backgroundMusic.play(0)
 
+    powermode = False
+    count = 0
     while isRunning:
         # times per second this loop runs
 
@@ -294,18 +296,18 @@ def game():
             if event.type == pygame.QUIT:
                 isRunning = False
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LEFT and pacMan.checkMove("left", potentialCollidingWalls, level1):# collidingWallLeft:
+                if event.key == pygame.K_LEFT and pacMan.checkMove("left", level1, level1):# collidingWallLeft:
                     pacMan.velocity.y = 0
-                    pacMan.velocity.x = (-4)*pacMan.powerUp
-                elif event.key == pygame.K_RIGHT and pacMan.checkMove("right", potentialCollidingWalls, level1):# collidingWallRight:
+                    pacMan.velocity.x = (-1.5)*pacMan.powerUp
+                elif event.key == pygame.K_RIGHT and pacMan.checkMove("right", level1, level1):# collidingWallRight:
                     pacMan.velocity.y = 0
-                    pacMan.velocity.x = 4*pacMan.powerUp
-                elif event.key == pygame.K_UP and pacMan.checkMove("up", potentialCollidingWalls, level1):# collidingWallTop:
+                    pacMan.velocity.x = 1.5*pacMan.powerUp
+                elif event.key == pygame.K_UP and pacMan.checkMove("up", level1, level1):# collidingWallTop:
                     pacMan.velocity.x = 0
-                    pacMan.velocity.y = (-4)*pacMan.powerUp
-                elif event.key == pygame.K_DOWN and pacMan.checkMove("down", potentialCollidingWalls, level1):# collidingWallBottom:
+                    pacMan.velocity.y = (-1.5)*pacMan.powerUp
+                elif event.key == pygame.K_DOWN and pacMan.checkMove("down", level1, level1):# collidingWallBottom:
                     pacMan.velocity.x = 0
-                    pacMan.velocity.y = 4*pacMan.powerUp
+                    pacMan.velocity.y = 1.5*pacMan.powerUp
 
             manager.process_events(event)
         redColor = Color(255, 0, 0, a=100)
@@ -318,13 +320,13 @@ def game():
                 pygame.draw.rect(background, purpleColor, level1.walls[wallIndex].rect)
 
         if collidingWallRight:
-            pacMan.velocity.x = min(0, max(pacMan.velocity.x, (-4) * pacMan.powerUp))
+            pacMan.velocity.x = min(0, max(pacMan.velocity.x, (-1.5) * pacMan.powerUp))
         if collidingWallLeft:
-            pacMan.velocity.x = max(0, min(pacMan.velocity.x, 4 * pacMan.powerUp))
+            pacMan.velocity.x = max(0, min(pacMan.velocity.x, 1.5 * pacMan.powerUp))
         if collidingWallTop:
-            pacMan.velocity.y = max(0, min(pacMan.velocity.y, 4 * pacMan.powerUp))
+            pacMan.velocity.y = max(0, min(pacMan.velocity.y, 1.5 * pacMan.powerUp))
         if collidingWallBottom:
-            pacMan.velocity.y = min(0, max(pacMan.velocity.y, (-4) * pacMan.powerUp))
+            pacMan.velocity.y = min(0, max(pacMan.velocity.y, (-1.5) * pacMan.powerUp))
 
         if pygame.sprite.spritecollide(pacMan, ghosts, False):
             if pacMan.powerUp == 1:
@@ -345,13 +347,26 @@ def game():
             for x in pillGroup:
                 if pacMan.rect.colliderect(x.rect):
                     if pacMan.eatPill(x):
+                        powermode = True
                         for ghost in ghosts:
                             ghost.setPowerUpMode()
                     pillGroup.remove(x)
 
-        manager.update(time_delta)
+        # only run the powerup for 1000 loops
+        if powermode:
+            count += 1
+        if count == 600:
+            powermode = False
+            count = 0
+            pacMan.setPowerUp()
+            pacMan.velocity.x = pacMan.velocity.x / pacMan.powerUp
+            pacMan.velocity.y = pacMan.velocity.y / pacMan.powerUp
+            for ghost in ghosts:
+                ghost.setPowerUpMode()
+
+       # manager.update(time_delta)
         window.blit(background, (0, 0))
-        manager.draw_ui(window)
+       # manager.draw_ui(window)
 
         # display the health bar at the bottom
         if pacMan.startingHealth - 1 == 2:
@@ -386,7 +401,7 @@ def game():
 
     pygame.mixer.music.stop()
     sys.exit(0)
-    #mainClock.tick(10)
+    # mainClock.tick(10)
 
 
 def displayGameOver(pacMan, window):

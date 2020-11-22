@@ -80,6 +80,3 @@ class Level(pygame.sprite.Sprite):
         self.layout[rowIndex].append(tempWall)
         self.wallBlocks.append(tempWall.rect)
 
-    def copy(self):
-        wallCopy = Level(self.layoutFilename, self.wallSize, self.originPosition)
-        return wallCopy
