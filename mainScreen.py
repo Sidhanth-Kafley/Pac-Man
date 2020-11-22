@@ -364,7 +364,7 @@ def game():
             displayGameOver(pacMan, window)
         # display score
         window.blit(pacMan.renderScore(32), (10, 10))
-
+        pacMan.startingHealth = 0 # TODO
         # inefficient collision for testing, should be handled in PacMan movement code instead
         # for wall in level1.walls:
         #     wall.collision(pacMan)
@@ -398,6 +398,7 @@ def displayGameOver(pacMan, window):
     while isRunning:
         screen.fill(BACKGROUND_COLOR)
         drawText('GameOver', titleFont, (255, 255, 255), screen, 340, 250)
+        drawText('Please enter your initials to record your score', font, (255, 255, 255), screen, 70, 80)
         window.blit(pacMan.renderScore(100), (440, 380))
         mousePosition = pygame.mouse.get_pos()
         button = pygame.Rect(340, 500, 250, 50)
