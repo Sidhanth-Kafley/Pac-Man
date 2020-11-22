@@ -430,6 +430,8 @@ def displayGameOver(pacMan, window):
 
         highScoreInputBox.update()
         highScoreInputBox.draw(screen)
+        message = highScoreInputBox.getMessage()
+        drawText(message, font2, (255, 255, 255), screen, 300, 20)
 
         pygame.display.update()
         mainClock.tick(10)
@@ -522,6 +524,7 @@ def leaderBoards():
 
         pygame.display.update()
         mainClock.tick(10)
+
 
 if __name__ == '__main__':
     main()

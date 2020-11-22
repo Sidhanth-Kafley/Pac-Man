@@ -21,6 +21,7 @@ class InputBox():
         self.color = FONT_COLOR
         self.rect = pygame.Rect(self.xCoord, self.yCoord, self.width, self.height)
         self.textSurface = FONT.render(text, True, FONT_COLOR)
+        self.message = ''
 
         self.surface = pygame.Surface((1, 1))
         self.surface.set_alpha(0)
@@ -51,7 +52,6 @@ class InputBox():
             self.surface.blit(self.cursorSurface, (150, 150))
         self.clock.tick()
 
-
     def handleEvent(self, event):
         # the user has clicked on the input box
         if event.type == pygame.MOUSEBUTTONDOWN:
@@ -74,6 +74,7 @@ class InputBox():
                 if event.key == pygame.K_RETURN:
                     newScore = HighScores()
                     newScore.addScoreToDB(self.score, self.text)
+                    self.message = newScore.determineTopScore(self.score)
                     self.text = ''
                 # if the user hits the backspace key, then remove the last character
                 elif event.key == pygame.K_BACKSPACE:
@@ -89,3 +90,6 @@ class InputBox():
 
     def getText(self):
         return self.text
+
+    def getMessage(self):
+        return self.message

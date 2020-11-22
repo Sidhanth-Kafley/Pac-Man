@@ -3,42 +3,20 @@ import sqlite3
 from sqlite3 import Error
 
 
-class HighScores():
-
+class HighScores:
     def __init__(self):
         # initially connect to the database and create table
         # (if it hasn't already been created)
         self.connectDatabase()
 
-        try:
-            # create connection to database
-            connection = sqlite3.connect('HighScores.db')
-            # create cursor object
-            cursor = connection.cursor()
-
-            # get all data from the database
-            # cursor.execute("SELECT * FROM highScores")
-            # idCheck = cursor.fetchall()
-            #
-            # # if there is nothing in the database, then id is 1
-            # if idCheck is None:
-            #     idCount = 1
-            # # otherwise, increment id by 1
-            # else:
-            #     idCount = 0
-            #     for id in idCheck:
-            #         idCount = int(id[0])
-            #     idCount += 1
-            #
-            # # add info to tuple, then array
-            # self.scoresTuple = (idCount, self.usersInitial, self.newScore)
-            # self.scoresArray = []
-            # self.scoresArray.append(self.scoresTuple)
-            #
-            # connection.close()
-
-        except Error as error:
-            print('Cannot connect to database. The following error occurred: ', error)
+        # try:
+        #     # create connection to database
+        #     connection = sqlite3.connect('HighScores.db')
+        #     # create cursor object
+        #     cursor = connection.cursor()
+        #
+        # except Error as error:
+        #     print('Cannot connect to database. The following error occurred: ', error)
 
     def connectDatabase(self):
         try:
@@ -55,7 +33,6 @@ class HighScores():
 
             # commit databases
             connection.commit()
-
             connection.close()
 
         except Error as error:
@@ -104,7 +81,7 @@ class HighScores():
             cursor = connection.cursor()
 
             # sort database so that highest scores are at the top
-            cursor.execute("SELECT * FROM highScores ORDER BY scores DESC")
+            cursor.execute("SELECT id, userInitials, scores FROM highScores ORDER BY scores DESC, userInitials ASC")
             orderedData = cursor.fetchall()
             idCount = 1
 
@@ -122,7 +99,7 @@ class HighScores():
                 idCount += 1
                 # commit to database
                 connection.commit()
-                connection.close()
+            connection.close()
         except Error as error:
             print('Cannot connect to database. The following error occurred: ', error)
 
@@ -195,5 +172,27 @@ class HighScores():
 
             return top5HighScores
         
+        except Error as error:
+            print('Cannot connect to database. The following error occurred: ', error)
+
+    def determineTopScore(self, newScore):
+        try:
+            # create connection to database
+            connection = sqlite3.connect('HighScores.db')
+            cursor = connection.cursor()
+            cursor.execute("SELECT scores FROM highScores WHERE scores = (SELECT MAX(scores) FROM highScores)")
+            topScore = cursor.fetchone()
+
+            if self.newScore == int(topScore[0]):
+                # there is a tie
+                newHighScore = "You are tied for Top Score!"
+            elif self.newScore > int(topScore[0]):
+                newHighScore = "You have the new Top Score!"
+            else:
+                # no new high score
+                newHighScore = "You did not beat the top score"
+
+            return newHighScore
+
         except Error as error:
             print('Cannot connect to database. The following error occurred: ', error)
