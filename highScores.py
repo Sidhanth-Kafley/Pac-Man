@@ -9,15 +9,6 @@ class HighScores:
         # (if it hasn't already been created)
         self.connectDatabase()
 
-        # try:
-        #     # create connection to database
-        #     connection = sqlite3.connect('HighScores.db')
-        #     # create cursor object
-        #     cursor = connection.cursor()
-        #
-        # except Error as error:
-        #     print('Cannot connect to database. The following error occurred: ', error)
-
     def connectDatabase(self):
         try:
             # Start DB connection

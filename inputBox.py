@@ -1,5 +1,6 @@
 import pygame
 from highScores import HighScores
+import time
 
 pygame.init()
 # used for all the font written in input box
@@ -9,7 +10,7 @@ FONT_COLOR = pygame.Color('white')
 FONT_COLOR_ACTIVE = pygame.Color('blue')
 
 
-class InputBox():
+class InputBox:
     def __init__(self, xCoord, yCoord, width, height, score, text=''):
         self.xCoord = xCoord
         self.yCoord = yCoord
@@ -23,34 +24,14 @@ class InputBox():
         self.textSurface = FONT.render(text, True, FONT_COLOR)
         self.message = ''
 
-        self.surface = pygame.Surface((1, 1))
-        self.surface.set_alpha(0)
-
-        self.cursorColor = (255, 255, 255)
-        self.cursorVisible = True
-        self.cursorMSCounter = 0
-        self.cursorSwitchMS = 500
-        self.cursorPosition = len(self.text)
-        self.cursorSurface = pygame.Surface((int(FONT_SIZE / 20 + 1), FONT_SIZE))
-        self.clock = pygame.time.Clock()
+        # initialize variables for cursor
+        self.cursorColor = FONT_COLOR
+        self.cursor = pygame.Rect((self.xCoord, self.yCoord), (3, self.height))
 
     def update(self):
         # determine if size of input box is too small
         widthOfBox = max(200, self.textSurface.get_width()+10)
         self.rect.w = widthOfBox
-
-        # update the cursor
-        self.cursorMSCounter += self.clock.get_time()
-        if self.cursorMSCounter >= self.cursorSwitchMS:
-            self.cursorMSCounter %= self.cursorSwitchMS
-            self.cursorVisible = not self.cursorVisible
-
-        if self.cursorVisible:
-            cursorYPosition = FONT.size(self.text[:self.cursorPosition])
-            if self.cursorPosition > 0:
-                cursorYPosition -= self.cursorSurface.get_width()
-            self.surface.blit(self.cursorSurface, (150, 150))
-        self.clock.tick()
 
     def handleEvent(self, event):
         # the user has clicked on the input box
@@ -73,20 +54,31 @@ class InputBox():
             if self.active:
                 if event.key == pygame.K_RETURN:
                     newScore = HighScores()
+                    # add the user's score to the database
                     newScore.addScoreToDB(self.score, self.text)
+                    # determine if it is the top score
                     self.message = newScore.determineTopScore(self.score)
                     self.text = ''
                 # if the user hits the backspace key, then remove the last character
                 elif event.key == pygame.K_BACKSPACE:
-                    self.text = self.text[:-1]
+                    if len(self.text) != 0:
+                        characterRemoved = self.text[-1]
+                        self.text = self.text[:-1]
+                        width, height = FONT.size(characterRemoved)
+                        self.cursor.x -= width
                 else:
                     self.text += event.unicode
+                    width, height = FONT.size(event.unicode)
+                    self.cursor.x += width
                 self.textSurface = FONT.render(self.text, True, self.color)
 
     def draw(self, screen):
         # draw the input box on the screen
         screen.blit(self.textSurface, (self.rect.x, self.rect.y))
-        pygame.draw.rect(screen, FONT_COLOR, self.rect, 2)
+        pygame.draw.rect(screen, self.color, self.rect, 2)
+
+        if time.time() % 1 > 0.5:
+            pygame.draw.rect(screen, FONT_COLOR, self.cursor)
 
     def getText(self):
         return self.text
