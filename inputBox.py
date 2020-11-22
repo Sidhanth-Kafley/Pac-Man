@@ -41,8 +41,6 @@ class InputBox:
             else:
                 self.active = False
 
-            self.cursorVisible = True
-
             # need to show the input box is active by changing colors
             if self.active:
                 self.color = FONT_COLOR_ACTIVE
@@ -59,15 +57,20 @@ class InputBox:
                     # determine if it is the top score
                     self.message = newScore.determineTopScore(self.score)
                     self.text = ''
+
                 # if the user hits the backspace key, then remove the last character
                 elif event.key == pygame.K_BACKSPACE:
                     if len(self.text) != 0:
                         characterRemoved = self.text[-1]
                         self.text = self.text[:-1]
+                        # move cursor backwards
                         width, height = FONT.size(characterRemoved)
                         self.cursor.x -= width
+
+                # if the user presses a character on the keyboard, add to text
                 else:
                     self.text += event.unicode
+                    # move cursor forwards
                     width, height = FONT.size(event.unicode)
                     self.cursor.x += width
                 self.textSurface = FONT.render(self.text, True, self.color)
@@ -77,11 +80,14 @@ class InputBox:
         screen.blit(self.textSurface, (self.rect.x, self.rect.y))
         pygame.draw.rect(screen, self.color, self.rect, 2)
 
+        # draw the cursor on the input box on the screen (create blinking effect)
         if time.time() % 1 > 0.5:
             pygame.draw.rect(screen, FONT_COLOR, self.cursor)
 
+    # returns what the user has written in the text box so far
     def getText(self):
         return self.text
 
+    # returns whether the user has beaten the top score
     def getMessage(self):
         return self.message

@@ -364,7 +364,7 @@ def game():
             displayGameOver(pacMan, window)
         # display score
         window.blit(pacMan.renderScore(32), (10, 10))
-        pacMan.startingHealth = 0 # TODO
+
         # inefficient collision for testing, should be handled in PacMan movement code instead
         # for wall in level1.walls:
         #     wall.collision(pacMan)
