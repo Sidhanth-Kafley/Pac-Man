@@ -164,6 +164,7 @@ def loadImages(path):
 
 def credits():
     isRunning = True
+    click = False
     while isRunning:
         screen.fill((BACKGROUND_COLOR))
         drawText('Game made by', titleFont, (255, 255, 255), screen, 300, 250)
@@ -186,7 +187,6 @@ def credits():
 
         drawText('Main Menu', font, (255, 255, 255), screen, 370, 555)
 
-        click = False
         for event in pygame.event.get():
             if event.type == QUIT:
                 isRunning = False
@@ -426,7 +426,6 @@ def displayGameOver(pacMan, window):
 
         drawText('Play again', font, (255, 255, 255), screen, 360, 515)
 
-        click = False
         for event in pygame.event.get():
             if event.type == QUIT:
                 pygame.quit()
@@ -475,6 +474,7 @@ def leaderBoards():
 
         pygame.display.update()
         mainClock.tick(10)
+
 
 if __name__ == '__main__':
     main()

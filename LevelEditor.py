@@ -2,6 +2,7 @@ import os
 import pygame
 import mainScreen
 from Level import Level
+from PacMan import PacMan
 
 
 def mainEditor():
@@ -17,6 +18,10 @@ def mainEditor():
     # initiate background surface (NEED TO CHANGE THE SIZE TO MATCH THE PROPORTIONS OF THE PLAYABLE AREA)
     basicBox = pygame.Rect((50, 100), (700, 675))
 
+    placeableArea = pygame.Rect((200, 100), (550, 675))
+
+    otherSideBasicBox = pygame.Rect((200, 100), (700, 675))
+
     borderSprites = []
     ghosthouseSprites = []
     ppSprites = []
@@ -30,6 +35,18 @@ def mainEditor():
 
     wallSprites = []
     specialSprites = []
+
+
+    path1 = "PacManSprites"
+    for file in path1:
+        if "PacManLeft" in file:
+            pcmn = PacMan()
+    path2 = "PinkGhostSprites"
+
+    path3 = "RedGhostSprites"
+    path4 = "OrangeGhostSprites"
+
+    path5 = "BlueGhostSprites"
 
     # initialize the wall objects
     path = 'WallObjects'
@@ -105,12 +122,12 @@ def mainEditor():
                 print("hi")
                 # CALL THE GAME PLAYER WITH THIS LEVEL
 
-        if 700 + 250 > mousePosition[0] > 700 and 700 + 50 > mousePosition[1] > 700:
+        if 200 + 250 > mousePosition[0] > 200 and 30 + 50 > mousePosition[1] > 30:
             pygame.draw.rect(mainScreen.screen, (0, 190, 0), button4)
         else:
             pygame.draw.rect(mainScreen.screen, (0, 255, 0), button4)
 
-        if 700 + 250 > mousePosition[0] > 700 and 650 + 50 > mousePosition[1] > 650:
+        if 500 + 250 > mousePosition[0] > 500 and 30 + 50 > mousePosition[1] > 30:
             pygame.draw.rect(mainScreen.screen, (0, 190, 0), button5)
         else:
             pygame.draw.rect(mainScreen.screen, (0, 255, 0), button5)
@@ -157,11 +174,25 @@ def mainEditor():
                         specialSprites.append(new)
                         for wall in new:
                             spriteGroup.add(wall)
+
+                # FIGURE OUT HOW TO MAKE THE OBJECTS ROTATE AROUND A POINT
+                # elif event.button == 2:
+                #     for group in wallSprites:
+                #         for wall in group:
+                #             if wall.drag:
+
             elif event.type == pygame.MOUSEBUTTONUP:
                 if event.button == 1:
+                    checker1 = False
                     for group in wallSprites:
                         for wall in group:
-                            wall.drag = False
+                            if not checker1:
+                                wall.drag = False
+                                if not wall.rect.colliderect(placeableArea) and group in specialSprites:
+                                    wallSprites.remove(group)
+                                    for x in group:
+                                        spriteGroup.remove(x)
+                                    checker1 = True
             elif event.type == pygame.MOUSEMOTION:
                 for group in specialSprites:
                     for walls in group:
@@ -173,7 +204,10 @@ def mainEditor():
         # draw the background box on the screen
         window.blit(background, (0, 0))
 
-        pygame.draw.rect(background, (30, 30, 30), basicBox)
+        grayColor = (30, 30, 30)
+        pygame.draw.rect(background, grayColor, basicBox)
+        pygame.draw.rect(background, grayColor, otherSideBasicBox)
+        pygame.draw.rect(background, (0, 30, 30), placeableArea)
 
         for x in spriteGroup:
             x.rect.clamp_ip(basicBox)
@@ -194,7 +228,6 @@ def mainEditor():
 
         pygame.display.update()
 
-
-def openMenu():
-    print("hi")
-    # Open the menu and display options for save, discard, and return to main menu
+    # FIGURE OUT HOW TO MAKE THE WINDOW RESET AFTER EXITING
+    spriteGroup.empty()
+    pygame.display.update()
