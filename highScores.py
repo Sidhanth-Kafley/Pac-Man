@@ -20,7 +20,7 @@ class HighScores:
             cursor.execute('''SELECT count(name) FROM sqlite_master WHERE type='table' AND name='highScores' ''')
 
             # add the id, userInitials, and scores columns to the table
-            cursor.execute("CREATE TABLE IF NOT EXISTS highScores (id VARCHAR(64), userInitials VARCHAR(64), scores VARCHAR(64))")
+            cursor.execute("CREATE TABLE IF NOT EXISTS highScores (id INTEGER, userInitials VARCHAR(64), scores INTEGER)")
 
             # commit databases
             connection.commit()
@@ -53,7 +53,7 @@ class HighScores:
                 idCount += 1
 
             # add info to tuple, then array
-            self.scoresTuple = (idCount, self.usersInitial, self.newScore)
+            self.scoresTuple = (idCount, self.usersInitial, int(self.newScore))
             self.scoresArray = []
             self.scoresArray.append(self.scoresTuple)
 
@@ -72,7 +72,7 @@ class HighScores:
             cursor = connection.cursor()
 
             # sort database so that highest scores are at the top
-            cursor.execute("SELECT id, userInitials, scores FROM highScores ORDER BY scores DESC, userInitials ASC")
+            cursor.execute("SELECT id, userInitials, scores FROM highScores ORDER BY CAST(scores AS INTEGER) DESC, userInitials ASC")
             orderedData = cursor.fetchall()
             idCount = 1
 
@@ -171,7 +171,7 @@ class HighScores:
             # create connection to database
             connection = sqlite3.connect('HighScores.db')
             cursor = connection.cursor()
-            cursor.execute("SELECT scores FROM highScores WHERE scores = (SELECT MAX(scores) FROM highScores)")
+            cursor.execute("SELECT scores FROM highScores WHERE scores = (SELECT MAX(CAST(scores AS INTEGER)) FROM highScores)")
             topScore = cursor.fetchone()
 
             if self.newScore == int(topScore[0]):
