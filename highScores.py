@@ -171,13 +171,17 @@ class HighScores:
             # create connection to database
             connection = sqlite3.connect('HighScores.db')
             cursor = connection.cursor()
+            # find the max value in the scores column (this is the top score)
             cursor.execute("SELECT scores FROM highScores WHERE scores = (SELECT MAX(CAST(scores AS INTEGER)) FROM highScores)")
             topScore = cursor.fetchone()
 
-            if self.newScore == int(topScore[0]):
+            # determine if the user's score beats the top score
+            if topScore is None:
+                newHighScore = "You have the new Top Score!"
+            elif newScore == int(topScore[0]):
                 # there is a tie
                 newHighScore = "You are tied for Top Score!"
-            elif self.newScore > int(topScore[0]):
+            elif newScore > int(topScore[0]):
                 newHighScore = "You have the new Top Score!"
             else:
                 # no new high score

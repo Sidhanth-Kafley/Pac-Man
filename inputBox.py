@@ -23,6 +23,7 @@ class InputBox:
         self.rect = pygame.Rect(self.xCoord, self.yCoord, self.width, self.height)
         self.textSurface = FONT.render(text, True, FONT_COLOR)
         self.message = ''
+        self.appear = True
 
         # initialize variables for cursor
         self.cursorColor = FONT_COLOR
@@ -34,8 +35,12 @@ class InputBox:
         self.rect.w = widthOfBox
 
     def handleEvent(self, event):
+        # if the user has already entered their initials, input box is inactive
+        if not self.appear:
+            self.active = False
+            self.color = FONT_COLOR
         # the user has clicked on the input box
-        if event.type == pygame.MOUSEBUTTONDOWN:
+        elif event.type == pygame.MOUSEBUTTONDOWN:
             if self.rect.collidepoint(event.pos):
                 self.active = True
             else:
@@ -49,14 +54,15 @@ class InputBox:
 
         # if the user presses a key on the keyboard, then get the input
         if event.type == pygame.KEYDOWN:
-            if self.active:
+            if self.active and self.appear:
                 if event.key == pygame.K_RETURN:
                     newScore = HighScores()
-                    # add the user's score to the database
-                    newScore.addScoreToDB(self.score, self.text)
                     # determine if it is the top score
                     self.message = newScore.determineTopScore(self.score)
+                    # add the user's score to the database
+                    newScore.addScoreToDB(self.score, self.text)
                     self.text = ''
+                    self.appear = False
 
                 # if the user hits the backspace key, then remove the last character
                 elif event.key == pygame.K_BACKSPACE:
@@ -81,7 +87,7 @@ class InputBox:
         pygame.draw.rect(screen, self.color, self.rect, 2)
 
         # draw the cursor on the input box on the screen (create blinking effect)
-        if time.time() % 1 > 0.5:
+        if time.time() % 1 > 0.5 and self.appear:
             pygame.draw.rect(screen, FONT_COLOR, self.cursor)
 
     # returns what the user has written in the text box so far
