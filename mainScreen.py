@@ -486,13 +486,20 @@ def leaderBoards():
         drawText('Leaderboards', titleFont, (255, 255, 255), screen, 300, 50)
 
         # display the top 5 scores
-        scoreXCoord = 400
+        scoreXCoord = 350
         scoreYCoord = 200
 
+        # display headers for leaderboard
+        headers = 'Initials             Scores' #format(salary,'11.2f')
+        drawText(headers, font2, (255, 255, 255), screen, 325, scoreYCoord)
+        scoreYCoord += 75
+
+        # go through each score in the top high scores dictionary and display them
         for key in dictOfScores:
             initial = dictOfScores[key][1]
             userScore = dictOfScores[key][2]
-            highScoreDisplay = initial + '       ' + str(userScore)
+            highScoreDisplay = initial + '                      ' + str(userScore)
+            #print(format(userScore, '20.0f'))
             drawText(highScoreDisplay, font2, (255, 255, 255), screen, scoreXCoord, scoreYCoord)
             # need to make sure scores are spaced out
             scoreYCoord += 75
