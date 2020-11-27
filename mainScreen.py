@@ -594,7 +594,7 @@ def displayGameOver(pacMan, window):
 
         if button.collidepoint(mousePosition[0], mousePosition[1]):
             if click:
-                game()
+                game1()  # level 1
 
         if 340+250 > mousePosition[0] > 340 and 500+50 > mousePosition[1] > 500:
             pygame.draw.rect(screen, (0, 190, 0), button)
