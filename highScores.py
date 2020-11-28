@@ -3,21 +3,40 @@ import sqlite3
 from sqlite3 import Error
 
 
-class HighScores():
-
-    def __init__(self, newScore, usersInitial):
-        self.newScore = newScore
-        self.usersInitial = usersInitial
-
+class HighScores:
+    def __init__(self):
         # initially connect to the database and create table
         # (if it hasn't already been created)
         self.connectDatabase()
 
+    def connectDatabase(self):
         try:
-            # create connection to database
+            # Start DB connection
             connection = sqlite3.connect('HighScores.db')
             # create cursor object
             cursor = connection.cursor()
+
+            # create highScores table in the database
+            cursor.execute('''SELECT count(name) FROM sqlite_master WHERE type='table' AND name='highScores' ''')
+
+            # add the id, userInitials, and scores columns to the table
+            cursor.execute("CREATE TABLE IF NOT EXISTS highScores (id INTEGER, userInitials VARCHAR(64), scores INTEGER)")
+
+            # commit databases
+            connection.commit()
+            connection.close()
+
+        except Error as error:
+            print('Cannot connect to database. The following error occurred: ', error)
+
+    def addScoreToDB(self, newScore, usersInitial):
+        try:
+            # create connection to database
+            connection = sqlite3.connect('HighScores.db')
+            cursor = connection.cursor()
+
+            self.newScore = newScore
+            self.usersInitial = usersInitial
 
             # get all data from the database
             cursor.execute("SELECT * FROM highScores")
@@ -34,41 +53,9 @@ class HighScores():
                 idCount += 1
 
             # add info to tuple, then array
-            self.scoresTuple = (idCount, self.usersInitial, self.newScore)
+            self.scoresTuple = (idCount, self.usersInitial, int(self.newScore))
             self.scoresArray = []
             self.scoresArray.append(self.scoresTuple)
-
-            connection.close()
-
-        except Error as error:
-            print('Cannot connect to database. The following error occurred: ', error)
-
-    def connectDatabase(self):
-        try:
-            # Start DB connection
-            connection = sqlite3.connect('HighScores.db')
-            # create cursor object
-            cursor = connection.cursor()
-
-            # create highScores table in the database
-            cursor.execute('''SELECT count(name) FROM sqlite_master WHERE type='table' AND name='highScores' ''')
-
-            # add the id, userInitials, and scores columns to the table
-            cursor.execute("CREATE TABLE IF NOT EXISTS highScores (id VARCHAR(64), userInitials VARCHAR(64), scores VARCHAR(64))")
-
-            # commit databases
-            connection.commit()
-
-            connection.close()
-
-        except Error as error:
-            print('Cannot connect to database. The following error occurred: ', error)
-
-    def addScoreToDB(self):
-        try:
-            # create connection to database
-            connection = sqlite3.connect('HighScores.db')
-            cursor = connection.cursor()
 
             # add user's initials and score to the database
             cursor.executemany("INSERT INTO highScores (id, userInitials, scores) VALUES (?, ?, ?);", self.scoresArray)
@@ -85,7 +72,7 @@ class HighScores():
             cursor = connection.cursor()
 
             # sort database so that highest scores are at the top
-            cursor.execute("SELECT * FROM highScores ORDER BY scores DESC")
+            cursor.execute("SELECT id, userInitials, scores FROM highScores ORDER BY CAST(scores AS INTEGER) DESC, userInitials ASC")
             orderedData = cursor.fetchall()
             idCount = 1
 
@@ -103,7 +90,7 @@ class HighScores():
                 idCount += 1
                 # commit to database
                 connection.commit()
-                connection.close()
+            connection.close()
         except Error as error:
             print('Cannot connect to database. The following error occurred: ', error)
 
@@ -127,26 +114,20 @@ class HighScores():
                 top5HighScores["No Scores"] = 0
 
             elif sizeOfArray == 1:
-                # high score 1
                 highScore1 = scoresData[0]
                 # add to dictionary
                 top5HighScores["1"] = highScore1
 
             elif sizeOfArray == 2:
-                # high score 1
                 highScore1 = scoresData[0]
-                # high score 2
                 highScore2 = scoresData[1]
                 # add to dictionary
                 top5HighScores["1"] = highScore1
                 top5HighScores["2"] = highScore2
 
             elif sizeOfArray == 3:
-                # high score 1
                 highScore1 = scoresData[0]
-                # high score 2
                 highScore2 = scoresData[1]
-                # high score 3
                 highScore3 = scoresData[2]
 
                 # add to dictionary
@@ -155,13 +136,9 @@ class HighScores():
                 top5HighScores["3"] = highScore3
 
             elif sizeOfArray == 4:
-                # high score 1
                 highScore1 = scoresData[0]
-                # high score 2
                 highScore2 = scoresData[1]
-                # high score 3
                 highScore3 = scoresData[2]
-                # high score 4
                 highScore4 = scoresData[3]
 
                 # add to dictionary
@@ -171,15 +148,10 @@ class HighScores():
                 top5HighScores["4"] = highScore4
 
             else:
-                # high score 1
                 highScore1 = scoresData[0]
-                # high score 2
                 highScore2 = scoresData[1]
-                # high score 3
                 highScore3 = scoresData[2]
-                # high score 4
                 highScore4 = scoresData[3]
-                # high score 5
                 highScore5 = scoresData[4]
 
                 # add to dictionary
@@ -191,5 +163,31 @@ class HighScores():
 
             return top5HighScores
         
+        except Error as error:
+            print('Cannot connect to database. The following error occurred: ', error)
+
+    def determineTopScore(self, newScore):
+        try:
+            # create connection to database
+            connection = sqlite3.connect('HighScores.db')
+            cursor = connection.cursor()
+            # find the max value in the scores column (this is the top score)
+            cursor.execute("SELECT scores FROM highScores WHERE scores = (SELECT MAX(CAST(scores AS INTEGER)) FROM highScores)")
+            topScore = cursor.fetchone()
+
+            # determine if the user's score beats the top score
+            if topScore is None:
+                newHighScore = "You have the new Top Score!"
+            elif newScore == int(topScore[0]):
+                # there is a tie
+                newHighScore = "You are tied for Top Score!"
+            elif newScore > int(topScore[0]):
+                newHighScore = "You have the new Top Score!"
+            else:
+                # no new high score
+                newHighScore = "You did not beat the top score"
+
+            return newHighScore
+
         except Error as error:
             print('Cannot connect to database. The following error occurred: ', error)
