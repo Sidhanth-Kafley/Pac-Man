@@ -2,6 +2,7 @@ import pygame
 import pygame_gui
 import sys
 import os
+import LevelEditor
 from PacMan import PacMan
 from ghost import Ghost
 from pygame.locals import *
@@ -68,7 +69,7 @@ def mainMenu():
 
         if button3.collidepoint((mousePosition[0], mousePosition[1])):
             if click:
-                creativeMode()
+                LevelEditor.mainEditor()
 
         if button4.collidepoint((mousePosition[0], mousePosition[1])):
             if click:
@@ -165,6 +166,7 @@ def loadImages(path):
 
 def credits():
     isRunning = True
+    click = False
     while isRunning:
         screen.fill((BACKGROUND_COLOR))
         drawText('Game made by', titleFont, (255, 255, 255), screen, 300, 250)
@@ -187,7 +189,6 @@ def credits():
 
         drawText('Main Menu', font, (255, 255, 255), screen, 370, 555)
 
-        click = False
         for event in pygame.event.get():
             if event.type == QUIT:
                 isRunning = False
@@ -255,11 +256,14 @@ def game1():
     backgroundMusic = pygame.mixer.Sound("Music/PacManBeginning.wav")
     backgroundMusic.play(0)
 
+    powermode = False
+    count = 0
     while isRunning:
         # times per second this loop runs
 
         time_delta = clock.tick_busy_loop(60) / 1000.0
-
+        pygame.display.set_caption("fps: " + str(clock.get_fps()))
+        screen.fill(BACKGROUND_COLOR)
         # determine if a wall is colliding
         collidingWallTop = False
         collidingWallBottom = False
@@ -295,18 +299,18 @@ def game1():
             if event.type == pygame.QUIT:
                 isRunning = False
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LEFT and pacMan.checkMove("left", potentialCollidingWalls, level1):# collidingWallLeft:
+                if event.key == pygame.K_LEFT and pacMan.checkMove("left", level1, level1):# collidingWallLeft:
                     pacMan.velocity.y = 0
-                    pacMan.velocity.x = (-4)*pacMan.powerUp
-                elif event.key == pygame.K_RIGHT and pacMan.checkMove("right", potentialCollidingWalls, level1):# collidingWallRight:
+                    pacMan.velocity.x = (-1.5)*pacMan.powerUp
+                elif event.key == pygame.K_RIGHT and pacMan.checkMove("right", level1, level1):# collidingWallRight:
                     pacMan.velocity.y = 0
-                    pacMan.velocity.x = 4*pacMan.powerUp
-                elif event.key == pygame.K_UP and pacMan.checkMove("up", potentialCollidingWalls, level1):# collidingWallTop:
+                    pacMan.velocity.x = 1.5*pacMan.powerUp
+                elif event.key == pygame.K_UP and pacMan.checkMove("up", level1, level1):# collidingWallTop:
                     pacMan.velocity.x = 0
-                    pacMan.velocity.y = (-4)*pacMan.powerUp
-                elif event.key == pygame.K_DOWN and pacMan.checkMove("down", potentialCollidingWalls, level1):# collidingWallBottom:
+                    pacMan.velocity.y = (-1.5)*pacMan.powerUp
+                elif event.key == pygame.K_DOWN and pacMan.checkMove("down", level1, level1):# collidingWallBottom:
                     pacMan.velocity.x = 0
-                    pacMan.velocity.y = 4*pacMan.powerUp
+                    pacMan.velocity.y = 1.5*pacMan.powerUp
 
             manager.process_events(event)
         redColor = Color(255, 0, 0, a=100)
@@ -319,13 +323,13 @@ def game1():
                 pygame.draw.rect(background, purpleColor, level1.walls[wallIndex].rect)
 
         if collidingWallRight:
-            pacMan.velocity.x = min(0, max(pacMan.velocity.x, (-4) * pacMan.powerUp))
+            pacMan.velocity.x = min(0, max(pacMan.velocity.x, (-1.5) * pacMan.powerUp))
         if collidingWallLeft:
-            pacMan.velocity.x = max(0, min(pacMan.velocity.x, 4 * pacMan.powerUp))
+            pacMan.velocity.x = max(0, min(pacMan.velocity.x, 1.5 * pacMan.powerUp))
         if collidingWallTop:
-            pacMan.velocity.y = max(0, min(pacMan.velocity.y, 4 * pacMan.powerUp))
+            pacMan.velocity.y = max(0, min(pacMan.velocity.y, 1.5 * pacMan.powerUp))
         if collidingWallBottom:
-            pacMan.velocity.y = min(0, max(pacMan.velocity.y, (-4) * pacMan.powerUp))
+            pacMan.velocity.y = min(0, max(pacMan.velocity.y, (-1.5) * pacMan.powerUp))
 
         if pygame.sprite.spritecollide(pacMan, ghosts, False):
             if pacMan.powerUp == 1:
@@ -346,13 +350,26 @@ def game1():
             for x in pillGroup:
                 if pacMan.rect.colliderect(x.rect):
                     if pacMan.eatPill(x):
+                        powermode = True
                         for ghost in ghosts:
                             ghost.setPowerUpMode()
                     pillGroup.remove(x)
 
-        manager.update(time_delta)
+        # only run the powerup for 1000 loops
+        if powermode:
+            count += 1
+        if count == 600:
+            powermode = False
+            count = 0
+            pacMan.setPowerUp()
+            pacMan.velocity.x = pacMan.velocity.x / pacMan.powerUp
+            pacMan.velocity.y = pacMan.velocity.y / pacMan.powerUp
+            for ghost in ghosts:
+                ghost.setPowerUpMode()
+
+       # manager.update(time_delta)
         window.blit(background, (0, 0))
-        manager.draw_ui(window)
+       # manager.draw_ui(window)
 
         # display the health bar at the bottom
         if pacMan.startingHealth - 1 == 2:
@@ -386,7 +403,7 @@ def game1():
 
     pygame.mixer.music.stop()
     sys.exit(0)
-    #mainClock.tick(10)
+    # mainClock.tick(10)
 
 
 def game2():

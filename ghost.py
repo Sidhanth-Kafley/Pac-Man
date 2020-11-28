@@ -30,6 +30,7 @@ class Ghost(pygame.sprite.Sprite):
         self.direction = 'up'
         self.changeDirection = False
         self.moving = True
+        self.drag = False
 
         # set speed of the ghost
         self.velocity = pygame.math.Vector2()
@@ -50,6 +51,8 @@ class Ghost(pygame.sprite.Sprite):
         # power up ghost
         if self.powerUpMode:
             self.index = 4
+        elif not self.powerUpMode:
+            self.index = 1
         # ghost moving down
         elif self.moveX == 0 and self.moveY > 0:
             self.index = 0
@@ -97,7 +100,7 @@ class Ghost(pygame.sprite.Sprite):
 
     # pac-man is in power-up mode and can eat the ghosts
     def setPowerUpMode(self):
-        self.powerUpMode = True
+        self.powerUpMode = not self.powerUpMode
 
     # move ghosts in maze in the selected direction
     def moveGhosts(self):

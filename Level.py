@@ -1,10 +1,10 @@
 import pygame
 import os
 from pill import Pill
-
 from Wall import Wall
 
-class Level():
+
+class Level(pygame.sprite.Sprite):
     layout = [[]]
     walls = []
     pointPills = []
@@ -15,6 +15,7 @@ class Level():
     wallBlocks = []
     levelWidth = 0
     levelHeight = 0
+    pacmanAndGhost = []
 
     def __init__(self, layoutFilename, wallSize, originPosition):
         # initialize super class
@@ -80,6 +81,3 @@ class Level():
         self.layout[rowIndex].append(tempWall)
         self.wallBlocks.append(tempWall.rect)
 
-    def copy(self):
-        wallCopy = Level(self.layoutFilename, self.wallSize, self.originPosition)
-        return wallCopy
