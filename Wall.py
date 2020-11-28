@@ -8,7 +8,7 @@ class Wall(pygame.sprite.Sprite):
     colliding = False
     drag = False
 
-    def __init__(self, position, size, image):
+    def __init__(self, position, size, image, imagePath):
         # initialize super class
         super(Wall, self).__init__()
         self.position = position
@@ -21,6 +21,7 @@ class Wall(pygame.sprite.Sprite):
         self.distancex = None
         self.distancey = None
         self.collideRect = None
+        self.imagePath = imagePath
 
     def collision(self, other):
         if self.rect.colliderect(other.rect) and not self.colliding:
@@ -31,7 +32,7 @@ class Wall(pygame.sprite.Sprite):
             self.colliding = False
 
     def copy(self):
-        copy = Wall(self.position, self.size, self.image)
+        copy = Wall(self.position, self.size, self.image, self.imagePath)
         return copy
 
     def calculateDistance(self):

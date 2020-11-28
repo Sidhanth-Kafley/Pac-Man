@@ -76,8 +76,11 @@ class Level(pygame.sprite.Sprite):
 
     def appendWall(self, imageFilename, rowIndex, colIndex):
         image = pygame.image.load('WallSprites' + os.sep + imageFilename).convert_alpha()
-        tempWall = Wall(position=((colIndex * self.wallSize[0]) + self.originPosition[0], (rowIndex * self.wallSize[1]) + self.originPosition[1]), size=(self.wallSize[0], self.wallSize[1]), image=image)
+        tempWall = Wall(position=((colIndex * self.wallSize[0]) + self.originPosition[0], (rowIndex * self.wallSize[1]) + self.originPosition[1]), size=(self.wallSize[0], self.wallSize[1]), image=image, imagePath=imageFilename)
         self.walls.append(tempWall)
         self.layout[rowIndex].append(tempWall)
         self.wallBlocks.append(tempWall.rect)
+
+    def __del__(self):
+        return True
 
