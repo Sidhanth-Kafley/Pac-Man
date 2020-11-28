@@ -36,6 +36,7 @@ class PacMan(pygame.sprite.Sprite):
         # sets the current image (closed circle to start)
         self.image = self.images[1]
         self.loadDeathImages()
+        self.drag = False
 
     def update(self):
         if not self.death:

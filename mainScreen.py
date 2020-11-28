@@ -261,6 +261,7 @@ def game():
 
         time_delta = clock.tick_busy_loop(60) / 1000.0
         pygame.display.set_caption("fps: " + str(clock.get_fps()))
+        screen.fill(BACKGROUND_COLOR)
         # determine if a wall is colliding
         collidingWallTop = False
         collidingWallBottom = False

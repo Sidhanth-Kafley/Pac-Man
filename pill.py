@@ -13,6 +13,7 @@ class Pill(pygame.sprite.Sprite):
         self.position = position
         self.image = image
         self.rect = pygame.Rect(position, self.size)
+        self.drag = False
 
     def __del__(self):
         return True

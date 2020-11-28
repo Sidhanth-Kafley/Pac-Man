@@ -20,7 +20,7 @@ class Wall(pygame.sprite.Sprite):
         self.rect = pygame.Rect(position, size)
         self.distancex = None
         self.distancey = None
-        self.distance = None
+        self.collideRect = None
 
     def collision(self, other):
         if self.rect.colliderect(other.rect) and not self.colliding:
@@ -42,3 +42,6 @@ class Wall(pygame.sprite.Sprite):
         y2 = self.rect.centery
         self.distancex = x1 - x2
         self.distancey = y1 - y2
+
+    def setCollideRect(self):
+        self.collideRect = pygame.Rect(self.rect.center, (self.size[0] * 4, self.size[1] * 4))

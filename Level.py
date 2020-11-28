@@ -15,6 +15,7 @@ class Level(pygame.sprite.Sprite):
     wallBlocks = []
     levelWidth = 0
     levelHeight = 0
+    pacmanAndGhost = []
 
     def __init__(self, layoutFilename, wallSize, originPosition):
         # initialize super class
