@@ -6,8 +6,6 @@ import LevelEditor
 from PacMan import PacMan
 from ghost import Ghost
 from pygame.locals import *
-from pill import Pill
-from Wall import Wall
 from Level import Level
 from highScores import HighScores
 from inputBox import InputBox
@@ -203,7 +201,7 @@ def credits():
         mainClock.tick(10)
 
 
-def game1():
+def game(game="1"):
     # Initiate game and window
     pygame.init()
     window = pygame.display.set_mode((MAX_WIDTH, MAX_HEIGHT))
@@ -212,41 +210,61 @@ def game1():
     background.fill(BACKGROUND_COLOR)
     manager = pygame_gui.UIManager((MAX_WIDTH, MAX_HEIGHT))
 
-    # create pacman object
-    images = loadImages(path='PacManSprites')
-
-    pacMan = PacMan(position=(MAX_WIDTH/5, (MAX_HEIGHT/2)), size=(2*CELL_SIZE, 2*CELL_SIZE), images=images)
-
     # create level object
-    level1 = Level(layoutFilename='Levels/level1alt.txt', wallSize=(CELL_SIZE, CELL_SIZE), originPosition=(int(MAX_WIDTH/5), int(MAX_HEIGHT/12) - 2))
+    customLevel = False
+    if game == "1":
+        level = Level(layoutFilename='Levels/level1alt.txt', wallSize=(CELL_SIZE, CELL_SIZE), originPosition=(int(MAX_WIDTH/5), int(MAX_HEIGHT/12) - 2))
+    elif game == "2":
+        level = Level(layoutFilename='Levels/level2.txt', wallSize=(CELL_SIZE, CELL_SIZE),
+                      originPosition=(int(MAX_WIDTH / 5), int(MAX_HEIGHT / 12) - 2))
+    else:
+        # call level parser to create custom level object
+        level = LevelEditor.parseCustomLevel(game)
+        customLevel = True
 
-    pillGroup = pygame.sprite.Group(level1.pills)
+    pillGroup = pygame.sprite.Group(level.pills)
 
+    images = loadImages(path='PacManSprites')
     ghosts = []
-    # create blue ghost object
-    blueGhostImages = loadImages(path='BlueGhostSprites')
-    blueGhost = Ghost('blue', position=(500, 390), size=(2*CELL_SIZE, 2*CELL_SIZE), images=blueGhostImages)
-    ghosts.append(blueGhost)
 
-    # create orange ghost object
-    orangeGhostImages = loadImages(path='OrangeGhostSprites')
-    orangeGhost = Ghost('orange', position=(465, 390), size=(2*CELL_SIZE, 2*CELL_SIZE), images=orangeGhostImages)
-    ghosts.append(orangeGhost)
+    if not customLevel:
+        # create pacman object
+        pacMan = PacMan(position=(MAX_WIDTH / 5, (MAX_HEIGHT / 2)), size=(2 * CELL_SIZE, 2 * CELL_SIZE), images=images)
 
-    # create pink ghost object
-    pinkGhostImages = loadImages(path='PinkGhostSprites')
-    pinkGhost = Ghost('pink', position=(430, 390), size=(2*CELL_SIZE, 2*CELL_SIZE), images=pinkGhostImages)
-    ghosts.append(pinkGhost)
+        # create blue ghost object
+        blueGhostImages = loadImages(path='BlueGhostSprites')
+        blueGhost = Ghost('blue', position=(500, 390), size=(2*CELL_SIZE, 2*CELL_SIZE), images=blueGhostImages)
+        ghosts.append(blueGhost)
 
-    # create red ghost object
-    redGhostImages = loadImages(path='RedGhostSprites')
-    redGhost = Ghost('red', position=(465, 320), size=(2*CELL_SIZE, 2*CELL_SIZE), images=redGhostImages)
-    ghosts.append(redGhost)
+        # create orange ghost object
+        orangeGhostImages = loadImages(path='OrangeGhostSprites')
+        orangeGhost = Ghost('orange', position=(465, 390), size=(2*CELL_SIZE, 2*CELL_SIZE), images=orangeGhostImages)
+        ghosts.append(orangeGhost)
+
+        # create pink ghost object
+        pinkGhostImages = loadImages(path='PinkGhostSprites')
+        pinkGhost = Ghost('pink', position=(430, 390), size=(2*CELL_SIZE, 2*CELL_SIZE), images=pinkGhostImages)
+        ghosts.append(pinkGhost)
+
+        # create red ghost object
+        redGhostImages = loadImages(path='RedGhostSprites')
+        redGhost = Ghost('red', position=(465, 320), size=(2*CELL_SIZE, 2*CELL_SIZE), images=redGhostImages)
+        ghosts.append(redGhost)
+    else:
+        pacMan = level.pacmanAndGhost[0]
+        blueGhost = level.pacmanAndGhost[1]
+        redGhost = level.pacmanAndGhost[2]
+        pinkGhost = level.pacmanAndGhost[3]
+        orangeGhost = level.pacmanAndGhost[4]
+        ghosts.append(blueGhost)
+        ghosts.append(orangeGhost)
+        ghosts.append(pinkGhost)
+        ghosts.append(redGhost)
 
     # health bar at the top of the screen
     healthBar = pygame.transform.scale(images[2], (int(24), int(24)))
 
-    allSprites = pygame.sprite.Group(pacMan, blueGhost, orangeGhost, pinkGhost, redGhost, level1.walls)
+    allSprites = pygame.sprite.Group(pacMan, blueGhost, orangeGhost, pinkGhost, redGhost, level.walls)
 
     # clock used for framerate
     clock = pygame.time.Clock()
@@ -262,7 +280,7 @@ def game1():
         # times per second this loop runs
 
         time_delta = clock.tick_busy_loop(60) / 1000.0
-        pygame.display.set_caption("fps: " + str(clock.get_fps()))
+
         screen.fill(BACKGROUND_COLOR)
         # determine if a wall is colliding
         collidingWallTop = False
@@ -278,37 +296,37 @@ def game1():
         pacManCollisionRect.y = pacMan.rect.y
 
         # This list contains every wall that pacMan is colliding with, but may also contain some he doesn't.
-        potentialCollidingWalls = pacManCollisionRect.collidelistall(level1.walls)
+        potentialCollidingWalls = pacManCollisionRect.collidelistall(level.walls)
         greenColor = Color(0, 255, 0, a=100)
-        for wall in level1.walls:
+        for wall in level.walls:
             pygame.draw.rect(background, greenColor, wall.rect)
 
         for wallIndex in potentialCollidingWalls:
-            if pacMan.rect.colliderect(level1.walls[wallIndex]):
+            if pacMan.rect.colliderect(level.walls[wallIndex]):
                 if pacMan.velocity.x < 0:
-                    pacMan.rect.left = level1.walls[wallIndex].rect.right
+                    pacMan.rect.left = level.walls[wallIndex].rect.right
                 if pacMan.velocity.x > 0:
-                    pacMan.rect.right = level1.walls[wallIndex].rect.left
+                    pacMan.rect.right = level.walls[wallIndex].rect.left
                 if pacMan.velocity.y < 0:
-                    pacMan.rect.top = level1.walls[wallIndex].rect.bottom
+                    pacMan.rect.top = level.walls[wallIndex].rect.bottom
                 if pacMan.velocity.y > 0:
-                    pacMan.rect.bottom = level1.walls[wallIndex].rect.top
+                    pacMan.rect.bottom = level.walls[wallIndex].rect.top
 
         # handles events
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 isRunning = False
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LEFT and pacMan.checkMove("left", level1, level1):# collidingWallLeft:
+                if event.key == pygame.K_LEFT and pacMan.checkMove("left", level, level):# collidingWallLeft:
                     pacMan.velocity.y = 0
                     pacMan.velocity.x = (-1.5)*pacMan.powerUp
-                elif event.key == pygame.K_RIGHT and pacMan.checkMove("right", level1, level1):# collidingWallRight:
+                elif event.key == pygame.K_RIGHT and pacMan.checkMove("right", level, level):# collidingWallRight:
                     pacMan.velocity.y = 0
                     pacMan.velocity.x = 1.5*pacMan.powerUp
-                elif event.key == pygame.K_UP and pacMan.checkMove("up", level1, level1):# collidingWallTop:
+                elif event.key == pygame.K_UP and pacMan.checkMove("up", level, level):# collidingWallTop:
                     pacMan.velocity.x = 0
                     pacMan.velocity.y = (-1.5)*pacMan.powerUp
-                elif event.key == pygame.K_DOWN and pacMan.checkMove("down", level1, level1):# collidingWallBottom:
+                elif event.key == pygame.K_DOWN and pacMan.checkMove("down", level, level):# collidingWallBottom:
                     pacMan.velocity.x = 0
                     pacMan.velocity.y = 1.5*pacMan.powerUp
 
@@ -320,7 +338,7 @@ def game1():
         # pygame.draw.rect(background, whiteColor, pacManCollisionRect)
         if potentialCollidingWalls != -1 and potentialCollidingWalls != []:
             for wallIndex in potentialCollidingWalls:
-                pygame.draw.rect(background, purpleColor, level1.walls[wallIndex].rect)
+                pygame.draw.rect(background, purpleColor, level.walls[wallIndex].rect)
 
         if collidingWallRight:
             pacMan.velocity.x = min(0, max(pacMan.velocity.x, (-1.5) * pacMan.powerUp))
@@ -406,195 +424,6 @@ def game1():
     # mainClock.tick(10)
 
 
-def game2():
-    # Initiate game and window
-    pygame.init()
-    window = pygame.display.set_mode((MAX_WIDTH, MAX_HEIGHT))
-    windowRect = window.get_rect()
-    background = pygame.Surface((MAX_WIDTH, MAX_HEIGHT))
-    background.fill(BACKGROUND_COLOR)
-    manager = pygame_gui.UIManager((MAX_WIDTH, MAX_HEIGHT))
-
-    # create pacman object
-    images = loadImages(path='PacManSprites')
-
-    pacMan = PacMan(position=(MAX_WIDTH / 5, (MAX_HEIGHT / 2)), size=(2 * CELL_SIZE, 2 * CELL_SIZE), images=images)
-
-    # create level object
-    level2 = Level(layoutFilename='Levels/level2.txt', wallSize=(CELL_SIZE, CELL_SIZE),
-                   originPosition=(int(MAX_WIDTH / 5), int(MAX_HEIGHT / 12) - 2))
-
-    pillGroup = pygame.sprite.Group(level2.pills)
-
-    ghosts = []
-    # create blue ghost object
-    blueGhostImages = loadImages(path='BlueGhostSprites')
-    blueGhost = Ghost('blue', position=(500, 390), size=(2 * CELL_SIZE, 2 * CELL_SIZE), images=blueGhostImages)
-    ghosts.append(blueGhost)
-
-    # create orange ghost object
-    orangeGhostImages = loadImages(path='OrangeGhostSprites')
-    orangeGhost = Ghost('orange', position=(465, 390), size=(2 * CELL_SIZE, 2 * CELL_SIZE), images=orangeGhostImages)
-    ghosts.append(orangeGhost)
-
-    # create pink ghost object
-    pinkGhostImages = loadImages(path='PinkGhostSprites')
-    pinkGhost = Ghost('pink', position=(430, 390), size=(2 * CELL_SIZE, 2 * CELL_SIZE), images=pinkGhostImages)
-    ghosts.append(pinkGhost)
-
-    # create red ghost object
-    redGhostImages = loadImages(path='RedGhostSprites')
-    redGhost = Ghost('red', position=(465, 320), size=(2 * CELL_SIZE, 2 * CELL_SIZE), images=redGhostImages)
-    ghosts.append(redGhost)
-
-    # health bar at the top of the screen
-    healthBar = pygame.transform.scale(images[2], (int(24), int(24)))
-
-    allSprites = pygame.sprite.Group(pacMan, blueGhost, orangeGhost, pinkGhost, redGhost, level2.walls)
-
-    # clock used for framerate
-    clock = pygame.time.Clock()
-    isRunning = True
-
-    # start main background music
-    backgroundMusic = pygame.mixer.Sound("Music/PacManBeginning.wav")
-    backgroundMusic.play(0)
-
-    while isRunning:
-        # times per second this loop runs
-
-        time_delta = clock.tick_busy_loop(60) / 1000.0
-
-        # determine if a wall is colliding
-        collidingWallTop = False
-        collidingWallBottom = False
-        collidingWallLeft = False
-        collidingWallRight = False
-
-        # Create a new rect to detect collisions with pacMan that is slightly larger than pacMan's rect,
-        # because the collidelistall function tests if rects overlap, not if they touch.
-        pacManCollisionRect = Rect((pacMan.rect.top - 1, pacMan.rect.left - 1),
-                                   (pacMan.rect.width + 2, pacMan.rect.height + 4))
-
-        pacManCollisionRect.x = pacMan.rect.x
-        pacManCollisionRect.y = pacMan.rect.y
-
-        # This list contains every wall that pacMan is colliding with, but may also contain some he doesn't.
-        potentialCollidingWalls = pacManCollisionRect.collidelistall(level2.walls)
-        greenColor = Color(0, 255, 0, a=100)
-        for wall in level2.walls:
-            pygame.draw.rect(background, greenColor, wall.rect)
-
-        for wallIndex in potentialCollidingWalls:
-            if pacMan.rect.colliderect(level2.walls[wallIndex]):
-                if pacMan.velocity.x < 0:
-                    pacMan.rect.left = level2.walls[wallIndex].rect.right
-                if pacMan.velocity.x > 0:
-                    pacMan.rect.right = level2.walls[wallIndex].rect.left
-                if pacMan.velocity.y < 0:
-                    pacMan.rect.top = level2.walls[wallIndex].rect.bottom
-                if pacMan.velocity.y > 0:
-                    pacMan.rect.bottom = level2.walls[wallIndex].rect.top
-
-        # handles events
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                isRunning = False
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LEFT and pacMan.checkMove("left", potentialCollidingWalls,
-                                                                   level2):  # collidingWallLeft:
-                    pacMan.velocity.y = 0
-                    pacMan.velocity.x = (-4) * pacMan.powerUp
-                elif event.key == pygame.K_RIGHT and pacMan.checkMove("right", potentialCollidingWalls,
-                                                                      level2):  # collidingWallRight:
-                    pacMan.velocity.y = 0
-                    pacMan.velocity.x = 4 * pacMan.powerUp
-                elif event.key == pygame.K_UP and pacMan.checkMove("up", potentialCollidingWalls,
-                                                                   level2):  # collidingWallTop:
-                    pacMan.velocity.x = 0
-                    pacMan.velocity.y = (-4) * pacMan.powerUp
-                elif event.key == pygame.K_DOWN and pacMan.checkMove("down", potentialCollidingWalls,
-                                                                     level2):  # collidingWallBottom:
-                    pacMan.velocity.x = 0
-                    pacMan.velocity.y = 4 * pacMan.powerUp
-
-            manager.process_events(event)
-        redColor = Color(255, 0, 0, a=100)
-        purpleColor = Color(255, 0, 255, a=100)
-        whiteColor = Color(255, 255, 255, a=100)
-        pygame.draw.rect(background, redColor, pacMan.rect)
-        # pygame.draw.rect(background, whiteColor, pacManCollisionRect)
-        if potentialCollidingWalls != -1 and potentialCollidingWalls != []:
-            for wallIndex in potentialCollidingWalls:
-                pygame.draw.rect(background, purpleColor, level2.walls[wallIndex].rect)
-
-        if collidingWallRight:
-            pacMan.velocity.x = min(0, max(pacMan.velocity.x, (-4) * pacMan.powerUp))
-        if collidingWallLeft:
-            pacMan.velocity.x = max(0, min(pacMan.velocity.x, 4 * pacMan.powerUp))
-        if collidingWallTop:
-            pacMan.velocity.y = max(0, min(pacMan.velocity.y, 4 * pacMan.powerUp))
-        if collidingWallBottom:
-            pacMan.velocity.y = min(0, max(pacMan.velocity.y, (-4) * pacMan.powerUp))
-
-        if pygame.sprite.spritecollide(pacMan, ghosts, False):
-            if pacMan.powerUp == 1:
-                pacManDeath = pygame.mixer.Sound("Music/PacManDeath.wav")
-                pacManDeath.play(0)
-                pacMan.deathAnimation()
-            else:
-                pacManEatGhost = pygame.mixer.Sound("Music/PacManEatGhost.wav")
-                pacManEatGhost.play(0)
-                for x in ghosts:
-                    if pacMan.rect.colliderect(x.rect):
-                        pacMan.eatGhost(x)
-
-        if pygame.sprite.spritecollide(pacMan, pillGroup, False):
-            # pygame.sprite.
-            pacManChomp = pygame.mixer.Sound("Music/PacManChomp.wav")
-            pacManChomp.play(0)
-            for x in pillGroup:
-                if pacMan.rect.colliderect(x.rect):
-                    if pacMan.eatPill(x):
-                        for ghost in ghosts:
-                            ghost.setPowerUpMode()
-                    pillGroup.remove(x)
-
-        manager.update(time_delta)
-        window.blit(background, (0, 0))
-        manager.draw_ui(window)
-
-        # display the health bar at the bottom
-        if pacMan.startingHealth - 1 == 2:
-            window.blit(healthBar, (20, MAX_HEIGHT - 50))
-            window.blit(healthBar, (50, MAX_HEIGHT - 50))
-        elif pacMan.startingHealth - 1 == 1:
-            window.blit(healthBar, (20, MAX_HEIGHT - 50))
-        elif pacMan.startingHealth == 0:
-            displayGameOver(pacMan, window)
-        # display score
-        window.blit(pacMan.renderScore(32), (10, 10))
-
-        # ensures that the pacMan and ghosts won't go off screen
-        pacMan.rect.clamp_ip(windowRect)
-        blueGhost.rect.clamp_ip(windowRect)
-        orangeGhost.rect.clamp_ip(windowRect)
-        pinkGhost.rect.clamp_ip(windowRect)
-        redGhost.rect.clamp_ip(windowRect)
-
-        pillGroup.draw(window)
-        # update the sprite
-        allSprites.update()
-        # update the image on screen
-        allSprites.draw(window)
-
-        pygame.display.update()
-
-    pygame.mixer.music.stop()
-    sys.exit(0)
-    # mainClock.tick(10)
-
-
 def displayGameOver(pacMan, window):
     # display button to play again
     click = False
@@ -611,7 +440,7 @@ def displayGameOver(pacMan, window):
 
         if button.collidepoint(mousePosition[0], mousePosition[1]):
             if click:
-                game1()  # level 1
+                game(game="1")  # level 1
 
         if 340+250 > mousePosition[0] > 340 and 500+50 > mousePosition[1] > 500:
             pygame.draw.rect(screen, (0, 190, 0), button)
@@ -754,11 +583,11 @@ def levels():
         # if button is clicked call corresponding functions
         if button5.collidepoint((mousePosition[0], mousePosition[1])):
             if click:
-                game1()
+                game(game="1")
 
         if button6.collidepoint((mousePosition[0], mousePosition[1])):
             if click:
-                game2()
+                game(game="2")
 
         if button7.collidepoint((mousePosition[0], mousePosition[1])):
             if click:

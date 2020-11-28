@@ -2,15 +2,18 @@ import os
 import pygame
 import mainScreen
 import math
+import sqlite3
+from sqlite3 import Error
 from Level import Level
 from PacMan import PacMan
 from pill import Pill
 from ghost import Ghost
+from inputBox import InputBox
+from Wall import Wall
 
 
 def mainEditor():
     tf = True
-    # clock = pygame.time.Clock()
 
     window = pygame.display.set_mode((mainScreen.MAX_WIDTH, mainScreen.MAX_HEIGHT))
     background = pygame.Surface((mainScreen.MAX_WIDTH, mainScreen.MAX_HEIGHT))
@@ -91,6 +94,7 @@ def mainEditor():
                 if wall not in spriteGroup:
                     borderSprites.append(wall)
                     spriteGroup.add(wall)
+            del brdr
         elif "ghosthouse" in file and "Down" not in file:
             gh = Level(layoutFilename=path + os.sep + file, wallSize=(16, 16), originPosition=(50, 100))
             for wall in gh.walls:
@@ -98,6 +102,7 @@ def mainEditor():
                     ghosthouseSprites.append(wall)
                     spriteGroup.add(wall)
             wallSprites.append(ghosthouseSprites)
+            del gh
         elif "rectangle" in file and "Vertical" not in file:
             rect = Level(layoutFilename=path + os.sep + file, wallSize=(16, 16), originPosition=(50, 200))
             for wall in rect.walls:
@@ -105,6 +110,7 @@ def mainEditor():
                     rectangleSprites.append(wall)
                     spriteGroup.add(wall)
             wallSprites.append(rectangleSprites)
+            del rect
         elif "square" in file:
             sqr = Level(layoutFilename=path + os.sep + file, wallSize=(16, 16), originPosition=(50, 300))
             for wall in sqr.walls:
@@ -112,6 +118,7 @@ def mainEditor():
                     squareSprites.append(wall)
                     spriteGroup.add(wall)
             wallSprites.append(squareSprites)
+            del sqr
         elif "straightBar" in file and file != "straightBarSmall" and "Vertical" not in file:
             strt = Level(layoutFilename=path + os.sep + file, wallSize=(16, 16), originPosition=(50, 400))
             for wall in strt.walls:
@@ -119,6 +126,7 @@ def mainEditor():
                     straightbarSprites.append(wall)
                     spriteGroup.add(wall)
             wallSprites.append(straightbarSprites)
+            del strt
         elif "straightBarSmall" in file and "Vertical" not in file:
             small = Level(layoutFilename=path + os.sep + file, wallSize=(16, 16), originPosition=(50, 500))
             for wall in small.walls:
@@ -126,6 +134,7 @@ def mainEditor():
                     straightbarsmallSprites.append(wall)
                     spriteGroup.add(wall)
             wallSprites.append(straightbarsmallSprites)
+            del small
         elif "T" in file and "Down" not in file:
             t = Level(layoutFilename=path + os.sep + file, wallSize=(16, 16), originPosition=(50, 600))
             for wall in t.walls:
@@ -133,6 +142,7 @@ def mainEditor():
                     tSprites.append(wall)
                     spriteGroup.add(wall)
             wallSprites.append(tSprites)
+            del t
 
     click = False
     while tf:
@@ -280,108 +290,43 @@ def mainEditor():
         pillSpriteGroup.draw(window)
 
         # Buttons
-        button4 = pygame.Rect(50, 30, 250, 50)
-        button5 = pygame.Rect(350, 30, 250, 50)
-        button6 = pygame.Rect(650, 30, 250, 50)
+        buttonplace4x = 200
+        buttonplace6x = 500
+        button4 = pygame.Rect(buttonplace4x, 30, 250, 50)
+        button6 = pygame.Rect(buttonplace6x, 30, 250, 50)
         mousePosition = pygame.mouse.get_pos()
 
         if button4.collidepoint(mousePosition[0], mousePosition[1]):
             if click:
                 tf = False
-        if button5.collidepoint(mousePosition[0], mousePosition[1]):
-            if click:
-                playLevel(borderSprites, specialSprites, specialpillSprites, ghostsAndPacman)
-                # CALL THE GAME PLAYER WITH THIS LEVEL
         if button6.collidepoint(mousePosition[0], mousePosition[1]):
             if click:
-                saveLevel(borderSprites, specialSprites, specialpillSprites, ghostsAndPacman)
-                # SAVE THE LEVEL (TO DATABASE ?)
+                saveLevel(borderSprites, specialSprites, specialpillSprites, pcmn, blueGhost, redGhost,
+                          pinkGhost, orangeGhost)
+                tf = False
 
-        if 50 + 250 > mousePosition[0] > 50 and 30 + 50 > mousePosition[1] > 30:
+        if buttonplace4x + 250 > mousePosition[0] > buttonplace4x and 30 + 50 > mousePosition[1] > 30:
             pygame.draw.rect(mainScreen.screen, (0, 190, 0), button4)
         else:
             pygame.draw.rect(mainScreen.screen, (0, 255, 0), button4)
 
-        if 350 + 250 > mousePosition[0] > 350 and 30 + 50 > mousePosition[1] > 30:
-            pygame.draw.rect(mainScreen.screen, (0, 190, 0), button5)
-        else:
-            pygame.draw.rect(mainScreen.screen, (0, 255, 0), button5)
-
-        if 650 + 250 > mousePosition[0] > 650 and 30 + 50 > mousePosition[1] > 30:
+        if buttonplace6x + 250 > mousePosition[0] > buttonplace6x and 30 + 50 > mousePosition[1] > 30:
             pygame.draw.rect(mainScreen.screen, (0, 190, 0), button6)
         else:
             pygame.draw.rect(mainScreen.screen, (0, 255, 0), button6)
 
-        mainScreen.drawText('Play Level', mainScreen.font, (255, 255, 255), mainScreen.screen, 375, 45)
-        mainScreen.drawText('Main menu', mainScreen.font, (255, 255, 255), mainScreen.screen, 75, 45)
-        mainScreen.drawText('Save Level', mainScreen.font, (255, 255, 255), mainScreen.screen, 675, 45)
+        mainScreen.drawText('Main menu', mainScreen.font, (255, 255, 255), mainScreen.screen, buttonplace4x + 25, 45)
+        mainScreen.drawText('Save Level', mainScreen.font, (255, 255, 255), mainScreen.screen, buttonplace6x + 25, 45)
         click = False
 
         pygame.display.update()
 
+    background.fill(mainScreen.BACKGROUND_COLOR)
     # FIGURE OUT HOW TO MAKE THE WINDOW RESET AFTER EXITING
-
-    spriteGroup.empty()
-    wallSprites.clear()
-    pygame.display.update()
-    pygame.init()
 
 
 def rotate(group):
     # this function is used to rotate the the wall objects around the center
-
-    # path = 'WallObjects'
-    # for file in os.listdir(path):
-    #     if "border" in file:
-    #         brdr = Level(layoutFilename=path + os.sep + file, wallSize=(16, 16), originPosition=(200, 100))
-    #         for wall in brdr.walls:
-    #             if wall not in spriteGroup:
-    #                 borderSprites.append(wall)
-    #                 spriteGroup.add(wall)
-    #     elif "ghosthouse" in file and "Down" not in file:
-    #         gh = Level(layoutFilename=path + os.sep + file, wallSize=(16, 16), originPosition=(50, 100))
-    #         for wall in gh.walls:
-    #             if wall not in spriteGroup:
-    #                 ghosthouseSprites.append(wall)
-    #                 spriteGroup.add(wall)
-    #         wallSprites.append(ghosthouseSprites)
-    #     elif "rectangle" in file and "Vertical" not in file:
-    #         rect = Level(layoutFilename=path + os.sep + file, wallSize=(16, 16), originPosition=(50, 200))
-    #         for wall in rect.walls:
-    #             if wall not in spriteGroup:
-    #                 rectangleSprites.append(wall)
-    #                 spriteGroup.add(wall)
-    #         wallSprites.append(rectangleSprites)
-    #     elif "square" in file:
-    #         sqr = Level(layoutFilename=path + os.sep + file, wallSize=(16, 16), originPosition=(50, 300))
-    #         for wall in sqr.walls:
-    #             if wall not in spriteGroup:
-    #                 squareSprites.append(wall)
-    #                 spriteGroup.add(wall)
-    #         wallSprites.append(squareSprites)
-    #     elif "straightBar" in file and file != "straightBarSmall" and "Vertical" not in file:
-    #         strt = Level(layoutFilename=path + os.sep + file, wallSize=(16, 16), originPosition=(50, 400))
-    #         for wall in strt.walls:
-    #             if wall not in spriteGroup:
-    #                 straightbarSprites.append(wall)
-    #                 spriteGroup.add(wall)
-    #         wallSprites.append(straightbarSprites)
-    #     elif "straightBarSmall" in file and "Vertical" not in file:
-    #         small = Level(layoutFilename=path + os.sep + file, wallSize=(16, 16), originPosition=(50, 500))
-    #         for wall in small.walls:
-    #             if wall not in spriteGroup:
-    #                 straightbarsmallSprites.append(wall)
-    #                 spriteGroup.add(wall)
-    #         wallSprites.append(straightbarsmallSprites)
-    #     elif "T" in file and "Down" not in file:
-    #         t = Level(layoutFilename=path + os.sep + file, wallSize=(16, 16), originPosition=(50, 600))
-    #         for wall in t.walls:
-    #             if wall not in spriteGroup:
-    #                 tSprites.append(wall)
-    #                 spriteGroup.add(wall)
-    #         wallSprites.append(tSprites)
-
-
     mouse = pygame.mouse.get_pos()
     totalpointx = 0
     totalpointy = 0
@@ -418,11 +363,11 @@ def collisionDetection(rect, othersprites):
     return False
 
 
-def saveLevel(borderSprites, specialSprites, specialpillSprites, ghostsAndPacman):
+def saveLevel(borderSprites, specialSprites, specialpillSprites, pacman, blue, red, pink, orange):
     path = 'Levels'
     file = 'blank'
     level = Level(layoutFilename=path + os.sep + file, wallSize=(mainScreen.CELL_SIZE, mainScreen.CELL_SIZE),
-                  originPosition=(int(mainScreen.MAX_WIDTH/5), int(mainScreen.MAX_HEIGHT/12) - 2))
+                  originPosition=(int(mainScreen.MAX_WIDTH / 5), int(mainScreen.MAX_HEIGHT / 12) - 2))
 
     for wall in borderSprites:
         level.walls.append(wall)
@@ -431,9 +376,224 @@ def saveLevel(borderSprites, specialSprites, specialpillSprites, ghostsAndPacman
             level.walls.append(wall)
     for pill in specialpillSprites:
         level.pills.append(pill)
-    for obj in ghostsAndPacman:
-        level.pacmanAndGhost.append(obj)
+    # level.pacmanAndGhost = [0, 0, 0, 0, 0]
+    level.pacmanAndGhost.append(pacman)
+    level.pacmanAndGhost.append(blue)
+    level.pacmanAndGhost.append(red)
+    level.pacmanAndGhost.append(pink)
+    level.pacmanAndGhost.append(orange)
+
+    message = chooseName()
+    connectDatabase()
+
+    try:
+        # create connection to database
+        connection = sqlite3.connect('HighScores.db')
+        cursor = connection.cursor()
+
+        for x in level.walls:
+            wallTuple = (message, x.imagePath, x.rect.centerx, x.rect.centery)
+            wallArray = [wallTuple]
+            cursor.executemany("INSERT INTO savedWalls (id, image, xpos, ypos) VALUES (?, ?, ?, ? );", wallArray)
+            connection.commit()
+        for x in level.pills:
+            if x.powerPill:
+                pillTuple = (message, 1, "PowerUpPointPill.png", x.rect.centerx, x.rect.centery)
+                pillArray = [pillTuple]
+            else:
+                pillTuple = (message, 0, "PointPill.png", x.rect.centerx, x.rect.centery)
+                pillArray = [pillTuple]
+            cursor.executemany("INSERT INTO savedPoints (id, powerPill, image, xpos, ypos) VALUES (?, ?, ?, ?, ?);",
+                               pillArray)
+            connection.commit()
+        i = 0
+        while i < len(level.pacmanAndGhost):
+            typeCharacter = ''
+            if i == 0:
+                typeCharacter = 'Pacman'
+            elif i == 1:
+                typeCharacter = 'BlueGhost'
+            elif i == 2:
+                typeCharacter = 'RedGhost'
+            elif i == 3:
+                typeCharacter = 'PinkGhost'
+            elif i == 4:
+                typeCharacter = 'OrangeGhost'
+
+            Tuple = (message, typeCharacter, level.pacmanAndGhost[i].rect.centerx, level.pacmanAndGhost[i].rect.centery)
+            Array = [Tuple]
+            cursor.executemany("INSERT INTO savedCharacters (id, characterType, xpos, ypos) VALUES (?, ?, ?, ?);",
+                               Array)
+            connection.commit()
+            i += 1
+        connection.close()
+
+    except Error as error:
+        print('Cannot connect to database. The following error occurred: ', error)
 
 
-def playLevel(borderSprites, specialSprites, specialpillSprites, ghostsAndPacman):
-    saveLevel(borderSprites, specialSprites, specialpillSprites, ghostsAndPacman)
+def chooseName():
+    click = False
+    isRunning = True
+    nameInputBox = InputBox(365, 150, 140, 32, "Save Level")
+
+    while isRunning:
+        mainScreen.screen.fill(mainScreen.BACKGROUND_COLOR)
+        mainScreen.drawText('Please enter a name for your level', mainScreen.font, (255, 255, 255), mainScreen.screen,
+                            150, 80)
+        mousePosition = pygame.mouse.get_pos()
+        button = pygame.Rect(365, 225, 200, 50)
+
+        if button.collidepoint(mousePosition[0], mousePosition[1]):
+            if click:
+                isRunning = False
+                message = nameInputBox.text
+                if message != '':
+                    return message
+
+        if 365 + 200 > mousePosition[0] > 365 and 225 + 50 > mousePosition[1] > 225:
+            pygame.draw.rect(mainScreen.screen, (0, 190, 0), button)
+        else:
+            pygame.draw.rect(mainScreen.screen, (0, 255, 0), button)
+
+        mainScreen.drawText('Save', mainScreen.font, (255, 255, 255), mainScreen.screen, 425, 240)
+
+        click = False
+        for event in pygame.event.get():
+            if event.type == mainScreen.QUIT:
+                pygame.quit()
+                mainScreen.sys.exit()
+            if event.type == mainScreen.KEYDOWN:
+                if event.key == mainScreen.K_ESCAPE:
+                    isRunning = False
+            if event.type == mainScreen.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    click = True
+
+            nameInputBox.handleEvent(event)
+
+        nameInputBox.update()
+        nameInputBox.draw(mainScreen.screen)
+        mainScreen.drawText(nameInputBox.getMessage(), mainScreen.font2, (255, 255, 255), mainScreen.screen, 300, 20)
+
+        pygame.display.update()
+        mainScreen.mainClock.tick(10)
+
+
+def connectDatabase():
+    try:
+        # Start DB connection
+        connection = sqlite3.connect('HighScores.db')
+        # create cursor object
+        cursor = connection.cursor()
+
+        # create levels table in the database
+        cursor.execute('''SELECT count(name) FROM sqlite_master WHERE type='table' AND name='savedWalls' ''')
+
+        # add the wall and position to the table
+        cursor.execute(
+            "CREATE TABLE IF NOT EXISTS savedWalls (id VARCHAR[64], image VARCHAR[64], xpos INTEGER, ypos INTEGER)")
+
+        # create points table in the database
+        cursor.execute('''SELECT count(name) FROM sqlite_master WHERE type='table' AND name='savedPoints' ''')
+
+        # add the points and position to the table
+        cursor.execute(
+            "CREATE TABLE IF NOT EXISTS savedPoints (id VARCHAR[64], powerpill INTEGER, image VARCHAR[64], xpos INTEGER, ypos INTEGER)")
+
+        # create character sprites table in the database
+        cursor.execute('''SELECT count(name) FROM sqlite_master WHERE type='table' AND name='savedCharacters' ''')
+
+        # add the character sprites and position to the table
+        cursor.execute(
+            "CREATE TABLE IF NOT EXISTS savedCharacters (id VARCHAR[64], characterType VARCHAR[64], xpos INTEGER, ypos INTEGER)")
+
+        # commit databases
+        connection.commit()
+        connection.close()
+
+    except Error as error:
+        print('Cannot connect to database. The following error occurred: ', error)
+
+
+def parseCustomLevel(message):
+    path = 'Levels'
+    file = 'blank'
+    level = Level(layoutFilename=path + os.sep + file, wallSize=(mainScreen.CELL_SIZE, mainScreen.CELL_SIZE),
+                  originPosition=(int(mainScreen.MAX_WIDTH / 5), int(mainScreen.MAX_HEIGHT / 12) - 2))
+    try:
+        connection = sqlite3.connect('HighScores.db')
+        cursor = connection.cursor()
+
+        cursor.execute(
+            "SELECT image, xpos, ypos FROM savedWalls WHERE id LIKE '" + message + "'")
+        wallData = cursor.fetchall()
+
+        cursor.execute(
+            "SELECT powerpill, image, xpos, ypos FROM savedPoints WHERE id LIKE '" + message + "'")
+        pointData = cursor.fetchall()
+
+        cursor.execute(
+            "SELECT characterType, xpos, ypos FROM savedCharacters WHERE id LIKE '" + message + "'")
+        characterData = cursor.fetchall()
+
+        connection.close()
+
+        level.walls = []
+        for data in wallData:
+            img = data[0]
+            xpos = data[1]
+            ypos = data[2]
+            image = pygame.image.load('WallSprites' + os.sep + img).convert_alpha()
+            level.walls.append(Wall((xpos, ypos), (level.wallSize[0], level.wallSize[1]), image, img))
+
+        level.pills = []
+        for data in pointData:
+            pp = data[0]
+            image = data[1]
+            xpos = data[2]
+            ypos = data[3]
+            if pp == 0:
+                power = False
+            else:
+                power = True
+            pillImage = pygame.image.load(image).convert_alpha()
+            pillImage = pygame.transform.scale(pillImage, (int(Level.wallSize[0]), int(Level.wallSize[1])))
+            level.pills.append(Pill(power, pillImage, (xpos, ypos)))
+
+        pacman = None
+        blueGhost = None
+        redGhost = None
+        pinkGhost = None
+        orangeGhost = None
+        for data in characterData:
+            charType = data[0]
+            xpos = data[1]
+            ypos = data[2]
+            if 'Pacman' in charType:
+                images = mainScreen.loadImages(path='PacManSprites')
+                pacman = PacMan(position=(xpos, ypos), size=(2 * mainScreen.CELL_SIZE, 2 * mainScreen.CELL_SIZE),
+                                images=images)
+            elif 'BlueGhost' in charType:
+                images = mainScreen.loadImages(path='BlueGhostSprites')
+                blueGhost = Ghost('blue', position=(xpos, ypos),
+                                  size=(2 * mainScreen.CELL_SIZE, 2 * mainScreen.CELL_SIZE), images=images)
+            elif 'RedGhost' in charType:
+                images = mainScreen.loadImages(path='RedGhostSprites')
+                redGhost = Ghost('red', position=(xpos, ypos),
+                                 size=(2 * mainScreen.CELL_SIZE, 2 * mainScreen.CELL_SIZE), images=images)
+            elif 'PinkGhost' in charType:
+                images = mainScreen.loadImages(path='PinkGhostSprites')
+                pinkGhost = Ghost('pink', position=(xpos, ypos),
+                                  size=(2 * mainScreen.CELL_SIZE, 2 * mainScreen.CELL_SIZE), images=images)
+            elif 'OrangeGhost' in charType:
+                images = mainScreen.loadImages(path='OrangeGhostSprites')
+                orangeGhost = Ghost('orange', position=(xpos, ypos),
+                                    size=(2 * mainScreen.CELL_SIZE, 2 * mainScreen.CELL_SIZE),
+                                    images=images)
+
+        level.pacmanAndGhost = [pacman, blueGhost, redGhost, pinkGhost, orangeGhost]
+
+    except Error as error:
+        print('Cannot connect to database. The following error occurred: ', error)
+    return level
