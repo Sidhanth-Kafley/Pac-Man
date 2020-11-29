@@ -558,7 +558,7 @@ def parseCustomLevel(message):
             else:
                 power = True
             pillImage = pygame.image.load(image).convert_alpha()
-            pillImage = pygame.transform.scale(pillImage, (int(Level.wallSize[0]), int(Level.wallSize[1])))
+            pillImage = pygame.transform.scale(pillImage, (16, 16))
             level.pills.append(Pill(power, pillImage, (xpos, ypos)))
 
         pacman = None
@@ -597,3 +597,24 @@ def parseCustomLevel(message):
     except Error as error:
         print('Cannot connect to database. The following error occurred: ', error)
     return level
+
+
+def getSavedLevels():
+    levelArray = []
+    try:
+        connection = sqlite3.connect('HighScores.db')
+        cursor = connection.cursor()
+        cursor.execute(
+            "SELECT DISTINCT id FROM savedWalls")
+        allLevels = cursor.fetchall()
+
+        connection.close()
+
+        index = 0
+        while index < len(allLevels):
+            levelArray.append(allLevels[index][0])
+            index += 1
+
+    except Error as error:
+        print('Cannot connect to database. The following error occurred: ', error)
+    return levelArray
