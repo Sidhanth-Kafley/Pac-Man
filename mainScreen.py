@@ -26,7 +26,11 @@ titleFont = pygame.font.Font('8-BIT WONDER.TTF', 30)
 
 pygame.display.set_caption('Pac Man')
 screen = pygame.display.set_mode((MAX_WIDTH, MAX_HEIGHT), 0, 32)
-
+window = pygame.display.set_mode((MAX_WIDTH, MAX_HEIGHT))
+windowRect = window.get_rect()
+background = pygame.Surface((MAX_WIDTH, MAX_HEIGHT))
+background.fill(BACKGROUND_COLOR)
+manager = pygame_gui.UIManager((MAX_WIDTH, MAX_HEIGHT))
 
 # function to draw text onto the screen
 def drawText(text, font, color, surface, x, y):
@@ -203,11 +207,6 @@ def credits():
 def game(game="1"):
     # Initiate game and window
     pygame.init()
-    window = pygame.display.set_mode((MAX_WIDTH, MAX_HEIGHT))
-    windowRect = window.get_rect()
-    background = pygame.Surface((MAX_WIDTH, MAX_HEIGHT))
-    background.fill(BACKGROUND_COLOR)
-    manager = pygame_gui.UIManager((MAX_WIDTH, MAX_HEIGHT))
 
     # create level object
     customLevel = False
@@ -389,7 +388,7 @@ def game(game="1"):
 
         # manager.update(time_delta)
         window.blit(background, (0, 0))
-        # manager.draw_ui(window)
+        manager.draw_ui(window)
 
         # display the health bar at the bottom
         if pacMan.startingHealth - 1 == 2:
@@ -641,8 +640,7 @@ def levels():
                 sys.exit()
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
-                    pygame.quit()
-                    sys.exit()
+                    main()
             if event.type == MOUSEBUTTONDOWN:
                 if event.button == 1:
                     click = True
@@ -660,12 +658,14 @@ def renderCustomLevels():
         drawText('Select Level', titleFont, (255, 255, 255), screen, 300, 50)
         mousePosition = pygame.mouse.get_pos()
 
-        index = 0
+        index = 1
         ycount = 0
+        xcount = 0
         for level in levelArray:
-            if index > 4:
+            if index % 5 == 0:
                 ycount += 1
-            xpos = int(MAX_HEIGHT / 5.5) + (200 * index)
+                xcount = 0
+            xpos = int(MAX_HEIGHT / 5.5) + (200 * xcount)
             ypos = int(MAX_WIDTH / 5.5) + (200 * ycount)
             button = pygame.Rect(xpos, ypos, 150, 150)
 
@@ -681,6 +681,7 @@ def renderCustomLevels():
 
             drawText(level, font, (255, 255, 255), screen, xpos + 10, ypos + 25)
             index += 1
+            xcount += 1
 
         for event in pygame.event.get():
             if event.type == QUIT:
@@ -688,8 +689,7 @@ def renderCustomLevels():
                 sys.exit()
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
-                    pygame.quit()
-                    sys.exit()
+                    levels()
             if event.type == MOUSEBUTTONDOWN:
                 if event.button == 1:
                     click = True
