@@ -73,6 +73,7 @@ class Level(pygame.sprite.Sprite):
                 elif rows[i][j] == "&":
                     self.pills.append(Pill(True, powerPillImage, ((j * self.wallSize[1]) + self.originPosition[0] + 5, (i * self.wallSize[0]) + self.originPosition[1])))
             self.layout.append([])
+            print(rows[i])
 
     def appendWall(self, imageFilename, rowIndex, colIndex):
         image = pygame.image.load('WallSprites' + os.sep + imageFilename).convert_alpha()
@@ -81,6 +82,7 @@ class Level(pygame.sprite.Sprite):
         self.layout[rowIndex].append(tempWall)
         self.wallBlocks.append(tempWall.rect)
 
-    def __del__(self):
+    def __delete__(self, instance):
+        del self.walls
         return True
 

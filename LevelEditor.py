@@ -15,14 +15,15 @@ from Wall import Wall
 def mainEditor():
     tf = True
 
-    window = pygame.display.set_mode((mainScreen.MAX_WIDTH, mainScreen.MAX_HEIGHT))
-    background = pygame.Surface((mainScreen.MAX_WIDTH, mainScreen.MAX_HEIGHT))
-    background.fill(mainScreen.BACKGROUND_COLOR)
+    # screen = pygame.display.set_mode((mainScreen.MAX_WIDTH, mainScreen.MAX_HEIGHT), 0, 32)
+    mainScreen.screen.fill(mainScreen.BACKGROUND_COLOR)
+    window = mainScreen.screen
+    background = mainScreen.screen
 
     # initiate background surface
-    basicBox = pygame.Rect((50, 100), (700, 675))
-    placeableArea = pygame.Rect((200, 100), (550, 675))
-    otherSideBasicBox = pygame.Rect((200, 100), (700, 675))
+    basicBox = pygame.Rect((int(mainScreen.MAX_WIDTH / 5)-150, int(mainScreen.MAX_HEIGHT / 12) - 2), (700, 675))
+    placeableArea = pygame.Rect((int(mainScreen.MAX_WIDTH / 5), int(mainScreen.MAX_HEIGHT / 12) - 2), (550, 675))
+    otherSideBasicBox = pygame.Rect((int(mainScreen.MAX_WIDTH / 5), int(mainScreen.MAX_HEIGHT / 12) - 2), (700, 675))
 
     # left hand side objects
     borderSprites = []
@@ -89,7 +90,8 @@ def mainEditor():
     path = 'WallObjects'
     for file in os.listdir(path):
         if "border" in file:
-            brdr = Level(layoutFilename=path + os.sep + file, wallSize=(16, 16), originPosition=(200, 100))
+            brdr = Level(layoutFilename=path + os.sep + file, wallSize=(16, 16),
+                         originPosition=(int(mainScreen.MAX_WIDTH / 5), int(mainScreen.MAX_HEIGHT / 12) - 2))
             for wall in brdr.walls:
                 if wall not in spriteGroup:
                     borderSprites.append(wall)
@@ -146,9 +148,11 @@ def mainEditor():
 
     click = False
     while tf:
-
-        # time_delta = clock.tick_busy_loop(60) / 1000.0
         # handles events
+        mainScreen.screen.fill(mainScreen.BACKGROUND_COLOR)
+        window.fill(mainScreen.BACKGROUND_COLOR)
+        background.fill(mainScreen.BACKGROUND_COLOR)
+
         for event in pygame.event.get():
             if event.type == mainScreen.QUIT:
                 pygame.quit()
@@ -260,7 +264,7 @@ def mainEditor():
                         x.rect.center = event.pos
 
         # draw the background box on the screen
-        window.blit(background, (0, 0))
+        # window.blit(background, (0, 0))
 
         grayColor = (30, 30, 30)
         pygame.draw.rect(background, grayColor, basicBox)
@@ -292,8 +296,9 @@ def mainEditor():
         # Buttons
         buttonplace4x = 200
         buttonplace6x = 500
-        button4 = pygame.Rect(buttonplace4x, 30, 250, 50)
-        button6 = pygame.Rect(buttonplace6x, 30, 250, 50)
+        buttonplacey = 10
+        button4 = pygame.Rect(buttonplace4x, buttonplacey, 250, 50)
+        button6 = pygame.Rect(buttonplace6x, buttonplacey, 250, 50)
         mousePosition = pygame.mouse.get_pos()
 
         if button4.collidepoint(mousePosition[0], mousePosition[1]):
@@ -305,23 +310,23 @@ def mainEditor():
                           pinkGhost, orangeGhost)
                 tf = False
 
-        if buttonplace4x + 250 > mousePosition[0] > buttonplace4x and 30 + 50 > mousePosition[1] > 30:
+        if buttonplace4x + 250 > mousePosition[0] > buttonplace4x and buttonplacey + 50 > mousePosition[1] > buttonplacey:
             pygame.draw.rect(mainScreen.screen, (0, 190, 0), button4)
         else:
             pygame.draw.rect(mainScreen.screen, (0, 255, 0), button4)
 
-        if buttonplace6x + 250 > mousePosition[0] > buttonplace6x and 30 + 50 > mousePosition[1] > 30:
+        if buttonplace6x + 250 > mousePosition[0] > buttonplace6x and buttonplacey + 50 > mousePosition[1] > buttonplacey:
             pygame.draw.rect(mainScreen.screen, (0, 190, 0), button6)
         else:
             pygame.draw.rect(mainScreen.screen, (0, 255, 0), button6)
 
-        mainScreen.drawText('Main menu', mainScreen.font, (255, 255, 255), mainScreen.screen, buttonplace4x + 25, 45)
-        mainScreen.drawText('Save Level', mainScreen.font, (255, 255, 255), mainScreen.screen, buttonplace6x + 25, 45)
+        mainScreen.drawText('Main menu', mainScreen.font, (255, 255, 255), mainScreen.screen, buttonplace4x + 25,
+                            buttonplacey + 15)
+        mainScreen.drawText('Save Level', mainScreen.font, (255, 255, 255), mainScreen.screen, buttonplace6x + 25,
+                            buttonplacey + 15)
         click = False
-
         pygame.display.update()
 
-    background.fill(mainScreen.BACKGROUND_COLOR)
     # FIGURE OUT HOW TO MAKE THE WINDOW RESET AFTER EXITING
 
 
@@ -376,7 +381,6 @@ def saveLevel(borderSprites, specialSprites, specialpillSprites, pacman, blue, r
             level.walls.append(wall)
     for pill in specialpillSprites:
         level.pills.append(pill)
-    # level.pacmanAndGhost = [0, 0, 0, 0, 0]
     level.pacmanAndGhost.append(pacman)
     level.pacmanAndGhost.append(blue)
     level.pacmanAndGhost.append(red)
@@ -391,19 +395,25 @@ def saveLevel(borderSprites, specialSprites, specialpillSprites, pacman, blue, r
         connection = sqlite3.connect('HighScores.db')
         cursor = connection.cursor()
 
+        # get the number of items in the database for the index
+        query = """SELECT count(distinct id) from savedWalls"""
+        cursor.execute(query)
+        indexQuery = cursor.fetchall()
+        index = indexQuery[0][0] + 1
+
         for x in level.walls:
-            wallTuple = (message, x.imagePath, x.rect.centerx, x.rect.centery)
+            wallTuple = (index, message, x.imagePath, x.rect.centerx, x.rect.centery)
             wallArray = [wallTuple]
-            cursor.executemany("INSERT INTO savedWalls (id, image, xpos, ypos) VALUES (?, ?, ?, ? );", wallArray)
+            cursor.executemany("INSERT INTO savedWalls (idx, id, image, xpos, ypos) VALUES (?, ?, ?, ?, ? );", wallArray)
             connection.commit()
         for x in level.pills:
             if x.powerPill:
-                pillTuple = (message, 1, "PowerUpPointPill.png", x.rect.centerx, x.rect.centery)
+                pillTuple = (index, message, 1, "PowerUpPointPill.png", x.rect.centerx, x.rect.centery)
                 pillArray = [pillTuple]
             else:
-                pillTuple = (message, 0, "PointPill.png", x.rect.centerx, x.rect.centery)
+                pillTuple = (index, message, 0, "PointPill.png", x.rect.centerx, x.rect.centery)
                 pillArray = [pillTuple]
-            cursor.executemany("INSERT INTO savedPoints (id, powerPill, image, xpos, ypos) VALUES (?, ?, ?, ?, ?);",
+            cursor.executemany("INSERT INTO savedPoints (idx, id, powerPill, image, xpos, ypos) VALUES (?, ?, ?, ?, ?, ?);",
                                pillArray)
             connection.commit()
         i = 0
@@ -420,9 +430,9 @@ def saveLevel(borderSprites, specialSprites, specialpillSprites, pacman, blue, r
             elif i == 4:
                 typeCharacter = 'OrangeGhost'
 
-            Tuple = (message, typeCharacter, level.pacmanAndGhost[i].rect.centerx, level.pacmanAndGhost[i].rect.centery)
+            Tuple = (index, message, typeCharacter, level.pacmanAndGhost[i].rect.centerx, level.pacmanAndGhost[i].rect.centery)
             Array = [Tuple]
-            cursor.executemany("INSERT INTO savedCharacters (id, characterType, xpos, ypos) VALUES (?, ?, ?, ?);",
+            cursor.executemany("INSERT INTO savedCharacters (idx, id, characterType, xpos, ypos) VALUES (?, ?, ?, ?, ?);",
                                Array)
             connection.commit()
             i += 1
@@ -492,21 +502,21 @@ def connectDatabase():
 
         # add the wall and position to the table
         cursor.execute(
-            "CREATE TABLE IF NOT EXISTS savedWalls (id VARCHAR[64], image VARCHAR[64], xpos INTEGER, ypos INTEGER)")
+            "CREATE TABLE IF NOT EXISTS savedWalls (idx INTEGER, id VARCHAR[64], image VARCHAR[64], xpos INTEGER, ypos INTEGER)")
 
         # create points table in the database
         cursor.execute('''SELECT count(name) FROM sqlite_master WHERE type='table' AND name='savedPoints' ''')
 
         # add the points and position to the table
         cursor.execute(
-            "CREATE TABLE IF NOT EXISTS savedPoints (id VARCHAR[64], powerpill INTEGER, image VARCHAR[64], xpos INTEGER, ypos INTEGER)")
+            "CREATE TABLE IF NOT EXISTS savedPoints (idx INTEGER, id VARCHAR[64], powerpill INTEGER, image VARCHAR[64], xpos INTEGER, ypos INTEGER)")
 
         # create character sprites table in the database
         cursor.execute('''SELECT count(name) FROM sqlite_master WHERE type='table' AND name='savedCharacters' ''')
 
         # add the character sprites and position to the table
         cursor.execute(
-            "CREATE TABLE IF NOT EXISTS savedCharacters (id VARCHAR[64], characterType VARCHAR[64], xpos INTEGER, ypos INTEGER)")
+            "CREATE TABLE IF NOT EXISTS savedCharacters (idx INTEGER, id VARCHAR[64], characterType VARCHAR[64], xpos INTEGER, ypos INTEGER)")
 
         # commit databases
         connection.commit()
@@ -605,7 +615,7 @@ def getSavedLevels():
         connection = sqlite3.connect('HighScores.db')
         cursor = connection.cursor()
         cursor.execute(
-            "SELECT DISTINCT id FROM savedWalls")
+            "SELECT DISTINCT id FROM savedWalls ORDER BY idx DESC LIMIT 0,12")
         allLevels = cursor.fetchall()
 
         connection.close()

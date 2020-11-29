@@ -1,5 +1,4 @@
 import pygame
-import math
 
 
 class Wall(pygame.sprite.Sprite):
@@ -46,3 +45,6 @@ class Wall(pygame.sprite.Sprite):
 
     def setCollideRect(self):
         self.collideRect = pygame.Rect(self.rect.center, (self.size[0] * 4, self.size[1] * 4))
+
+    def __del__(self):
+        return True
