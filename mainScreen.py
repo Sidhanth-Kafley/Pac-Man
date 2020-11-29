@@ -32,7 +32,6 @@ background = pygame.Surface((MAX_WIDTH, MAX_HEIGHT))
 background.fill(BACKGROUND_COLOR)
 manager = pygame_gui.UIManager((MAX_WIDTH, MAX_HEIGHT))
 
-
 # function to draw text onto the screen
 def drawText(text, font, color, surface, x, y):
     textObj = font.render(text, 1, color)

@@ -1,10 +1,10 @@
 import pygame
 import os
 from pill import Pill
-
 from Wall import Wall
 
-class Level():
+
+class Level(pygame.sprite.Sprite):
     layout = [[]]
     walls = []
     pointPills = []
@@ -15,6 +15,7 @@ class Level():
     wallBlocks = []
     levelWidth = 0
     levelHeight = 0
+    pacmanAndGhost = []
 
     def __init__(self, layoutFilename, wallSize, originPosition):
         # initialize super class
@@ -74,14 +75,16 @@ class Level():
                 elif rows[i][j] == "&":
                     self.pills.append(Pill(True, powerPillImage, ((j * self.wallSize[1]) + self.originPosition[0] + 5, (i * self.wallSize[0]) + self.originPosition[1])))
             self.layout.append([])
+            print(rows[i])
 
     def appendWall(self, imageFilename, rowIndex, colIndex):
         image = pygame.image.load('WallSprites' + os.sep + imageFilename).convert_alpha()
-        tempWall = Wall(position=((colIndex * self.wallSize[0]) + self.originPosition[0], (rowIndex * self.wallSize[1]) + self.originPosition[1]), size=(self.wallSize[0], self.wallSize[1]), image=image)
+        tempWall = Wall(position=((colIndex * self.wallSize[0]) + self.originPosition[0], (rowIndex * self.wallSize[1]) + self.originPosition[1]), size=(self.wallSize[0], self.wallSize[1]), image=image, imagePath=imageFilename)
         self.walls.append(tempWall)
         self.layout[rowIndex].append(tempWall)
         self.wallBlocks.append(tempWall.rect)
 
-    def copy(self):
-        wallCopy = Level(self.layoutFilename, self.wallSize, self.originPosition)
-        return wallCopy
+    def __delete__(self, instance):
+        del self.walls
+        return True
+
