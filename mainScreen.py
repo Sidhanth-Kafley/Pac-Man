@@ -16,14 +16,13 @@ MAX_HEIGHT = 800
 MAX_WIDTH = 1000
 BACKGROUND_COLOR = pygame.Color('black')
 CELL_SIZE = 16
-SPRITE_SIZE = 2*CELL_SIZE
+SPRITE_SIZE = 2 * CELL_SIZE
 
 click = False
 mainClock = pygame.time.Clock()
 font = pygame.font.Font('8-BIT WONDER.TTF', 20)
 font2 = pygame.font.Font(None, 40)
 titleFont = pygame.font.Font('8-BIT WONDER.TTF', 30)
-
 
 pygame.display.set_caption('Pac Man')
 screen = pygame.display.set_mode((MAX_WIDTH, MAX_HEIGHT), 0, 32)
@@ -45,11 +44,11 @@ def mainMenu():
     running = True
     global click
     click = False
-    
+
     while running:
 
         screen.fill(BACKGROUND_COLOR)
-        drawText('main menu', titleFont, (255, 255, 255), screen, MAX_HEIGHT/2.5, MAX_WIDTH/4)
+        drawText('main menu', titleFont, (255, 255, 255), screen, MAX_HEIGHT / 2.5, MAX_WIDTH / 4)
 
         # get mousePosition for collision detection
         mousePosition = pygame.mouse.get_pos()
@@ -180,7 +179,7 @@ def credits():
             if click:
                 isRunning = False
 
-        if 350+250 > mousePosition[0] > 350 and 540+50 > mousePosition[1] > 540:
+        if 350 + 250 > mousePosition[0] > 350 and 540 + 50 > mousePosition[1] > 540:
             pygame.draw.rect(screen, (0, 190, 0), button)
         else:
             pygame.draw.rect(screen, (0, 255, 0), button)
@@ -213,7 +212,8 @@ def game(game="1"):
     # create level object
     customLevel = False
     if game == "1":
-        level = Level(layoutFilename='Levels/level1alt.txt', wallSize=(CELL_SIZE, CELL_SIZE), originPosition=(int(MAX_WIDTH/5), int(MAX_HEIGHT/12) - 2))
+        level = Level(layoutFilename='Levels/level1alt.txt', wallSize=(CELL_SIZE, CELL_SIZE),
+                      originPosition=(int(MAX_WIDTH / 5), int(MAX_HEIGHT / 12) - 2))
     elif game == "2":
         level = Level(layoutFilename='Levels/level2.txt', wallSize=(CELL_SIZE, CELL_SIZE),
                       originPosition=(int(MAX_WIDTH / 5), int(MAX_HEIGHT / 12) - 2))
@@ -233,22 +233,23 @@ def game(game="1"):
 
         # create blue ghost object
         blueGhostImages = loadImages(path='BlueGhostSprites')
-        blueGhost = Ghost('blue', position=(500, 390), size=(2*CELL_SIZE, 2*CELL_SIZE), images=blueGhostImages)
+        blueGhost = Ghost('blue', position=(500, 390), size=(2 * CELL_SIZE, 2 * CELL_SIZE), images=blueGhostImages)
         ghosts.append(blueGhost)
 
         # create orange ghost object
         orangeGhostImages = loadImages(path='OrangeGhostSprites')
-        orangeGhost = Ghost('orange', position=(465, 390), size=(2*CELL_SIZE, 2*CELL_SIZE), images=orangeGhostImages)
+        orangeGhost = Ghost('orange', position=(465, 390), size=(2 * CELL_SIZE, 2 * CELL_SIZE),
+                            images=orangeGhostImages)
         ghosts.append(orangeGhost)
 
         # create pink ghost object
         pinkGhostImages = loadImages(path='PinkGhostSprites')
-        pinkGhost = Ghost('pink', position=(430, 390), size=(2*CELL_SIZE, 2*CELL_SIZE), images=pinkGhostImages)
+        pinkGhost = Ghost('pink', position=(430, 390), size=(2 * CELL_SIZE, 2 * CELL_SIZE), images=pinkGhostImages)
         ghosts.append(pinkGhost)
 
         # create red ghost object
         redGhostImages = loadImages(path='RedGhostSprites')
-        redGhost = Ghost('red', position=(465, 320), size=(2*CELL_SIZE, 2*CELL_SIZE), images=redGhostImages)
+        redGhost = Ghost('red', position=(465, 320), size=(2 * CELL_SIZE, 2 * CELL_SIZE), images=redGhostImages)
         ghosts.append(redGhost)
     else:
         pacMan = level.pacmanAndGhost[0]
@@ -290,7 +291,8 @@ def game(game="1"):
 
         # Create a new rect to detect collisions with pacMan that is slightly larger than pacMan's rect,
         # because the collidelistall function tests if rects overlap, not if they touch.
-        pacManCollisionRect = Rect((pacMan.rect.top - 1, pacMan.rect.left - 1), (pacMan.rect.width + 2, pacMan.rect.height + 4))
+        pacManCollisionRect = Rect((pacMan.rect.top - 1, pacMan.rect.left - 1),
+                                   (pacMan.rect.width + 2, pacMan.rect.height + 4))
 
         pacManCollisionRect.x = pacMan.rect.x
         pacManCollisionRect.y = pacMan.rect.y
@@ -317,18 +319,18 @@ def game(game="1"):
             if event.type == pygame.QUIT:
                 isRunning = False
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LEFT and pacMan.checkMove("left", level, level):# collidingWallLeft:
+                if event.key == pygame.K_LEFT and pacMan.checkMove("left", level, level):  # collidingWallLeft:
                     pacMan.velocity.y = 0
-                    pacMan.velocity.x = (-1.5)*pacMan.powerUp
-                elif event.key == pygame.K_RIGHT and pacMan.checkMove("right", level, level):# collidingWallRight:
+                    pacMan.velocity.x = (-1.5) * pacMan.powerUp
+                elif event.key == pygame.K_RIGHT and pacMan.checkMove("right", level, level):  # collidingWallRight:
                     pacMan.velocity.y = 0
-                    pacMan.velocity.x = 1.5*pacMan.powerUp
-                elif event.key == pygame.K_UP and pacMan.checkMove("up", level, level):# collidingWallTop:
+                    pacMan.velocity.x = 1.5 * pacMan.powerUp
+                elif event.key == pygame.K_UP and pacMan.checkMove("up", level, level):  # collidingWallTop:
                     pacMan.velocity.x = 0
-                    pacMan.velocity.y = (-1.5)*pacMan.powerUp
-                elif event.key == pygame.K_DOWN and pacMan.checkMove("down", level, level):# collidingWallBottom:
+                    pacMan.velocity.y = (-1.5) * pacMan.powerUp
+                elif event.key == pygame.K_DOWN and pacMan.checkMove("down", level, level):  # collidingWallBottom:
                     pacMan.velocity.x = 0
-                    pacMan.velocity.y = 1.5*pacMan.powerUp
+                    pacMan.velocity.y = 1.5 * pacMan.powerUp
 
             manager.process_events(event)
         redColor = Color(255, 0, 0, a=100)
@@ -385,9 +387,9 @@ def game(game="1"):
             for ghost in ghosts:
                 ghost.setPowerUpMode()
 
-       # manager.update(time_delta)
+        # manager.update(time_delta)
         window.blit(background, (0, 0))
-       # manager.draw_ui(window)
+        # manager.draw_ui(window)
 
         # display the health bar at the bottom
         if pacMan.startingHealth - 1 == 2:
@@ -442,7 +444,7 @@ def displayGameOver(pacMan, window):
             if click:
                 game(game="1")  # level 1
 
-        if 340+250 > mousePosition[0] > 340 and 500+50 > mousePosition[1] > 500:
+        if 340 + 250 > mousePosition[0] > 340 and 500 + 50 > mousePosition[1] > 500:
             pygame.draw.rect(screen, (0, 190, 0), button)
         else:
             pygame.draw.rect(screen, (0, 255, 0), button)
@@ -525,7 +527,7 @@ def leaderBoards():
         scoreYCoord = 200
 
         # display headers for leaderboard
-        headers = 'Initials             Scores' #format(salary,'11.2f')
+        headers = 'Initials             Scores'  # format(salary,'11.2f')
         drawText(headers, font2, (255, 255, 255), screen, 325, scoreYCoord)
         scoreYCoord += 75
 
@@ -534,7 +536,7 @@ def leaderBoards():
             initial = dictOfScores[key][1]
             userScore = dictOfScores[key][2]
             highScoreDisplay = initial + '                      ' + str(userScore)
-            #print(format(userScore, '20.0f'))
+            # print(format(userScore, '20.0f'))
             drawText(highScoreDisplay, font2, (255, 255, 255), screen, scoreXCoord, scoreYCoord)
             # need to make sure scores are spaced out
             scoreYCoord += 75
@@ -579,6 +581,7 @@ def levels():
         button5 = pygame.Rect(int(MAX_HEIGHT / 2.5), int(MAX_WIDTH / 3.0), 250, 50)
         button6 = pygame.Rect(int(MAX_HEIGHT / 2.5), int(MAX_WIDTH / 2.4), 250, 50)
         button7 = pygame.Rect(int(MAX_HEIGHT / 2.5), int(MAX_WIDTH / 2.0), 250, 50)
+        button8 = pygame.Rect(int(MAX_HEIGHT / 2.5), int(MAX_WIDTH / 1.7), 250, 50)
 
         # if button is clicked call corresponding functions
         if button5.collidepoint((mousePosition[0], mousePosition[1])):
@@ -590,6 +593,10 @@ def levels():
                 game(game="2")
 
         if button7.collidepoint((mousePosition[0], mousePosition[1])):
+            if click:
+                renderCustomLevels()
+
+        if button8.collidepoint((mousePosition[0], mousePosition[1])):
             if click:
                 isRunning = False
 
@@ -617,10 +624,64 @@ def levels():
         else:
             pygame.draw.rect(screen, (0, 255, 0), button7)
 
-        drawText('Main Menu', font, (255, 255, 255), screen, MAX_HEIGHT / 2.2, MAX_WIDTH / 1.95)
+        drawText('Custom', font, (255, 255, 255), screen, MAX_HEIGHT / 2.1, MAX_WIDTH / 1.95)
 
+        if MAX_HEIGHT / 2.5 + 250 > mousePosition[0] > MAX_HEIGHT / 2.5 and MAX_WIDTH / 1.7 + 50 > mousePosition[
+            1] > MAX_WIDTH / 1.7:
+            pygame.draw.rect(screen, (0, 190, 0), button8)
+        else:
+            pygame.draw.rect(screen, (0, 255, 0), button8)
+
+        drawText('Main Menu', font, (255, 255, 255), screen, MAX_HEIGHT / 2.2, MAX_WIDTH / 1.66)
 
         click = False
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == KEYDOWN:
+                if event.key == K_ESCAPE:
+                    pygame.quit()
+                    sys.exit()
+            if event.type == MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    click = True
+
+        pygame.display.update()
+
+
+def renderCustomLevels():
+    click = False
+    isRunning = True
+    levelArray = LevelEditor.getSavedLevels()
+
+    while isRunning:
+        screen.fill(BACKGROUND_COLOR)
+        drawText('Select Level', titleFont, (255, 255, 255), screen, 300, 50)
+        mousePosition = pygame.mouse.get_pos()
+
+        index = 0
+        ycount = 0
+        for level in levelArray:
+            if index > 4:
+                ycount += 1
+            xpos = int(MAX_HEIGHT / 5.5) + (200 * index)
+            ypos = int(MAX_WIDTH / 5.5) + (200 * ycount)
+            button = pygame.Rect(xpos, ypos, 150, 150)
+
+            if button.collidepoint((mousePosition[0], mousePosition[1])):
+                if click:
+                    game(game=level)
+
+            if xpos + 150 > mousePosition[0] > xpos and ypos + 150 > mousePosition[
+                1] > ypos:
+                pygame.draw.rect(screen, (0, 190, 0), button)
+            else:
+                pygame.draw.rect(screen, (0, 255, 0), button)
+
+            drawText(level, font, (255, 255, 255), screen, xpos + 10, ypos + 25)
+            index += 1
+
         for event in pygame.event.get():
             if event.type == QUIT:
                 pygame.quit()
