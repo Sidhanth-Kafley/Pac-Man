@@ -540,7 +540,6 @@ def leaderBoards():
             initial = dictOfScores[key][1]
             userScore = dictOfScores[key][2]
             highScoreDisplay = initial + '                      ' + str(userScore)
-            # print(format(userScore, '20.0f'))
             drawText(highScoreDisplay, font2, (255, 255, 255), screen, scoreXCoord, scoreYCoord)
             # need to make sure scores are spaced out
             scoreYCoord += 75
