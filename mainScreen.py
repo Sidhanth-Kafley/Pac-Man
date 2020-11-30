@@ -278,7 +278,6 @@ def game(game='1'):
     count = 0
     while isRunning:
         # times per second this loop runs
-
         time_delta = clock.tick_busy_loop(60) / 1000.0
 
         screen.fill(BACKGROUND_COLOR)
@@ -389,7 +388,8 @@ def game(game='1'):
         # manager.update(time_delta)
         window.blit(background, (0, 0))
         manager.draw_ui(window)
-
+        # ADDED TO RESET SCREEN
+        pygame.draw.rect(screen, BACKGROUND_COLOR, (0, 0, 800, 1000))
         # display the health bar at the bottom
         if pacMan.startingHealth - 1 == 2:
             window.blit(healthBar, (20, MAX_HEIGHT - 50))
@@ -418,6 +418,11 @@ def game(game='1'):
         # update the image on screen
         allSprites.draw(window)
 
+        # used in custom level
+        if customLevel:
+            # TODO: Not the best way to cover up old game
+            pygame.draw.rect(screen, BACKGROUND_COLOR, (0, 100, 202, 620))
+            pygame.draw.rect(screen, BACKGROUND_COLOR, (800, 200, 100, 300))
         pygame.display.update()
 
     pygame.mixer.music.stop()
@@ -526,7 +531,7 @@ def leaderBoards():
         scoreYCoord = 200
 
         # display headers for leaderboard
-        headers = 'Initials             Scores'  # format(salary,'11.2f')
+        headers = 'Initials             Scores'
         drawText(headers, font2, (255, 255, 255), screen, 325, scoreYCoord)
         scoreYCoord += 75
 
@@ -535,7 +540,6 @@ def leaderBoards():
             initial = dictOfScores[key][1]
             userScore = dictOfScores[key][2]
             highScoreDisplay = initial + '                      ' + str(userScore)
-            # print(format(userScore, '20.0f'))
             drawText(highScoreDisplay, font2, (255, 255, 255), screen, scoreXCoord, scoreYCoord)
             # need to make sure scores are spaced out
             scoreYCoord += 75

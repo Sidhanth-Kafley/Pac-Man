@@ -32,6 +32,8 @@ class Level(pygame.sprite.Sprite):
         powerPillImage = pygame.transform.scale(powerPillImage, (int(wallSize[0]), int(wallSize[1])))
         self.pills = []
         self.layoutFilename = layoutFilename
+        self.wallBlocks.clear()
+        self.walls.clear()
 
         # create level objects based on characters in file
         for i in range(len(rows)):
