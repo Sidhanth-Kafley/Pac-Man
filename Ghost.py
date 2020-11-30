@@ -33,6 +33,11 @@ class Ghost(pygame.sprite.Sprite):
         self.moving = True
         self.drag = False
         self.pathingController = pathingGridController
+        self.cellX = math.floor(self.rect.x / self.pathingController.cellWidth)
+        self.cellY = math.floor(self.rect.y / self.pathingController.cellHeight)
+        self.prevCellX = self.cellX
+        self.prevCellY = self.cellY
+
 
         # set speed of the ghost
         self.velocity = pygame.math.Vector2()
@@ -45,8 +50,11 @@ class Ghost(pygame.sprite.Sprite):
     # update the ghost (position, image, etc.)
     def update(self):
 
-        cellX = math.floor(self.rect.x / self.pathingController.cellWidth)
-        cellY = math.floor(self.rect.y / self.pathingController.cellHeight)
+        self.prevCellX = self.cellX
+        self.prevCellY = self.cellY
+        self.cellX = math.floor(self.rect.x / self.pathingController.cellWidth)
+        self.cellY = math.floor(self.rect.y / self.pathingController.cellHeight)
+
 
         # if ghost can move, then move ghost
         if self.moving:
@@ -72,9 +80,11 @@ class Ghost(pygame.sprite.Sprite):
         elif self.moveX == 0 and self.moveY < 0:
             self.index = 3
 
-        # update location in pathing controller grid
-        if self.moveX != 0 or self.moveY != 0:
-            self.pathingController.gridContents
+        # update location in pathing controller grid, clear past location
+        if self.prevCellX != self.cellX or self.prevCellY != self.cellY:
+            self.pathingController.gridContents[cellY][cellX] = 1
+            self.pathingController.gridContents[prevCellY][prevCellX] = 0
+
 
         # update the image of ghost
         self.image = self.images[self.index]
