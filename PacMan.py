@@ -45,6 +45,7 @@ class PacMan(pygame.sprite.Sprite):
         self.image = self.images[1]
         self.loadDeathImages()
         self.drag = False
+        self.timer = 0
 
     def update(self):
         if not self.death:
@@ -60,13 +61,12 @@ class PacMan(pygame.sprite.Sprite):
             elif self.velocity.x == self.velocity.y:
                 self.images = self.imagesStop
             # loop through the images of the index
-            self.index += 1
-            if self.index >= len(self.images):
-                self.index = 0
-            self.image = self.images[self.index]
-            # moves the image on the screen according to the set velocity
-            self.rect.move_ip(*self.velocity)
-            self.collisionRect.move_ip(*self.velocity)
+            if self.timer % 10 == 0:
+                self.index += 1
+                if self.index >= len(self.images):
+                    self.index = 0
+                self.image = self.images[self.index]
+                self.timer = 1
         else:
             if self.velocity.x > 0:
                 self.imagesDeath = self.deathRight
@@ -79,15 +79,26 @@ class PacMan(pygame.sprite.Sprite):
             self.images = self.imagesDeath
             self.velocity.x = 0
             self.velocity.y = 0
-            self.index += 1
-            if self.index >= len(self.images):
-                self.newLife()
-            self.image = self.images[self.index]
-            # moves the image on the screen according to the set velocity
-            self.rect.move_ip(*self.velocity)
-            self.collisionRect.move_ip(*self.velocity)
+            if self.timer % 10 == 0:
+                self.index += 1
+                if self.index >= len(self.images):
+                    self.newLife()
+                self.image = self.images[self.index]
+                self.timer = 1
+        # moves the image on the screen according to the set velocity
+        self.rect.move_ip(*self.velocity)
+        self.collisionRect.center = self.rect.center
+        self.collisionRectTop.bottom = self.collisionRect.top
+        self.collisionRectTop.left = self.collisionRect.left
+        self.collisionRectBottom.top = self.collisionRect.bottom
+        self.collisionRectBottom.left = self.collisionRect.left
+        self.collisionRectLeft.right = self.collisionRect.left
+        self.collisionRectLeft.top = self.collisionRect.top
+        self.collisionRectRight.left = self.collisionRect.right
+        self.collisionRectRight.top = self.collisionRect.top
+        self.timer += 1
         # stop chomping on wall impact
-        if self.velocity.x == 0 and self.velocity.y == 0:
+        if self.velocity.x == 0 and self.velocity.y == 0 and not self.death:
             self.image = self.imagesStop[0]
 
     def hit(self):
@@ -100,7 +111,6 @@ class PacMan(pygame.sprite.Sprite):
             self.powerUp = 1
 
     def eatGhost(self, ghost):
-        # ghost.hit()
         self.totalPoints += self.ghostPoints
         self.ghostPoints = self.ghostPoints*2
 
@@ -175,6 +185,26 @@ class PacMan(pygame.sprite.Sprite):
                 if wall.rect.colliderect(self.collisionRectRight):
                     return False
         return True
+
+    def checkMotion(self, level):
+        check = False
+        for wall in level.walls:
+            if not check:
+                if self.velocity.x > 0:
+                    if self.collisionRectRight.left + 5 == wall.rect.left and self.collisionRectRight.colliderect(wall.rect):
+                        check = True
+                if self.velocity.x < 0:
+                    if self.collisionRectLeft.right - 5 == wall.rect.right and self.collisionRectLeft.colliderect(wall.rect):
+                        check = True
+                if self.velocity.y > 0:
+                    if self.collisionRectBottom.top + 5 == wall.rect.top and self.collisionRectBottom.colliderect(wall.rect):
+                        check = True
+                if self.velocity.y < 0:
+                    if self.collisionRectTop.bottom - 5 == wall.rect.bottom and self.collisionRectTop.colliderect(wall.rect):
+                        check = True
+        if check:
+            self.velocity.x = 0
+            self.velocity.y = 0
 
     def getTotalPoints(self):
         return self.totalPoints

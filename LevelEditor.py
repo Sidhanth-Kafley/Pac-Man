@@ -26,14 +26,11 @@ def mainEditor():
 
     # left hand side objects
     borderSprites = []
-    ghosthouseSprites = []
-    rectangleSprites = []
-    squareSprites = []
-    straightbarSprites = []
-    straightbarsmallSprites = []
-    tSprites = []
-    wallSprites = [0, 0, 0, 0, 0, 0]
+    wallSprites = []
     specialSprites = []
+
+    otherwallsprites = []
+    allWalls = []
 
     # right hand side objects
     pill = []
@@ -42,45 +39,48 @@ def mainEditor():
 
     # sprite groups to draw everything
     spriteGroup = pygame.sprite.Group()
+    groupoSprites = pygame.sprite.Group()
     characterSpriteGroup = pygame.sprite.Group()
     pillSpriteGroup = pygame.sprite.Group()
+
+    allWallSprites = pygame.sprite.Group()
 
     SPRITE_SIZE = 3 * mainScreen.CELL_SIZE
 
     # load Pacman object
     imgs = mainScreen.loadImages(path="PacManSprites")
-    pcmn = PacMan(position=(800, 200), size=(SPRITE_SIZE, SPRITE_SIZE), images=imgs)
+    pcmn = PacMan(position=(810, 250), size=(SPRITE_SIZE, SPRITE_SIZE), images=imgs)
     characterSpriteGroup.add(pcmn)
     ghostsAndPacman.append(pcmn)
 
     powerPillImage = pygame.image.load("PowerUpPointPill.png").convert_alpha()
     powerPillImage = pygame.transform.scale(powerPillImage, (24, 24))
-    pll = Pill(True, powerPillImage, (803, 453))
+    pll = Pill(True, powerPillImage, (813, 503))
     pll.rect.size = (24, 24)
     pill.append(pll)
     pillSpriteGroup.add(pll)
 
     # create ghost objects
     blueGhostImages = mainScreen.loadImages(path='BlueGhostSprites')
-    blueGhost = Ghost('blue', position=(800, 350), size=(SPRITE_SIZE, SPRITE_SIZE),
+    blueGhost = Ghost('blue', position=(810, 400), size=(SPRITE_SIZE, SPRITE_SIZE),
                       images=blueGhostImages)
     ghostsAndPacman.append(blueGhost)
     characterSpriteGroup.add(blueGhost)
 
     orangeGhostImages = mainScreen.loadImages(path='OrangeGhostSprites')
-    orangeGhost = Ghost('orange', position=(800, 300), size=(SPRITE_SIZE, SPRITE_SIZE),
+    orangeGhost = Ghost('orange', position=(810, 350), size=(SPRITE_SIZE, SPRITE_SIZE),
                         images=orangeGhostImages)
     ghostsAndPacman.append(orangeGhost)
     characterSpriteGroup.add(orangeGhost)
 
     pinkGhostImages = mainScreen.loadImages(path='PinkGhostSprites')
-    pinkGhost = Ghost('pink', position=(800, 250), size=(SPRITE_SIZE, SPRITE_SIZE),
+    pinkGhost = Ghost('pink', position=(810, 300), size=(SPRITE_SIZE, SPRITE_SIZE),
                       images=pinkGhostImages)
     ghostsAndPacman.append(pinkGhost)
     characterSpriteGroup.add(pinkGhost)
 
     redGhostImages = mainScreen.loadImages(path='RedGhostSprites')
-    redGhost = Ghost('red', position=(800, 400), size=(SPRITE_SIZE, SPRITE_SIZE),
+    redGhost = Ghost('red', position=(810, 450), size=(SPRITE_SIZE, SPRITE_SIZE),
                      images=redGhostImages)
     ghostsAndPacman.append(redGhost)
     characterSpriteGroup.add(redGhost)
@@ -88,70 +88,63 @@ def mainEditor():
     # initialize the wall objects
     path = 'WallObjects'
     for file in os.listdir(path):
+        check = True
+        lvl = None
         if "border" in file:
             brdr = Level(layoutFilename=path + os.sep + file, wallSize=(16, 16),
                          originPosition=(int(mainScreen.MAX_WIDTH / 5), int(mainScreen.MAX_HEIGHT / 12) - 2))
             for wall in brdr.walls:
                 if wall not in spriteGroup:
                     borderSprites.append(wall)
-                    spriteGroup.add(wall)
+                    allWallSprites.add(wall)
             del brdr
-        elif "ghosthouse" in file and "Down" not in file:
-            gh = Level(layoutFilename=path + os.sep + file, wallSize=(16, 16), originPosition=(50, 100))
-            for wall in gh.walls:
+        if "ghosthouse" in file and "Down" not in file and "border" not in file:
+            lvl = Level(layoutFilename=path + os.sep + file, wallSize=(16, 16), originPosition=(50, 100))
+        elif "rectangle" in file and "Vertical" not in file and "border" not in file:
+            lvl = Level(layoutFilename=path + os.sep + file, wallSize=(16, 16), originPosition=(50, 250))
+        elif "square" in file and "border" not in file:
+            lvl = Level(layoutFilename=path + os.sep + file, wallSize=(16, 16), originPosition=(90, 350))
+        elif "straightBar" in file and file != "straightBarSmall" and "Vertical" not in file and "border" not in file:
+            lvl = Level(layoutFilename=path + os.sep + file, wallSize=(16, 16), originPosition=(55, 450))
+        elif "straightBarSmall" in file and "Vertical" not in file and "border" not in file:
+            lvl = Level(layoutFilename=path + os.sep + file, wallSize=(16, 16), originPosition=(75, 525))
+        elif "T" in file and "Down" not in file and "border" not in file:
+            lvl = Level(layoutFilename=path + os.sep + file, wallSize=(16, 16), originPosition=(50, 600))
+        # loop for vertical wall objects
+        elif "ghosthouse" in file and "Down" in file and "border" not in file:
+            lvl = Level(layoutFilename=path + os.sep + file, wallSize=(16, 16), originPosition=(50, 100))
+            check = False
+        elif "rectangle" in file and "Vertical" in file and "border" not in file:
+            lvl = Level(layoutFilename=path + os.sep + file, wallSize=(16, 16), originPosition=(95, 225))
+            check = False
+        elif "straightBar" in file and "Small" not in file and "Vertical" in file and "border" not in file:
+            lvl = Level(layoutFilename=path + os.sep + file, wallSize=(16, 16), originPosition=(90, 420))
+            check = False
+        elif "straightBarSmall" in file and "Vertical" in file and "border" not in file:
+            lvl = Level(layoutFilename=path + os.sep + file, wallSize=(16, 16), originPosition=(125, 440))
+            check = False
+        elif "T" in file and "Down" in file and "border" not in file:
+            lvl = Level(layoutFilename=path + os.sep + file, wallSize=(16, 16), originPosition=(50, 600))
+            check = False
+        group = []
+        if "border" not in file:
+            for wall in lvl.walls:
                 if wall not in spriteGroup:
-                    ghosthouseSprites.append(wall)
-                    spriteGroup.add(wall)
-            wallSprites[0] = ghosthouseSprites
-            del gh
-        elif "rectangle" in file and "Vertical" not in file:
-            rect = Level(layoutFilename=path + os.sep + file, wallSize=(16, 16), originPosition=(50, 200))
-            for wall in rect.walls:
-                if wall not in spriteGroup:
-                    rectangleSprites.append(wall)
-                    spriteGroup.add(wall)
-            wallSprites[1] = rectangleSprites
-            del rect
-        elif "square" in file:
-            sqr = Level(layoutFilename=path + os.sep + file, wallSize=(16, 16), originPosition=(50, 300))
-            for wall in sqr.walls:
-                if wall not in spriteGroup:
-                    squareSprites.append(wall)
-                    spriteGroup.add(wall)
-            wallSprites[2] = squareSprites
-            del sqr
-        elif "straightBar" in file and file != "straightBarSmall" and "Vertical" not in file:
-            strt = Level(layoutFilename=path + os.sep + file, wallSize=(16, 16), originPosition=(50, 400))
-            for wall in strt.walls:
-                if wall not in spriteGroup:
-                    straightbarSprites.append(wall)
-                    spriteGroup.add(wall)
-            wallSprites[3] = straightbarSprites
-            del strt
-        elif "straightBarSmall" in file and "Vertical" not in file:
-            small = Level(layoutFilename=path + os.sep + file, wallSize=(16, 16), originPosition=(50, 500))
-            for wall in small.walls:
-                if wall not in spriteGroup:
-                    straightbarsmallSprites.append(wall)
-                    spriteGroup.add(wall)
-            wallSprites[4] = straightbarsmallSprites
-            del small
-        elif "T" in file and "Down" not in file:
-            t = Level(layoutFilename=path + os.sep + file, wallSize=(16, 16), originPosition=(50, 600))
-            for wall in t.walls:
-                if wall not in spriteGroup:
-                    tSprites.append(wall)
-                    spriteGroup.add(wall)
-            wallSprites[5] = tSprites
-            del t
+                    group.append(wall)
+                    if check:
+                        spriteGroup.add(wall)
+                    else:
+                        groupoSprites.add(wall)
+            if check:
+                wallSprites.append(group)
+            else:
+                otherwallsprites.append(group)
+            allWalls.append(group)
+            del lvl
 
-    wallSpritesCopy = wallSprites
     click = False
+    vertical = False
     while tf:
-        # handles events
-        mainScreen.screen.fill(mainScreen.BACKGROUND_COLOR)
-        window.fill(mainScreen.BACKGROUND_COLOR)
-        background.fill(mainScreen.BACKGROUND_COLOR)
 
         for event in pygame.event.get():
             if event.type == mainScreen.QUIT:
@@ -165,7 +158,11 @@ def mainEditor():
                     click = True
                     checker = False
                     new = []
-                    for group in wallSprites:
+                    if not vertical:
+                        wllsprt = wallSprites
+                    else:
+                        wllsprt = otherwallsprites
+                    for group in wllsprt:
                         for wall in group:
                             if not checker:
                                 if wall.rect.collidepoint(event.pos):
@@ -177,16 +174,27 @@ def mainEditor():
                                             walls.calculateDistance()
                                             walls.setCollideRect()
                                             walls.drag = True
-                                    else:
-                                        for walls in group:
-                                            walls.calculateDistance()
-                                            walls.drag = True
+                                    checker = True
+                    checker = False
+                    for group in specialSprites:
+                        for wall in group:
+                            if not checker:
+                                if wall.rect.collidepoint(event.pos):
+                                    for walls in group:
+                                        walls.calculateDistance()
+                                        walls.drag = True
                                     checker = True
                     if len(new) != 0:
-                        wallSprites.append(new)
+                        allWalls.append(new)
                         specialSprites.append(new)
                         for wall in new:
-                            spriteGroup.add(wall)
+                            allWallSprites.add(wall)
+                        if not vertical:
+                            wllsprt.append(new)
+                            wallSprites = wllsprt
+                        else:
+                            wllsprt.append(new)
+                            otherwallsprites = wllsprt
                     for character in characterSpriteGroup:
                         if character.rect.collidepoint(event.pos):
                             character.drag = True
@@ -201,52 +209,26 @@ def mainEditor():
                                 pillSpriteGroup.add(newPill)
                             else:
                                 x.drag = True
-
-                # FIGURE OUT HOW TO MAKE THE OBJECTS ROTATE AROUND A POINT
                 elif event.button == 3:
-                    check = False
-                    for group in wallSprites:
-                        if not check:
-                            for wall in group:
-                                if wall.drag:
-                                    if group not in squareSprites:
-                                        if group in ghosthouseSprites:
-                                            idx = 0
-                                        elif group in rectangleSprites:
-                                            idx = 1
-                                        elif group in straightbarSprites:
-                                            idx = 3
-                                        elif group in straightbarsmallSprites:
-                                            idx = 4
-                                        else:
-                                            idx = 5
-                                        wallSprites.remove(group)
-                                        specialSprites.remove(group)
-                                        group = rotate(wallSpritesCopy, group, idx)
-                                        wallSprites.append(group)
-                                        specialSprites.append(group)
-                                        check = True
-
+                    vertical = not vertical
             elif event.type == pygame.MOUSEBUTTONUP:
                 if event.button == 1:
                     checker1 = False
-                    for group in wallSprites:
+                    for group in specialSprites:
                         for wall in group:
                             if not checker1:
                                 if wall.drag:
                                     if collisionDetection(wall, specialSprites):
                                         wall.drag = False
-                                        wallSprites.remove(group)
                                         specialSprites.remove(group)
                                         for x in group:
-                                            spriteGroup.remove(x)
+                                            allWallSprites.remove(x)
                                         checker1 = True
                                 wall.drag = False
                                 if not wall.rect.colliderect(placeableArea) and group in specialSprites:
-                                    wallSprites.remove(group)
                                     specialSprites.remove(group)
                                     for x in group:
-                                        spriteGroup.remove(x)
+                                        allWallSprites.remove(x)
                                     checker1 = True
                     for character in characterSpriteGroup:
                         if character.drag:
@@ -274,16 +256,13 @@ def mainEditor():
                     if x.drag:
                         x.rect.center = event.pos
 
-        # draw the background box on the screen
-        # window.blit(background, (0, 0))
-
         grayColor = (30, 30, 30)
         pygame.draw.rect(background, grayColor, basicBox)
         pygame.draw.rect(background, grayColor, otherSideBasicBox)
         pygame.draw.rect(background, (0, 30, 30), placeableArea)
 
         # make the sprites stay within their respective boxes
-        for x in spriteGroup:
+        for x in allWallSprites:
             x.rect.clamp_ip(basicBox)
         for x in characterSpriteGroup:
             x.rect.clamp_ip(otherSideBasicBox)
@@ -300,7 +279,11 @@ def mainEditor():
                     pygame.draw.rect(background, (0, 50, 50), y.collideRect)
 
         # draw all the sprites on screen
-        spriteGroup.draw(window)
+        if vertical:
+            groupoSprites.draw(window)
+        else:
+            spriteGroup.draw(window)
+        allWallSprites.draw(window)
         characterSpriteGroup.draw(window)
         pillSpriteGroup.draw(window)
 
@@ -338,99 +321,6 @@ def mainEditor():
         click = False
         pygame.display.update()
 
-    # FIGURE OUT HOW TO MAKE THE WINDOW RESET AFTER EXITING
-
-
-def rotate(wallSprites, group, idx):
-    print(idx)
-    ghosthouseSpritesOther = []
-    rectangleSpritesOther = []
-    straightbarSpritesOther = []
-    straightbarsmallSpritesOther = []
-    tSpritesOther = []
-    wallSpritesOther = [0, 0, 0, 0, 0, 0]
-    groupoSprites = pygame.sprite.Group()
-    
-    path = 'WallObjects'
-    for file in os.listdir(path):
-        if "ghosthouse" in file and "Down" in file:
-            gh = Level(layoutFilename=path + os.sep + file, wallSize=(16, 16), originPosition=(50, 100))
-            for wall in gh.walls:
-                if wall not in groupoSprites:
-                    ghosthouseSpritesOther.append(wall)
-                    groupoSprites.add(wall)
-            wallSpritesOther[0] = ghosthouseSpritesOther
-            del gh
-        elif "rectangle" in file and "Vertical" in file:
-            rect = Level(layoutFilename=path + os.sep + file, wallSize=(16, 16), originPosition=(50, 200))
-            for wall in rect.walls:
-                if wall not in groupoSprites:
-                    rectangleSpritesOther.append(wall)
-                    groupoSprites.add(wall)
-            wallSpritesOther[1] = rectangleSpritesOther
-            del rect
-        elif "straightBar" in file and file != "straightBarSmall" and "Vertical" in file:
-            strt = Level(layoutFilename=path + os.sep + file, wallSize=(16, 16), originPosition=(50, 400))
-            for wall in strt.walls:
-                if wall not in groupoSprites:
-                    straightbarSpritesOther.append(wall)
-                    groupoSprites.add(wall)
-            wallSpritesOther[3] = straightbarSpritesOther
-            del strt
-        elif "straightBarSmall" in file and "Vertical" in file:
-            small = Level(layoutFilename=path + os.sep + file, wallSize=(16, 16), originPosition=(50, 500))
-            for wall in small.walls:
-                if wall not in groupoSprites:
-                    straightbarsmallSpritesOther.append(wall)
-                    groupoSprites.add(wall)
-            wallSpritesOther[4] = straightbarsmallSpritesOther
-            del small
-        elif "T" in file and "Down" in file:
-            t = Level(layoutFilename=path + os.sep + file, wallSize=(16, 16), originPosition=(50, 600))
-            for wall in t.walls:
-                if wall not in groupoSprites:
-                    tSpritesOther.append(wall)
-                    groupoSprites.add(wall)
-            wallSpritesOther[5] = tSpritesOther
-            del t
-
-    if wallSpritesOther[idx] == group:
-        temp = wallSprites[idx]
-    else:
-        temp = wallSpritesOther[idx]
-    mouse = pygame.mouse.get_pos()
-    for x in temp:
-        x.calculateDistance()
-        x.setCollideRect()
-        x.rect.centerx = mouse[0] - x.distancex
-        x.rect.centery = mouse[1] - x.distancey
-        x.collideRect.centerx = mouse[0] - x.distancex
-        x.collideRect.centery = mouse[1] - x.distancey
-    return temp
-    # # this function is used to rotate the the wall objects around the center
-    # mouse = pygame.mouse.get_pos()
-    # totalpointx = 0
-    # totalpointy = 0
-    # angle = (1 * math.pi) / 180
-    # for x in group:
-    #     totalpointx += x.distancex
-    #     totalpointy += x.distancey
-    # avgx = mouse[0] - totalpointx / len(group)
-    # avgy = mouse[1] - totalpointy / len(group)
-    # for x in group:
-    #     x.rect.centerx -= avgx
-    #     x.rect.centery -= avgy
-    #     pointx = x.rect.centerx
-    #     pointy = x.rect.centery
-    #     newpointx = pointx * (math.cos(angle)) - pointy * math.sin(angle)
-    #     newpointy = pointx * math.sin(angle) + pointy * math.cos(angle)
-    #     x.rect.centerx = newpointx + avgx
-    #     x.rect.centery = newpointy + avgy
-    #     x.collideRect.centerx = x.rect.centerx
-    #     x.collideRect.centery = x.rect.centery
-    #     pygame.transform.rotate(x.image, angle)
-    # return group
-
 
 def collisionDetection(rect, othersprites):
     newGroup = []
@@ -455,6 +345,7 @@ def saveLevel(borderSprites, specialSprites, specialpillSprites, pacman, blue, r
     for group in specialSprites:
         for wall in group:
             level.walls.append(wall)
+    level.pills = []
     for pill in specialpillSprites:
         level.pills.append(pill)
     level.pacmanAndGhost.append(pacman)
@@ -512,6 +403,30 @@ def saveLevel(borderSprites, specialSprites, specialpillSprites, pacman, blue, r
                                Array)
             connection.commit()
             i += 1
+
+        for group in specialSprites:
+            maxx = 0
+            minx = 10000
+            maxy = 10000
+            miny = 0
+            for x in group:
+                if x.rect.top < maxy:
+                    maxy = x.rect.top
+                if x.rect.bottom > miny:
+                    miny = x.rect.bottom
+                if x.rect.right > maxx:
+                    maxx = x.rect.right
+                if x.rect.left < minx:
+                    minx = x.rect.left
+
+            Tuple = (
+            index, message, maxx, minx, maxy, miny)
+            Array = [Tuple]
+            cursor.executemany(
+                "INSERT INTO savedBlankSpace (idx, id, xmax, xmin, ymax, ymin) VALUES (?, ?, ?, ?, ?, ?);",
+                Array)
+            connection.commit()
+
         connection.close()
 
     except Error as error:
@@ -594,6 +509,13 @@ def connectDatabase():
         cursor.execute(
             "CREATE TABLE IF NOT EXISTS savedCharacters (idx INTEGER, id VARCHAR[64], characterType VARCHAR[64], xpos INTEGER, ypos INTEGER)")
 
+        # create character sprites table in the database
+        cursor.execute('''SELECT count(name) FROM sqlite_master WHERE type='table' AND name='savedBlankSpace' ''')
+
+        # add the character sprites and position to the table
+        cursor.execute(
+            "CREATE TABLE IF NOT EXISTS savedBlankSpace (idx INTEGER, id VARCHAR[64], xmax INTEGER, xmin INTEGER, ymax INTEGER, ymin INTEGER)")
+
         # commit databases
         connection.commit()
         connection.close()
@@ -623,6 +545,10 @@ def parseCustomLevel(message):
             "SELECT characterType, xpos, ypos FROM savedCharacters WHERE id LIKE '" + message + "'")
         characterData = cursor.fetchall()
 
+        cursor.execute(
+            "SELECT xmax, xmin, ymax, ymin FROM savedBlankSpace WHERE id LIKE '" + message + "'")
+        blankData = cursor.fetchall()
+
         connection.close()
 
         level.walls = []
@@ -633,7 +559,6 @@ def parseCustomLevel(message):
             image = pygame.image.load('WallSprites' + os.sep + img).convert_alpha()
             level.walls.append(Wall((xpos, ypos), (level.wallSize[0], level.wallSize[1]), image, img))
 
-        level.pills = []
         for data in pointData:
             pp = data[0]
             image = data[1]
@@ -658,27 +583,39 @@ def parseCustomLevel(message):
             ypos = data[2]
             if 'Pacman' in charType:
                 images = mainScreen.loadImages(path='PacManSprites')
-                pacman = PacMan(position=(xpos, ypos), size=(2 * mainScreen.CELL_SIZE, 2 * mainScreen.CELL_SIZE),
+                pacman = PacMan(position=(xpos, ypos - 16), size=(2 * mainScreen.CELL_SIZE, 2 * mainScreen.CELL_SIZE),
                                 images=images)
             elif 'BlueGhost' in charType:
                 images = mainScreen.loadImages(path='BlueGhostSprites')
-                blueGhost = Ghost('blue', position=(xpos, ypos),
+                blueGhost = Ghost('blue', position=(xpos - 16, ypos - 16),
                                   size=(2 * mainScreen.CELL_SIZE, 2 * mainScreen.CELL_SIZE), images=images)
             elif 'RedGhost' in charType:
                 images = mainScreen.loadImages(path='RedGhostSprites')
-                redGhost = Ghost('red', position=(xpos, ypos),
+                redGhost = Ghost('red', position=(xpos - 16, ypos - 16),
                                  size=(2 * mainScreen.CELL_SIZE, 2 * mainScreen.CELL_SIZE), images=images)
             elif 'PinkGhost' in charType:
                 images = mainScreen.loadImages(path='PinkGhostSprites')
-                pinkGhost = Ghost('pink', position=(xpos, ypos),
+                pinkGhost = Ghost('pink', position=(xpos - 16, ypos - 16),
                                   size=(2 * mainScreen.CELL_SIZE, 2 * mainScreen.CELL_SIZE), images=images)
             elif 'OrangeGhost' in charType:
                 images = mainScreen.loadImages(path='OrangeGhostSprites')
-                orangeGhost = Ghost('orange', position=(xpos, ypos),
+                orangeGhost = Ghost('orange', position=(xpos - 16, ypos - 16),
                                     size=(2 * mainScreen.CELL_SIZE, 2 * mainScreen.CELL_SIZE),
                                     images=images)
 
         level.pacmanAndGhost = [pacman, blueGhost, redGhost, pinkGhost, orangeGhost]
+
+        for data in blankData:
+            xmax = data[0]
+            xmin = data[1]
+            ymax = data[2]
+            ymin = data[3]
+            delta = 10
+            group = level.pills
+            for x in group:
+                if xmin - delta <= x.rect.centerx <= xmax + delta and ymax - delta <= x.rect.centery <= ymin + delta:
+                    level.pills.remove(x)
+                    del x
 
     except Error as error:
         print('Cannot connect to database. The following error occurred: ', error)

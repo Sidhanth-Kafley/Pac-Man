@@ -204,7 +204,7 @@ def credits():
         mainClock.tick(10)
 
 
-def game(game='1'):
+def game(game="1"):
     # Initiate game and window
     pygame.init()
 
@@ -290,27 +290,9 @@ def game(game='1'):
         # Create a new rect to detect collisions with pacMan that is slightly larger than pacMan's rect,
         # because the collidelistall function tests if rects overlap, not if they touch.
         pacManCollisionRect = Rect((pacMan.rect.top - 1, pacMan.rect.left - 1),
-                                   (pacMan.rect.width + 2, pacMan.rect.height + 4))
+                                    (pacMan.rect.width + 2, pacMan.rect.height + 4))
 
-        pacManCollisionRect.x = pacMan.rect.x
-        pacManCollisionRect.y = pacMan.rect.y
-
-        # This list contains every wall that pacMan is colliding with, but may also contain some he doesn't.
-        potentialCollidingWalls = pacManCollisionRect.collidelistall(level.walls)
-        greenColor = Color(0, 255, 0, a=100)
-        for wall in level.walls:
-            pygame.draw.rect(background, greenColor, wall.rect)
-
-        for wallIndex in potentialCollidingWalls:
-            if pacMan.rect.colliderect(level.walls[wallIndex]):
-                if pacMan.velocity.x < 0:
-                    pacMan.rect.left = level.walls[wallIndex].rect.right
-                if pacMan.velocity.x > 0:
-                    pacMan.rect.right = level.walls[wallIndex].rect.left
-                if pacMan.velocity.y < 0:
-                    pacMan.rect.top = level.walls[wallIndex].rect.bottom
-                if pacMan.velocity.y > 0:
-                    pacMan.rect.bottom = level.walls[wallIndex].rect.top
+        pacMan.checkMotion(level)
 
         # handles events
         for event in pygame.event.get():
@@ -331,14 +313,6 @@ def game(game='1'):
                     pacMan.velocity.y = 1.5 * pacMan.powerUp
 
             manager.process_events(event)
-        redColor = Color(255, 0, 0, a=100)
-        purpleColor = Color(255, 0, 255, a=100)
-        whiteColor = Color(255, 255, 255, a=100)
-        pygame.draw.rect(background, redColor, pacMan.rect)
-        # pygame.draw.rect(background, whiteColor, pacManCollisionRect)
-        if potentialCollidingWalls != -1 and potentialCollidingWalls != []:
-            for wallIndex in potentialCollidingWalls:
-                pygame.draw.rect(background, purpleColor, level.walls[wallIndex].rect)
 
         if collidingWallRight:
             pacMan.velocity.x = min(0, max(pacMan.velocity.x, (-1.5) * pacMan.powerUp))
@@ -362,7 +336,6 @@ def game(game='1'):
                         pacMan.eatGhost(x)
 
         if pygame.sprite.spritecollide(pacMan, pillGroup, False):
-            # pygame.sprite.
             pacManChomp = pygame.mixer.Sound("Music/PacManChomp.wav")
             pacManChomp.play(0)
             for x in pillGroup:
@@ -373,7 +346,10 @@ def game(game='1'):
                             ghost.setPowerUpMode()
                     pillGroup.remove(x)
 
-        # only run the powerup for 1000 loops
+        if len(pillGroup) == 0:
+            displayGameOver(pacMan, window, game)
+
+        # only run the powerup for 600 loops
         if powermode:
             count += 1
         if count == 600:
@@ -417,6 +393,11 @@ def game(game='1'):
         allSprites.update()
         # update the image on screen
         allSprites.draw(window)
+
+        pygame.draw.rect(screen, (0, 30, 0), pacMan.collisionRectRight)
+        pygame.draw.rect(screen, (0, 30, 0), pacMan.collisionRectLeft)
+        pygame.draw.rect(screen, (0, 30, 0), pacMan.collisionRectTop)
+        pygame.draw.rect(screen, (0, 30, 0), pacMan.collisionRectBottom)
 
         # used in custom level
         if customLevel:
