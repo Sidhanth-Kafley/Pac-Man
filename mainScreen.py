@@ -7,6 +7,7 @@ from PacMan import PacMan
 from ghost import Ghost
 from pygame.locals import *
 from Level import Level
+from PathingGridController import PathingGridController
 from highScores import HighScores
 from inputBox import InputBox
 
@@ -225,6 +226,8 @@ def game(game="1"):
 
     images = loadImages(path='PacManSprites')
     ghosts = []
+
+    pathingGrid = PathingGridController(level, CELL_SIZE, CELL_SIZE)
 
     if not customLevel:
         # create pacman object
