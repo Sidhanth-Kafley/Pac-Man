@@ -4,7 +4,7 @@ import os
 
 class PacMan(pygame.sprite.Sprite):
     startingHealth = 3
-    powerUp = 1
+    powerUp = False
     eatenGhosts = 0
     totalPoints = 0
     ghostPoints = 200
@@ -105,10 +105,7 @@ class PacMan(pygame.sprite.Sprite):
         self.startingHealth -= 1
 
     def setPowerUp(self):
-        if self.powerUp == 1:
-            self.powerUp = 1.5
-        else:
-            self.powerUp = 1
+        self.powerUp = not self.powerUp
 
     def eatGhost(self, ghost):
         self.totalPoints += self.ghostPoints

@@ -282,16 +282,9 @@ def game(game="1"):
 
         screen.fill(BACKGROUND_COLOR)
         # determine if a wall is colliding
-        collidingWallTop = False
-        collidingWallBottom = False
-        collidingWallLeft = False
-        collidingWallRight = False
 
         # Create a new rect to detect collisions with pacMan that is slightly larger than pacMan's rect,
         # because the collidelistall function tests if rects overlap, not if they touch.
-        pacManCollisionRect = Rect((pacMan.rect.top - 1, pacMan.rect.left - 1),
-                                    (pacMan.rect.width + 2, pacMan.rect.height + 4))
-
         pacMan.checkMotion(level)
 
         # handles events
@@ -299,32 +292,23 @@ def game(game="1"):
             if event.type == pygame.QUIT:
                 isRunning = False
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LEFT and pacMan.checkMove("left", level):  # collidingWallLeft:
+                if event.key == pygame.K_LEFT and pacMan.checkMove("left", level):
                     pacMan.velocity.y = 0
-                    pacMan.velocity.x = (-1.5) * pacMan.powerUp
-                elif event.key == pygame.K_RIGHT and pacMan.checkMove("right", level):  # collidingWallRight:
+                    pacMan.velocity.x = (-1.5)
+                elif event.key == pygame.K_RIGHT and pacMan.checkMove("right", level):
                     pacMan.velocity.y = 0
-                    pacMan.velocity.x = 1.5 * pacMan.powerUp
-                elif event.key == pygame.K_UP and pacMan.checkMove("up", level):  # collidingWallTop:
+                    pacMan.velocity.x = 1.5
+                elif event.key == pygame.K_UP and pacMan.checkMove("up", level):
                     pacMan.velocity.x = 0
-                    pacMan.velocity.y = (-1.5) * pacMan.powerUp
-                elif event.key == pygame.K_DOWN and pacMan.checkMove("down", level):  # collidingWallBottom:
+                    pacMan.velocity.y = (-1.5)
+                elif event.key == pygame.K_DOWN and pacMan.checkMove("down", level):
                     pacMan.velocity.x = 0
-                    pacMan.velocity.y = 1.5 * pacMan.powerUp
+                    pacMan.velocity.y = 1.5
 
             manager.process_events(event)
 
-        if collidingWallRight:
-            pacMan.velocity.x = min(0, max(pacMan.velocity.x, (-1.5) * pacMan.powerUp))
-        if collidingWallLeft:
-            pacMan.velocity.x = max(0, min(pacMan.velocity.x, 1.5 * pacMan.powerUp))
-        if collidingWallTop:
-            pacMan.velocity.y = max(0, min(pacMan.velocity.y, 1.5 * pacMan.powerUp))
-        if collidingWallBottom:
-            pacMan.velocity.y = min(0, max(pacMan.velocity.y, (-1.5) * pacMan.powerUp))
-
         if pygame.sprite.spritecollide(pacMan, ghosts, False):
-            if pacMan.powerUp == 1:
+            if not pacMan.powerUp:
                 pacManDeath = pygame.mixer.Sound("Music/PacManDeath.wav")
                 pacManDeath.play(0)
                 pacMan.deathAnimation()
@@ -341,7 +325,7 @@ def game(game="1"):
             for x in pillGroup:
                 if pacMan.rect.colliderect(x.rect):
                     if pacMan.eatPill(x):
-                        powermode = True
+                        pacMan.powerUp = True
                         for ghost in ghosts:
                             ghost.setPowerUpMode()
                     pillGroup.remove(x)
@@ -350,14 +334,11 @@ def game(game="1"):
             displayGameOver(pacMan, window, game)
 
         # only run the powerup for 600 loops
-        if powermode:
+        if pacMan.powerUp:
             count += 1
         if count == 600:
-            powermode = False
             count = 0
             pacMan.setPowerUp()
-            pacMan.velocity.x = pacMan.velocity.x / pacMan.powerUp
-            pacMan.velocity.y = pacMan.velocity.y / pacMan.powerUp
             for ghost in ghosts:
                 ghost.setPowerUpMode()
 
@@ -393,11 +374,6 @@ def game(game="1"):
         allSprites.update()
         # update the image on screen
         allSprites.draw(window)
-
-        pygame.draw.rect(screen, (0, 30, 0), pacMan.collisionRectRight)
-        pygame.draw.rect(screen, (0, 30, 0), pacMan.collisionRectLeft)
-        pygame.draw.rect(screen, (0, 30, 0), pacMan.collisionRectTop)
-        pygame.draw.rect(screen, (0, 30, 0), pacMan.collisionRectBottom)
 
         # used in custom level
         if customLevel:
