@@ -7,9 +7,10 @@ from sqlite3 import Error
 from Level import Level
 from PacMan import PacMan
 from pill import Pill
-from ghost import Ghost
+from Ghost import Ghost
 from inputBox import InputBox
 from Wall import Wall
+from PathingGridController import PathingGridController
 
 
 def mainEditor():
@@ -576,6 +577,8 @@ def parseCustomLevel(message):
         redGhost = None
         pinkGhost = None
         orangeGhost = None
+        pathingGrid = PathingGridController(level, mainScreen.CELL_SIZE, mainScreen.CELL_SIZE, mainScreen.MAX_WIDTH,
+                                            mainScreen.MAX_HEIGHT)
         for data in characterData:
             charType = data[0]
             xpos = data[1]
@@ -587,20 +590,24 @@ def parseCustomLevel(message):
             elif 'BlueGhost' in charType:
                 images = mainScreen.loadImages(path='BlueGhostSprites')
                 blueGhost = Ghost('blue', position=(xpos, ypos),
-                                  size=(2 * mainScreen.CELL_SIZE, 2 * mainScreen.CELL_SIZE), images=images)
+                                  size=(2 * mainScreen.CELL_SIZE, 2 * mainScreen.CELL_SIZE), images=images,
+                                  pathingGridController=pathingGrid)
             elif 'RedGhost' in charType:
                 images = mainScreen.loadImages(path='RedGhostSprites')
                 redGhost = Ghost('red', position=(xpos, ypos),
-                                 size=(2 * mainScreen.CELL_SIZE, 2 * mainScreen.CELL_SIZE), images=images)
+                                 size=(2 * mainScreen.CELL_SIZE, 2 * mainScreen.CELL_SIZE), images=images,
+                                 pathingGridController=pathingGrid)
             elif 'PinkGhost' in charType:
                 images = mainScreen.loadImages(path='PinkGhostSprites')
                 pinkGhost = Ghost('pink', position=(xpos, ypos),
-                                  size=(2 * mainScreen.CELL_SIZE, 2 * mainScreen.CELL_SIZE), images=images)
+                                  size=(2 * mainScreen.CELL_SIZE, 2 * mainScreen.CELL_SIZE), images=images,
+                                  pathingGridController=pathingGrid)
             elif 'OrangeGhost' in charType:
                 images = mainScreen.loadImages(path='OrangeGhostSprites')
                 orangeGhost = Ghost('orange', position=(xpos, ypos),
                                     size=(2 * mainScreen.CELL_SIZE, 2 * mainScreen.CELL_SIZE),
-                                    images=images)
+                                    images=images,
+                                    pathingGridController=pathingGrid)
 
         level.pacmanAndGhost = [pacman, blueGhost, redGhost, pinkGhost, orangeGhost]
 

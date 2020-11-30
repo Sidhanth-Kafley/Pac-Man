@@ -1,10 +1,11 @@
 import pygame
 import random
-
+import math
+from PathingGridController import PathingGridController
 
 class Ghost(pygame.sprite.Sprite):
 
-    def __init__(self, color, position, size, images):
+    def __init__(self, color, position, size, images, pathingGridController):
         # initialize super class
         super(Ghost, self).__init__()
         self.color = color
@@ -31,6 +32,7 @@ class Ghost(pygame.sprite.Sprite):
         self.changeDirection = False
         self.moving = True
         self.drag = False
+        self.pathingController = pathingGridController
 
         # set speed of the ghost
         self.velocity = pygame.math.Vector2()
@@ -42,6 +44,10 @@ class Ghost(pygame.sprite.Sprite):
 
     # update the ghost (position, image, etc.)
     def update(self):
+
+        cellX = math.floor(self.rect.x / self.pathingController.cellWidth)
+        cellY = math.floor(self.rect.y / self.pathingController.cellHeight)
+
         # if ghost can move, then move ghost
         if self.moving:
             # self.moveGhosts()
@@ -65,6 +71,10 @@ class Ghost(pygame.sprite.Sprite):
         # ghost moving up
         elif self.moveX == 0 and self.moveY < 0:
             self.index = 3
+
+        # update location in pathing controller grid
+        if self.moveX != 0 or self.moveY != 0:
+            self.pathingController.gridContents
 
         # update the image of ghost
         self.image = self.images[self.index]

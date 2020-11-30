@@ -1,5 +1,6 @@
 import pygame
 import os
+import math
 from Wall import Wall
 from Level import Level
 
@@ -12,28 +13,27 @@ class PathingGridController(pygame.sprite.Sprite):
     gridHeight = 0
     gridContents = []
 
-    def __init__(self, currentLevel, cellWidth, cellHeight):
+    def __init__(self, currentLevel, cellWidth, cellHeight, roomWidth, roomHeight):
         # initialize super class
         super(PathingGridController, self).__init__()
 
         self.currentLevel = currentLevel
         self.cellWidth = cellWidth
         self.cellHeight = cellHeight
-        self.gridWidth = len(self.currentLevel.layout[0])
-        self.gridHeight = len(self.currentLevel.layout)
+        self.gridWidth = math.floor(roomWidth / cellWidth)
+        self.gridHeight = math.floor(roomHeight / cellHeight)
 
-        # Populate gridContents
-        # 0 represents an empty cell, 1 a wall, and a different higher number for any other object occupying a cell
+        # Populate gridContents with empty cells
         for i in range(self.gridHeight):
             self.gridContents.append([])
             for j in range(self.gridWidth):
-                try:
-                    layoutCell = self.currentLevel.layout[i][j]
-                    if type(layoutCell) == Wall:
-                        self.gridContents[i].append(1)
-                    elif layoutCell == '' or layoutCell == '*' or layoutCell == '&':
-                        self.gridContents[i].append(0)
-                except IndexError:
-                    self.gridContents[i].append(0)
+                self.gridContents[i].append([0])
+
+        # Populate gridContents with wall cells
+        for i in range(len(self.currentLevel.walls)):
+            wallCellX = math.floor(self.currentLevel.walls[i].position[0] / self.cellWidth)
+            wallCellY = math.floor(self.currentLevel.walls[i].position[1] / self.cellHeight)
+            self.gridContents[wallCellY][wallCellX] = 1
+
 
 

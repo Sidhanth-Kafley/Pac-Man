@@ -4,7 +4,7 @@ import sys
 import os
 import LevelEditor
 from PacMan import PacMan
-from ghost import Ghost
+from Ghost import Ghost
 from pygame.locals import *
 from Level import Level
 from PathingGridController import PathingGridController
@@ -227,31 +227,34 @@ def game(game="1"):
     images = loadImages(path='PacManSprites')
     ghosts = []
 
-    pathingGrid = PathingGridController(level, CELL_SIZE, CELL_SIZE)
-
     if not customLevel:
+        pathingGrid = PathingGridController(level, CELL_SIZE, CELL_SIZE, MAX_WIDTH, MAX_HEIGHT)
+
         # create pacman object
         pacMan = PacMan(position=(MAX_WIDTH / 5, (MAX_HEIGHT / 2)), size=(2 * CELL_SIZE, 2 * CELL_SIZE), images=images)
 
         # create blue ghost object
         blueGhostImages = loadImages(path='BlueGhostSprites')
-        blueGhost = Ghost('blue', position=(500, 390), size=(2 * CELL_SIZE, 2 * CELL_SIZE), images=blueGhostImages)
+        blueGhost = Ghost('blue', position=(500, 390), size=(2 * CELL_SIZE, 2 * CELL_SIZE), images=blueGhostImages,
+                          pathingGridController=pathingGrid)
         ghosts.append(blueGhost)
 
         # create orange ghost object
         orangeGhostImages = loadImages(path='OrangeGhostSprites')
-        orangeGhost = Ghost('orange', position=(465, 390), size=(2 * CELL_SIZE, 2 * CELL_SIZE),
-                            images=orangeGhostImages)
+        orangeGhost = Ghost('orange', position=(465, 390), size=(2 * CELL_SIZE, 2 * CELL_SIZE),images=orangeGhostImages,
+                            pathingGridController=pathingGrid)
         ghosts.append(orangeGhost)
 
         # create pink ghost object
         pinkGhostImages = loadImages(path='PinkGhostSprites')
-        pinkGhost = Ghost('pink', position=(430, 390), size=(2 * CELL_SIZE, 2 * CELL_SIZE), images=pinkGhostImages)
+        pinkGhost = Ghost('pink', position=(430, 390), size=(2 * CELL_SIZE, 2 * CELL_SIZE), images=pinkGhostImages,
+                          pathingGridController=pathingGrid)
         ghosts.append(pinkGhost)
 
         # create red ghost object
         redGhostImages = loadImages(path='RedGhostSprites')
-        redGhost = Ghost('red', position=(465, 320), size=(2 * CELL_SIZE, 2 * CELL_SIZE), images=redGhostImages)
+        redGhost = Ghost('red', position=(465, 320), size=(2 * CELL_SIZE, 2 * CELL_SIZE), images=redGhostImages,
+                         pathingGridController=pathingGrid)
         ghosts.append(redGhost)
     else:
         pacMan = level.pacmanAndGhost[0]
