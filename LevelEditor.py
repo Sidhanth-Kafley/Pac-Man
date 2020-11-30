@@ -436,7 +436,7 @@ def saveLevel(borderSprites, specialSprites, specialpillSprites, pacman, blue, r
 def chooseName():
     click = False
     isRunning = True
-    nameInputBox = InputBox(365, 150, 140, 32, "Save Level")
+    nameInputBox = InputBox(365, 150, 140, 32, "Save Level", "level")
 
     while isRunning:
         mainScreen.screen.fill(mainScreen.BACKGROUND_COLOR)
