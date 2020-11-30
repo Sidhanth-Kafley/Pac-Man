@@ -44,7 +44,7 @@ class Wall(pygame.sprite.Sprite):
         self.distancey = y1 - y2
 
     def setCollideRect(self):
-        self.collideRect = pygame.Rect(self.rect.center, (self.size[0] * 4, self.size[1] * 4))
+        self.collideRect = pygame.Rect(self.rect.center, (self.size[0] * 3, self.size[1] * 3))
 
     def __del__(self):
         return True
