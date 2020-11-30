@@ -5,6 +5,7 @@ import os
 class PacMan(pygame.sprite.Sprite):
     startingHealth = 3
     powerUp = 1
+    baseMoveSpeed = 3
     eatenGhosts = 0
     totalPoints = 0
     ghostPoints = 200
