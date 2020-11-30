@@ -204,7 +204,7 @@ def credits():
         mainClock.tick(10)
 
 
-def game(game="1"):
+def game(game='1'):
     # Initiate game and window
     pygame.init()
 
@@ -318,16 +318,16 @@ def game(game="1"):
             if event.type == pygame.QUIT:
                 isRunning = False
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LEFT and pacMan.checkMove("left", level, level):  # collidingWallLeft:
+                if event.key == pygame.K_LEFT and pacMan.checkMove("left", level):  # collidingWallLeft:
                     pacMan.velocity.y = 0
                     pacMan.velocity.x = (-1.5) * pacMan.powerUp
-                elif event.key == pygame.K_RIGHT and pacMan.checkMove("right", level, level):  # collidingWallRight:
+                elif event.key == pygame.K_RIGHT and pacMan.checkMove("right", level):  # collidingWallRight:
                     pacMan.velocity.y = 0
                     pacMan.velocity.x = 1.5 * pacMan.powerUp
-                elif event.key == pygame.K_UP and pacMan.checkMove("up", level, level):  # collidingWallTop:
+                elif event.key == pygame.K_UP and pacMan.checkMove("up", level):  # collidingWallTop:
                     pacMan.velocity.x = 0
                     pacMan.velocity.y = (-1.5) * pacMan.powerUp
-                elif event.key == pygame.K_DOWN and pacMan.checkMove("down", level, level):  # collidingWallBottom:
+                elif event.key == pygame.K_DOWN and pacMan.checkMove("down", level):  # collidingWallBottom:
                     pacMan.velocity.x = 0
                     pacMan.velocity.y = 1.5 * pacMan.powerUp
 
@@ -397,7 +397,7 @@ def game(game="1"):
         elif pacMan.startingHealth - 1 == 1:
             window.blit(healthBar, (20, MAX_HEIGHT - 50))
         elif pacMan.startingHealth == 0:
-            displayGameOver(pacMan, window)
+            displayGameOver(pacMan, window, game)
         # display score
         window.blit(pacMan.renderScore(32), (10, 10))
 
@@ -425,7 +425,7 @@ def game(game="1"):
     # mainClock.tick(10)
 
 
-def displayGameOver(pacMan, window):
+def displayGameOver(pacMan, window, msg):
     # display button to play again
     click = False
     isRunning = True
@@ -441,7 +441,7 @@ def displayGameOver(pacMan, window):
 
         if button.collidepoint(mousePosition[0], mousePosition[1]):
             if click:
-                game(game="1")  # level 1
+                game(msg)
 
         if 340 + 250 > mousePosition[0] > 340 and 500 + 50 > mousePosition[1] > 500:
             pygame.draw.rect(screen, (0, 190, 0), button)

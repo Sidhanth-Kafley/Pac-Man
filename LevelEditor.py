@@ -15,7 +15,6 @@ from Wall import Wall
 def mainEditor():
     tf = True
 
-    # screen = pygame.display.set_mode((mainScreen.MAX_WIDTH, mainScreen.MAX_HEIGHT), 0, 32)
     mainScreen.screen.fill(mainScreen.BACKGROUND_COLOR)
     window = mainScreen.screen
     background = mainScreen.screen
@@ -33,7 +32,7 @@ def mainEditor():
     straightbarSprites = []
     straightbarsmallSprites = []
     tSprites = []
-    wallSprites = []
+    wallSprites = [0, 0, 0, 0, 0, 0]
     specialSprites = []
 
     # right hand side objects
@@ -103,7 +102,7 @@ def mainEditor():
                 if wall not in spriteGroup:
                     ghosthouseSprites.append(wall)
                     spriteGroup.add(wall)
-            wallSprites.append(ghosthouseSprites)
+            wallSprites[0] = ghosthouseSprites
             del gh
         elif "rectangle" in file and "Vertical" not in file:
             rect = Level(layoutFilename=path + os.sep + file, wallSize=(16, 16), originPosition=(50, 200))
@@ -111,7 +110,7 @@ def mainEditor():
                 if wall not in spriteGroup:
                     rectangleSprites.append(wall)
                     spriteGroup.add(wall)
-            wallSprites.append(rectangleSprites)
+            wallSprites[1] = rectangleSprites
             del rect
         elif "square" in file:
             sqr = Level(layoutFilename=path + os.sep + file, wallSize=(16, 16), originPosition=(50, 300))
@@ -119,7 +118,7 @@ def mainEditor():
                 if wall not in spriteGroup:
                     squareSprites.append(wall)
                     spriteGroup.add(wall)
-            wallSprites.append(squareSprites)
+            wallSprites[2] = squareSprites
             del sqr
         elif "straightBar" in file and file != "straightBarSmall" and "Vertical" not in file:
             strt = Level(layoutFilename=path + os.sep + file, wallSize=(16, 16), originPosition=(50, 400))
@@ -127,7 +126,7 @@ def mainEditor():
                 if wall not in spriteGroup:
                     straightbarSprites.append(wall)
                     spriteGroup.add(wall)
-            wallSprites.append(straightbarSprites)
+            wallSprites[3] = straightbarSprites
             del strt
         elif "straightBarSmall" in file and "Vertical" not in file:
             small = Level(layoutFilename=path + os.sep + file, wallSize=(16, 16), originPosition=(50, 500))
@@ -135,7 +134,7 @@ def mainEditor():
                 if wall not in spriteGroup:
                     straightbarsmallSprites.append(wall)
                     spriteGroup.add(wall)
-            wallSprites.append(straightbarsmallSprites)
+            wallSprites[4] = straightbarsmallSprites
             del small
         elif "T" in file and "Down" not in file:
             t = Level(layoutFilename=path + os.sep + file, wallSize=(16, 16), originPosition=(50, 600))
@@ -143,9 +142,10 @@ def mainEditor():
                 if wall not in spriteGroup:
                     tSprites.append(wall)
                     spriteGroup.add(wall)
-            wallSprites.append(tSprites)
+            wallSprites[5] = tSprites
             del t
 
+    wallSpritesCopy = wallSprites
     click = False
     while tf:
         # handles events
@@ -209,12 +209,23 @@ def mainEditor():
                         if not check:
                             for wall in group:
                                 if wall.drag:
-                                    wallSprites.remove(group)
-                                    specialSprites.remove(group)
-                                    group = rotate(group)
-                                    wallSprites.append(group)
-                                    specialSprites.append(group)
-                                    check = True
+                                    if group not in squareSprites:
+                                        if group in ghosthouseSprites:
+                                            idx = 0
+                                        elif group in rectangleSprites:
+                                            idx = 1
+                                        elif group in straightbarSprites:
+                                            idx = 3
+                                        elif group in straightbarsmallSprites:
+                                            idx = 4
+                                        else:
+                                            idx = 5
+                                        wallSprites.remove(group)
+                                        specialSprites.remove(group)
+                                        group = rotate(wallSpritesCopy, group, idx)
+                                        wallSprites.append(group)
+                                        specialSprites.append(group)
+                                        check = True
 
             elif event.type == pygame.MOUSEBUTTONUP:
                 if event.button == 1:
@@ -330,30 +341,95 @@ def mainEditor():
     # FIGURE OUT HOW TO MAKE THE WINDOW RESET AFTER EXITING
 
 
-def rotate(group):
-    # this function is used to rotate the the wall objects around the center
+def rotate(wallSprites, group, idx):
+    print(idx)
+    ghosthouseSpritesOther = []
+    rectangleSpritesOther = []
+    straightbarSpritesOther = []
+    straightbarsmallSpritesOther = []
+    tSpritesOther = []
+    wallSpritesOther = [0, 0, 0, 0, 0, 0]
+    groupoSprites = pygame.sprite.Group()
+    
+    path = 'WallObjects'
+    for file in os.listdir(path):
+        if "ghosthouse" in file and "Down" in file:
+            gh = Level(layoutFilename=path + os.sep + file, wallSize=(16, 16), originPosition=(50, 100))
+            for wall in gh.walls:
+                if wall not in groupoSprites:
+                    ghosthouseSpritesOther.append(wall)
+                    groupoSprites.add(wall)
+            wallSpritesOther[0] = ghosthouseSpritesOther
+            del gh
+        elif "rectangle" in file and "Vertical" in file:
+            rect = Level(layoutFilename=path + os.sep + file, wallSize=(16, 16), originPosition=(50, 200))
+            for wall in rect.walls:
+                if wall not in groupoSprites:
+                    rectangleSpritesOther.append(wall)
+                    groupoSprites.add(wall)
+            wallSpritesOther[1] = rectangleSpritesOther
+            del rect
+        elif "straightBar" in file and file != "straightBarSmall" and "Vertical" in file:
+            strt = Level(layoutFilename=path + os.sep + file, wallSize=(16, 16), originPosition=(50, 400))
+            for wall in strt.walls:
+                if wall not in groupoSprites:
+                    straightbarSpritesOther.append(wall)
+                    groupoSprites.add(wall)
+            wallSpritesOther[3] = straightbarSpritesOther
+            del strt
+        elif "straightBarSmall" in file and "Vertical" in file:
+            small = Level(layoutFilename=path + os.sep + file, wallSize=(16, 16), originPosition=(50, 500))
+            for wall in small.walls:
+                if wall not in groupoSprites:
+                    straightbarsmallSpritesOther.append(wall)
+                    groupoSprites.add(wall)
+            wallSpritesOther[4] = straightbarsmallSpritesOther
+            del small
+        elif "T" in file and "Down" in file:
+            t = Level(layoutFilename=path + os.sep + file, wallSize=(16, 16), originPosition=(50, 600))
+            for wall in t.walls:
+                if wall not in groupoSprites:
+                    tSpritesOther.append(wall)
+                    groupoSprites.add(wall)
+            wallSpritesOther[5] = tSpritesOther
+            del t
+
+    if wallSpritesOther[idx] == group:
+        temp = wallSprites[idx]
+    else:
+        temp = wallSpritesOther[idx]
     mouse = pygame.mouse.get_pos()
-    totalpointx = 0
-    totalpointy = 0
-    angle = (1 * math.pi) / 180
-    for x in group:
-        totalpointx += x.distancex
-        totalpointy += x.distancey
-    avgx = mouse[0] - totalpointx / len(group)
-    avgy = mouse[1] - totalpointy / len(group)
-    for x in group:
-        x.rect.centerx -= avgx
-        x.rect.centery -= avgy
-        pointx = x.rect.centerx
-        pointy = x.rect.centery
-        newpointx = pointx * (math.cos(angle)) - pointy * math.sin(angle)
-        newpointy = pointx * math.sin(angle) + pointy * math.cos(angle)
-        x.rect.centerx = newpointx + avgx
-        x.rect.centery = newpointy + avgy
-        x.collideRect.centerx = x.rect.centerx
-        x.collideRect.centery = x.rect.centery
-        pygame.transform.rotate(x.image, angle)
-    return group
+    for x in temp:
+        x.calculateDistance()
+        x.setCollideRect()
+        x.rect.centerx = mouse[0] - x.distancex
+        x.rect.centery = mouse[1] - x.distancey
+        x.collideRect.centerx = mouse[0] - x.distancex
+        x.collideRect.centery = mouse[1] - x.distancey
+    return temp
+    # # this function is used to rotate the the wall objects around the center
+    # mouse = pygame.mouse.get_pos()
+    # totalpointx = 0
+    # totalpointy = 0
+    # angle = (1 * math.pi) / 180
+    # for x in group:
+    #     totalpointx += x.distancex
+    #     totalpointy += x.distancey
+    # avgx = mouse[0] - totalpointx / len(group)
+    # avgy = mouse[1] - totalpointy / len(group)
+    # for x in group:
+    #     x.rect.centerx -= avgx
+    #     x.rect.centery -= avgy
+    #     pointx = x.rect.centerx
+    #     pointy = x.rect.centery
+    #     newpointx = pointx * (math.cos(angle)) - pointy * math.sin(angle)
+    #     newpointy = pointx * math.sin(angle) + pointy * math.cos(angle)
+    #     x.rect.centerx = newpointx + avgx
+    #     x.rect.centery = newpointy + avgy
+    #     x.collideRect.centerx = x.rect.centerx
+    #     x.collideRect.centery = x.rect.centery
+    #     pygame.transform.rotate(x.image, angle)
+    # return group
 
 
 def collisionDetection(rect, othersprites):

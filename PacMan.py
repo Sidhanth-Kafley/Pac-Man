@@ -32,7 +32,15 @@ class PacMan(pygame.sprite.Sprite):
         # sets the object's position and size on the background
         self.position = position
         self.rect = pygame.Rect(position, self.size)
-        self.collisionRect = pygame.Rect(position, (32, 32))
+        self.collisionRect = pygame.Rect(position, (16, 16))
+        self.collisionRectTop = pygame.Rect(position, (16, 16))
+        self.collisionRectTop.bottom = self.collisionRect.top
+        self.collisionRectBottom = pygame.Rect(position, (16, 16))
+        self.collisionRectBottom.top = self.collisionRect.bottom
+        self.collisionRectLeft = pygame.Rect(position, (16, 16))
+        self.collisionRectLeft.right = self.collisionRect.left
+        self.collisionRectRight = pygame.Rect(position, (16, 16))
+        self.collisionRectRight.left = self.collisionRect.right
         # sets the current image (closed circle to start)
         self.image = self.images[1]
         self.loadDeathImages()
@@ -152,22 +160,20 @@ class PacMan(pygame.sprite.Sprite):
         del pill
         return False
 
-    def checkMove(self, direction, potentialCollidingWalls, level1):
-        # for wallIndex in potentialCollidingWalls.walls:
-        #     if self.collisionRect.colliderect(wallIndex):
-        #         if "left" in direction:
-        #             if self.collisionRect.left == wallIndex.rect.right: # self.collisionRect.collidepoint(wallIndex.rect.x, wallIndex.rect.y) and wallIndex.rect.center[0] < self.collisionRect.center[0]:
-        #                 return False
-        #         elif "right" in direction:
-        #             if self.collisionRect.right == wallIndex.rect.left: # self.collisionRect.collidepoint(wallIndex.rect.x, wallIndex.rect.y) and wallIndex.rect.center[0] > self.collisionRect.center[0]:
-        #                 return False
-        #         elif "up" in direction:
-        #             if self.collisionRect.top == wallIndex.rect.bottom: # self.collisionRect.collidepoint(wallIndex.rect.x, wallIndex.rect.y) and wallIndex.rect.center[1] < self.collisionRect.center[1]:
-        #                 return False
-        #         elif "down" in direction:
-        #             if self.collisionRect.bottom == wallIndex.rect.top: # self.collisionRect.collidepoint(wallIndex.rect.x, wallIndex.rect.y) and wallIndex.rect.center[1] > self.collisionRect.center[1]:
-        #                 return False
-           # if self.rect.colliderect(level1.walls[wallIndex]):
+    def checkMove(self, direction, level):
+        for wall in level.walls:
+            if direction == "up":
+                if wall.rect.colliderect(self.collisionRectTop):
+                    return False
+            elif direction == "down":
+                if wall.rect.colliderect(self.collisionRectBottom):
+                    return False
+            elif direction == "left":
+                if wall.rect.colliderect(self.collisionRectLeft):
+                    return False
+            elif direction == "right":
+                if wall.rect.colliderect(self.collisionRectRight):
+                    return False
         return True
 
     def getTotalPoints(self):
