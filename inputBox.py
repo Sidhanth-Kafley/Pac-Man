@@ -11,12 +11,13 @@ FONT_COLOR_ACTIVE = pygame.Color('blue')
 
 
 class InputBox:
-    def __init__(self, xCoord, yCoord, width, height, score, text=''):
+    def __init__(self, xCoord, yCoord, width, height, score, typeOfBox, text=''):
         self.xCoord = xCoord
         self.yCoord = yCoord
         self.width = width
         self.height = height
         self.score = score
+        self.type = typeOfBox
         self.text = text
         self.active = False
         self.color = FONT_COLOR
@@ -55,7 +56,7 @@ class InputBox:
         # if the user presses a key on the keyboard, then get the input
         if event.type == pygame.KEYDOWN:
             if self.active and self.appear:
-                if event.key == pygame.K_RETURN:
+                if event.key == pygame.K_RETURN and self.type == "scores":
                     newScore = HighScores()
                     # determine if it is the top score
                     self.message = newScore.determineTopScore(self.score)

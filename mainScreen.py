@@ -434,7 +434,7 @@ def displayGameOver(pacMan, window):
     # display button to play again
     click = False
     isRunning = True
-    highScoreInputBox = InputBox(365, 150, 140, 32, pacMan.getTotalPoints())
+    highScoreInputBox = InputBox(365, 150, 140, 32, pacMan.getTotalPoints(), "scores")
 
     while isRunning:
         screen.fill(BACKGROUND_COLOR)
