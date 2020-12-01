@@ -9,6 +9,8 @@ class PathingGridController(pygame.sprite.Sprite):
     currentLevel = 0
     cellWidth = 0
     cellHeight = 0
+    roomWidth = 0
+    roomHeight = 0
     gridWidth = 0
     gridHeight = 0
     gridContents = []
@@ -22,6 +24,8 @@ class PathingGridController(pygame.sprite.Sprite):
         self.currentLevel = currentLevel
         self.cellWidth = cellWidth
         self.cellHeight = cellHeight
+        self.roomWidth = roomWidth
+        self.roomHeight = roomHeight
         self.gridWidth = math.floor(roomWidth / cellWidth)
         self.gridHeight = math.floor(roomHeight / cellHeight)
 
@@ -36,6 +40,3 @@ class PathingGridController(pygame.sprite.Sprite):
             wallCellX = math.floor(self.currentLevel.walls[i].position[0] / self.cellWidth)
             wallCellY = math.floor(self.currentLevel.walls[i].position[1] / self.cellHeight)
             self.gridContents[wallCellY][wallCellX] = 1
-
-
-

@@ -2,6 +2,7 @@ import pygame
 import pygame_gui
 import sys
 import os
+import math
 import LevelEditor
 from PacMan import PacMan
 from Ghost import Ghost
@@ -287,6 +288,13 @@ def game(game="1"):
         time_delta = clock.tick_busy_loop(60) / 1000.0
 
         screen.fill(BACKGROUND_COLOR)
+
+        # activate ghost pathfinding
+        pacCellX = math.floor(pacMan.rect.x / pathingGrid.cellWidth)
+        pacCellY = math.floor(pacMan.rect.y / pathingGrid.cellHeight)
+        for ghost in ghosts:
+            ghost.pathfindToPoint(pacCellX, pacCellY)
+
         # determine if a wall is colliding
         collidingWallTop = False
         collidingWallBottom = False

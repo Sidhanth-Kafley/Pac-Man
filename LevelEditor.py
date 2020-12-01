@@ -62,28 +62,31 @@ def mainEditor():
     pill.append(pll)
     pillSpriteGroup.add(pll)
 
+    pathingGrid = PathingGridController(mainScreen.level, mainScreen.CELL_SIZE, mainScreen.CELL_SIZE, mainScreen.MAX_WIDTH,
+                                        mainScreen.MAX_HEIGHT)
+
     # create ghost objects
     blueGhostImages = mainScreen.loadImages(path='BlueGhostSprites')
     blueGhost = Ghost('blue', position=(800, 350), size=(SPRITE_SIZE, SPRITE_SIZE),
-                      images=blueGhostImages)
+                      images=blueGhostImages, pathingGridController=pathingGrid)
     ghostsAndPacman.append(blueGhost)
     characterSpriteGroup.add(blueGhost)
 
     orangeGhostImages = mainScreen.loadImages(path='OrangeGhostSprites')
     orangeGhost = Ghost('orange', position=(800, 300), size=(SPRITE_SIZE, SPRITE_SIZE),
-                        images=orangeGhostImages)
+                        images=orangeGhostImages, pathingGridController=pathingGrid)
     ghostsAndPacman.append(orangeGhost)
     characterSpriteGroup.add(orangeGhost)
 
     pinkGhostImages = mainScreen.loadImages(path='PinkGhostSprites')
     pinkGhost = Ghost('pink', position=(800, 250), size=(SPRITE_SIZE, SPRITE_SIZE),
-                      images=pinkGhostImages)
+                      images=pinkGhostImages, pathingGridController=pathingGrid)
     ghostsAndPacman.append(pinkGhost)
     characterSpriteGroup.add(pinkGhost)
 
     redGhostImages = mainScreen.loadImages(path='RedGhostSprites')
     redGhost = Ghost('red', position=(800, 400), size=(SPRITE_SIZE, SPRITE_SIZE),
-                     images=redGhostImages)
+                     images=redGhostImages, pathingGridController=pathingGrid)
     ghostsAndPacman.append(redGhost)
     characterSpriteGroup.add(redGhost)
 
