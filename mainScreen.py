@@ -204,6 +204,55 @@ def credits():
         mainClock.tick(10)
 
 
+def pauseGame():
+
+    pause = True
+
+    click = False
+    while pause:
+        screen.fill((BACKGROUND_COLOR))
+        drawText('Game made by', titleFont, (255, 255, 255), screen, 300, 250)
+
+        mousePosition = pygame.mouse.get_pos()
+
+        button9 = pygame.Rect(int(MAX_HEIGHT / 2.5), int(MAX_WIDTH / 3.0), 250, 50)
+        button10 = pygame.Rect(int(MAX_HEIGHT / 2.5), int(MAX_WIDTH / 2.4), 250, 50)
+
+        if button9.collidepoint((mousePosition[0], mousePosition[1])):
+            if click:
+                pause = False
+
+
+        if button10.collidepoint((mousePosition[0], mousePosition[1])):
+            if click:
+                mainMenu()
+
+        if MAX_HEIGHT / 2.5 + 250 > mousePosition[0] > MAX_HEIGHT / 2.5 and MAX_WIDTH / 3.0 + 50 > mousePosition[
+            1] > MAX_WIDTH / 3.0:
+            pygame.draw.rect(screen, (0, 190, 0), button9)
+        else:
+            pygame.draw.rect(screen, (0, 255, 0), button9)
+
+        drawText('Play', font, (255, 255, 255), screen, MAX_HEIGHT / 2.0, MAX_WIDTH / 2.9)
+
+        if MAX_HEIGHT / 2.5 + 250 > mousePosition[0] > MAX_HEIGHT / 2.5 and MAX_WIDTH / 2.4 + 50 > mousePosition[
+            1] > MAX_WIDTH / 2.4:
+            pygame.draw.rect(screen, (0, 190, 0), button10)
+        else:
+            pygame.draw.rect(screen, (0, 255, 0), button10)
+
+        drawText('Main Menu', font, (255, 255, 255), screen, MAX_HEIGHT / 2.3, MAX_WIDTH / 2.32)
+
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    click = True
+
+        pygame.display.update()
+
 def game(game="1"):
     # Initiate game and window
     pygame.init()
@@ -276,7 +325,7 @@ def game(game="1"):
 
     # start main background music
     backgroundMusic = pygame.mixer.Sound("Music/PacManBeginning.wav")
-    backgroundMusic.play(0)
+    #backgroundMusic.play(0)
 
     count = 0
     # initial wait until game starts
@@ -308,6 +357,8 @@ def game(game="1"):
                 elif event.key == pygame.K_DOWN and pacMan.checkMove("down", level):
                     pacMan.velocity.x = 0
                     pacMan.velocity.y = 1.5
+                elif event.key == pygame.K_ESCAPE:
+                    pauseGame()
 
             manager.process_events(event)
 
