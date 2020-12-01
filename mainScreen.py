@@ -211,7 +211,7 @@ def pauseGame():
     click = False
     while pause:
         screen.fill((BACKGROUND_COLOR))
-        drawText('Game made by', titleFont, (255, 255, 255), screen, 300, 250)
+        drawText('Game Paused', titleFont, (255, 255, 255), screen, 300, 250)
 
         mousePosition = pygame.mouse.get_pos()
 
