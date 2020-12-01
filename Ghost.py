@@ -45,6 +45,8 @@ class Ghost(pygame.sprite.Sprite):
         self.closedCells = []
         self.openCells = []
         self.pathCells = []
+        self.nextPathCell = []
+        self.nextPathCellIterator = 1
 
         # set speed of the ghost
         self.velocity = pygame.math.Vector2()
@@ -61,12 +63,46 @@ class Ghost(pygame.sprite.Sprite):
         self.prevCellY = self.cellY
         self.cellX = math.floor(self.rect.x / self.pathingController.cellWidth)
         self.cellY = math.floor(self.rect.y / self.pathingController.cellHeight)
+        cw = self.pathingController.cellWidth
+        ch = self.pathingController.cellHeight
 
-        # if ghost can move, then move ghost
-        if self.moving:
-            # self.moveGhosts()
-            self.rect.x += self.moveX
-            self.rect.y += self.moveY
+        if len(self.pathCells) > 1:
+            self.nextPathCell = self.pathCells[len(self.pathCells) - self.nextPathCellIterator]
+            if self.moveToPoint(self.nextPathCell[0] * cw, self.nextPathCell[1] * ch, 2):
+                self.nextPathCellIterator += 1
+
+            if self.rect.x == self.pathCells[0][0] * cw and self.rect.y == self.pathCells[0][1] * ch:
+                self.nextPathCell = []
+                self.nextPathCellIterator = 1
+                self.pathCells.clear()
+
+        # # move the ghost to its next path cell if a path is found
+        # if len(self.pathCells) > 1:
+        #     if self.nextPathCell == []:
+        #         self.nextPathCell = self.pathCells[len(self.pathCells) - 1]
+        #
+        #     if self.rect.x != self.nextPathCell[0] * cw:
+        #         self.velocity.x = 1 * math.copysign(1, self.nextPathCell[0] * cw - self.rect.x)
+        #         self.velocity.y = 0
+        #     if self.rect.y != self.nextPathCell[1] * ch:
+        #         self.velocity.y = 1 * math.copysign(1, self.nextPathCell[1] * ch - self.rect.y)
+        #         self.velocity.x = 0
+        #
+        #     # begin moving to the next cell in the path
+        #     if self.rect.x == self.nextPathCell[0] * cw and self.rect.y == self.nextPathCell[1] * ch:
+        #     #if self.rect.x == self.nextPathCell[0] * cw:
+        #         self.nextPathCellIterator += 1
+        #         self.nextPathCell = self.pathCells[len(self.pathCells) - self.nextPathCellIterator]
+        #
+        #     # stop the ghost once it reaches its target cell
+        #     if self.rect.x == self.pathCells[0][0] * cw:
+        #         self.velocity.x = 0
+        #     if self.rect.y == self.pathCells[0][1] * ch:
+        #         self.velocity.y = 0
+        #     if self.rect.x == self.pathCells[0][0] * cw and self.rect.y == self.pathCells[0][1] * ch:
+        #         self.nextPathCell = []
+        #         self.nextPathCellIterator = 1
+        #         self.pathCells.clear()
 
         # power up ghost
         if self.powerUpMode:
@@ -74,16 +110,16 @@ class Ghost(pygame.sprite.Sprite):
         elif not self.powerUpMode:
             self.index = 1
         # ghost moving down
-        elif self.moveX == 0 and self.moveY > 0:
+        elif self.velocity.x == 0 and self.velocity.y > 0:
             self.index = 0
         # ghost moving left
-        elif self.moveX < 0 and self.moveY == 0:
+        elif self.velocity.x < 0 and self.velocity.y == 0:
             self.index = 1
         # ghost moving right
-        elif self.moveX > 0 and self.moveY == 0:
+        elif self.velocity.x > 0 and self.velocity.y == 0:
             self.index = 2
         # ghost moving up
-        elif self.moveX == 0 and self.moveY < 0:
+        elif self.velocity.x == 0 and self.velocity.y < 0:
             self.index = 3
 
         # update location in pathing controller grid, clear past location
@@ -91,8 +127,24 @@ class Ghost(pygame.sprite.Sprite):
             self.pathingController.gridContents[self.cellY][self.cellX] = 1
             self.pathingController.gridContents[self.prevCellY][self.prevCellX] = 0
 
+        self.rect.move_ip(*self.velocity)
+
         # update the image of ghost
         self.image = self.images[self.index]
+
+    def moveToPoint(self, targetX, targetY, magnitude):
+        if self.rect.x > targetX:
+            self.velocity.x = -magnitude
+        if self.rect.x < targetX:
+            self.velocity.x = magnitude
+        if self.rect.y > targetY:
+            self.velocity.y = -magnitude
+        if self.rect.y < targetY:
+            self.velocity.y = magnitude
+        if abs(self.rect.x - targetX) <= magnitude and abs(self.rect.y - targetY) <= magnitude:
+            self.velocity.x = 0
+            self.velocity.y = 0
+            return True
 
     # helper function for pathfindToPoint for searching through a list
     def isInOpenCells(self, list, element):
@@ -113,16 +165,14 @@ class Ghost(pygame.sprite.Sprite):
         self.isPathing = True
         self.closedCells.clear()
         self.openCells.clear()
-        self.pathCells.clear()
         openCellsHistory = []
 
         # re-initialize currentPathCell
-
         self.currentPathCell = [self.cellX, self.cellY, self.cellX, self.cellY, 0, 0]
 
-        test = 0
+        pathingAttemptLimiter = 0
         while self.isPathing:
-            test += 1
+            pathingAttemptLimiter += 1
             # check if target cell has been reached
             if abs(self.currentPathCell[0] - targetCellX) <= 1 and abs(self.currentPathCell[1] - targetCellY) <= 1:
                 self.isPathing = False
@@ -184,18 +234,23 @@ class Ghost(pygame.sprite.Sprite):
 
             # add neighboring cell with smallest f score to closedCells
             self.closedCells.append(self.currentPathCell)
-            if test == len(pathingGrid) * len(pathingGrid[0]):
+            if pathingAttemptLimiter == len(pathingGrid) * len(pathingGrid[0]):
                 self.isPathing = False
 
         # retrace the path through the closed cells
-        self.pathCells.append(self.closedCells[len(self.closedCells) - 1])
-        for i in range(len(self.closedCells) - 1):
-            prevIndex = self.getPrevClosedCellIndex(self.closedCells, self.pathCells[i])
-            self.pathCells.append(self.closedCells[prevIndex])
+        if len(self.closedCells) > 0:
+            self.pathCells.clear()
+            self.nextPathCellIterator = 1
+            self.pathCells.append(self.closedCells[len(self.closedCells) - 1])
+            for i in range(len(self.closedCells) - 1):
+                prevIndex = self.getPrevClosedCellIndex(self.closedCells, self.pathCells[i])
+                self.pathCells.append(self.closedCells[prevIndex])
 
-            # break once the starting cell is reached
-            if self.closedCells[prevIndex] == self.closedCells[0]:
-                break
+                # break once the starting cell is reached
+                if self.closedCells[prevIndex] == self.closedCells[0]:
+                    break
+
+        # note: ghosts will move automatically to their next path cell in their update function
 
 
     # get the color of the ghost

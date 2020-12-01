@@ -238,28 +238,28 @@ def game(game="1"):
 
         # create blue ghost object
         blueGhostImages = loadImages(path='BlueGhostSprites')
-        blueGhost = Ghost('blue', position=(504, 390), size=(2 * CELL_SIZE, 2 * CELL_SIZE), images=blueGhostImages,
+        blueGhost = Ghost('blue', position=(504, 390), size=(CELL_SIZE, CELL_SIZE), images=blueGhostImages,
                           pathingGridController=pathingGrid)
         ghosts.append(blueGhost)
 
         # create orange ghost object
         orangeGhostImages = loadImages(path='OrangeGhostSprites')
-        orangeGhost = Ghost('orange', position=(464, 390), size=(2 * CELL_SIZE, 2 * CELL_SIZE),images=orangeGhostImages,
+        orangeGhost = Ghost('orange', position=(464, 390), size=(CELL_SIZE, CELL_SIZE),images=orangeGhostImages,
                             pathingGridController=pathingGrid)
         ghosts.append(orangeGhost)
 
         # create pink ghost object
         pinkGhostImages = loadImages(path='PinkGhostSprites')
-        pinkGhost = Ghost('pink', position=(434, 390), size=(2 * CELL_SIZE, 2 * CELL_SIZE), images=pinkGhostImages,
+        pinkGhost = Ghost('pink', position=(434, 390), size=(CELL_SIZE, CELL_SIZE), images=pinkGhostImages,
                           pathingGridController=pathingGrid)
         ghosts.append(pinkGhost)
 
         # create red ghost object
         redGhostImages = loadImages(path='RedGhostSprites')
-        redGhost = Ghost('red', position=(465, 320), size=(2 * CELL_SIZE, 2 * CELL_SIZE), images=redGhostImages,
+        redGhost = Ghost('red', position=(465, 320), size=(CELL_SIZE, CELL_SIZE), images=redGhostImages,
                          pathingGridController=pathingGrid)
         ghosts.append(redGhost)
-        #pathingGrid.drawGrid(background)
+        pathingGrid.drawGrid(background)
     else:
         pathingGrid = PathingGridController(level, CELL_SIZE, CELL_SIZE, MAX_WIDTH, MAX_HEIGHT)
         pacMan = level.pacmanAndGhost[0]
@@ -293,15 +293,6 @@ def game(game="1"):
 
         screen.fill(BACKGROUND_COLOR)
 
-        # activate ghost pathfinding
-        pacCellX = math.floor(pacMan.rect.x / pathingGrid.cellWidth)
-        pacCellY = math.floor(pacMan.rect.y / pathingGrid.cellHeight)
-
-        if pacMan.velocity.x != 0 or pacMan.velocity.y != 0:
-            ghosts[3].pathfindToPoint(pacCellX, pacCellY)
-            #pathingGrid.drawCellsList(background, ghosts[3].closedCells, (255, 255, 0))
-            pathingGrid.drawCellsList(background, ghosts[3].pathCells, (0, 255, 255))
-
         # determine if a wall is colliding
         collidingWallTop = False
         collidingWallBottom = False
@@ -327,12 +318,16 @@ def game(game="1"):
             if pacMan.rect.colliderect(level.walls[wallIndex]):
                 if pacMan.velocity.x < 0:
                     pacMan.rect.left = level.walls[wallIndex].rect.right
+                    collidingWallLeft = True
                 if pacMan.velocity.x > 0:
                     pacMan.rect.right = level.walls[wallIndex].rect.left
+                    collidingWallRight = True
                 if pacMan.velocity.y < 0:
                     pacMan.rect.top = level.walls[wallIndex].rect.bottom
+                    collidingWallTop = True
                 if pacMan.velocity.y > 0:
                     pacMan.rect.bottom = level.walls[wallIndex].rect.top
+                    collidingWallBottom = True
 
         # handles events
 
@@ -364,17 +359,17 @@ def game(game="1"):
             for wallIndex in potentialCollidingWalls:
                 pygame.draw.rect(background, purpleColor, level.walls[wallIndex].rect)
 
-        #for ghost in ghosts:
-            #pygame.draw.rect(background, purpleColor, ghost.rect)
+        for ghost in ghosts:
+            pygame.draw.rect(background, purpleColor, ghost.rect)
 
-        if collidingWallRight:
-            pacMan.velocity.x = min(0, max(pacMan.velocity.x, (-pacMan.baseMoveSpeed) * pacMan.powerUp))
-        if collidingWallLeft:
-            pacMan.velocity.x = max(0, min(pacMan.velocity.x, pacMan.baseMoveSpeed * pacMan.powerUp))
-        if collidingWallTop:
-            pacMan.velocity.y = max(0, min(pacMan.velocity.y, pacMan.baseMoveSpeed * pacMan.powerUp))
-        if collidingWallBottom:
-            pacMan.velocity.y = min(0, max(pacMan.velocity.y, (-pacMan.baseMoveSpeed) * pacMan.powerUp))
+        #if collidingWallRight:
+        #    pacMan.velocity.x = min(0, max(pacMan.velocity.x, (-pacMan.baseMoveSpeed) * pacMan.powerUp))
+        #if collidingWallLeft:
+        #    pacMan.velocity.x = max(0, min(pacMan.velocity.x, pacMan.baseMoveSpeed * pacMan.powerUp))
+        #if collidingWallTop:
+        #    pacMan.velocity.y = max(0, min(pacMan.velocity.y, pacMan.baseMoveSpeed * pacMan.powerUp))
+        #if collidingWallBottom:
+        #    pacMan.velocity.y = min(0, max(pacMan.velocity.y, (-pacMan.baseMoveSpeed) * pacMan.powerUp))
 
         if pygame.sprite.spritecollide(pacMan, ghosts, False):
             if pacMan.powerUp == 1:
@@ -411,6 +406,15 @@ def game(game="1"):
             pacMan.velocity.y = pacMan.velocity.y / pacMan.powerUp
             for ghost in ghosts:
                 ghost.setPowerUpMode()
+
+        # activate ghost pathfinding
+        pacCellX = math.floor(pacMan.rect.x / pathingGrid.cellWidth)
+        pacCellY = math.floor(pacMan.rect.y / pathingGrid.cellHeight)
+        pathingGrid.drawGrid(background)
+        if not collidingWallRight and not collidingWallBottom and not collidingWallLeft and not collidingWallTop:
+            ghosts[3].pathfindToPoint(pacCellX, pacCellY)
+            # pathingGrid.drawCellsList(background, ghosts[3].closedCells, (255, 255, 0))
+            pathingGrid.drawCellsList(background, ghosts[3].pathCells, (0, 255, 255))
 
         # manager.update(time_delta)
         window.blit(background, (0, 0))
