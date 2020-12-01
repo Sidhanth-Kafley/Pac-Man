@@ -39,6 +39,7 @@ class Ghost(pygame.sprite.Sprite):
         self.prevCellY = self.cellY
 
         # initialize pathfinding variables
+        self.pathingController.gridContents[self.cellY][self.cellX] = 1
         self.isPathing = False
         self.currentPathCell = [-1, 0, 0, 0, 0, 0]
         self.closedCells = []
@@ -87,22 +88,34 @@ class Ghost(pygame.sprite.Sprite):
 
         # update location in pathing controller grid, clear past location
         if self.prevCellX != self.cellX or self.prevCellY != self.cellY:
-            self.pathingController.gridContents[cellY][cellX] = 1
-            self.pathingController.gridContents[prevCellY][prevCellX] = 0
-
+            self.pathingController.gridContents[self.cellY][self.cellX] = 1
+            self.pathingController.gridContents[self.prevCellY][self.prevCellX] = 0
 
         # update the image of ghost
         self.image = self.images[self.index]
 
+    # helper function for pathfindToPoint for searching through a list
+    def isInList(self, list, element):
+        for item in list:
+            if element == item:
+                return True
+        return False
+
     # use A* to pathfind to a given cell in the grid
     def pathfindToPoint(self, targetCellX, targetCellY):
         self.isPathing = True
+        self.closedCells.clear()
+        self.openCells.clear()
 
         # re-initialize currentPathCell
         if self.currentPathCell[0] == -1:
             self.currentPathCell = [self.cellX, self.cellY, self.cellX, self.cellY, 0, 0]
 
+        test = 0
+
         while self.isPathing:
+
+            test += 1
 
             # check if target cell has been reached
             if abs(self.currentPathCell[0] - targetCellX) <= 1 and abs(self.currentPathCell[1] - targetCellY) <= 1:
@@ -159,6 +172,7 @@ class Ghost(pygame.sprite.Sprite):
                 if self.openCells[i][4] < minFScore:
                     minFScore = self.openCells[i][4]
                     self.currentPathCell = self.openCells[i]
+                    print(self.openCells[i])
             self.currentPathCell.append(len(self.closedCells))
             self.currentPathCell.append(cpcPrevIndex)
 
@@ -166,8 +180,8 @@ class Ghost(pygame.sprite.Sprite):
             # add neighboring cell with smallest f score to closedCells
             self.closedCells.append(self.currentPathCell)
 
-            self.isPathing = False
-        print("done test")
+            if test == 3:
+                self.isPathing = False
 
     # get the color of the ghost
     def getGhostColor(self):

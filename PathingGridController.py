@@ -40,3 +40,15 @@ class PathingGridController(pygame.sprite.Sprite):
             wallCellX = math.floor(self.currentLevel.walls[i].position[0] / self.cellWidth)
             wallCellY = math.floor(self.currentLevel.walls[i].position[1] / self.cellHeight)
             self.gridContents[wallCellY][wallCellX] = 1
+
+    # function draws grid for debugging and level building
+    def drawGrid(self, background):
+        for i in range(self.gridHeight):
+            pygame.draw.line(background, (255, 255, 255), (0, i * self.cellHeight), (self.roomWidth, i * self.cellHeight))
+        for i in range(self.gridWidth):
+            pygame.draw.line(background, (255, 255, 255), (i * self.cellWidth, 0), (i * self.cellWidth, self.roomHeight))
+
+        for i in range(len(self.gridContents)):
+            for j in range(len(self.gridContents[i])):
+                if self.gridContents[i][j] == 1:
+                    pygame.draw.rect(background, (255, 0, 0), pygame.Rect(j * self.cellWidth, i * self.cellHeight, self.cellWidth, self.cellHeight))

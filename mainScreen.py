@@ -212,12 +212,14 @@ def game(game="1"):
 
     # create level object
     customLevel = False
+    levelOriginX = int(MAX_WIDTH / 5) + int(MAX_WIDTH / 5) % CELL_SIZE
+    levelOriginY = int(MAX_HEIGHT / 12) - int(MAX_HEIGHT / 12) % CELL_SIZE
     if game == "1":
         level = Level(layoutFilename='Levels/level1alt.txt', wallSize=(CELL_SIZE, CELL_SIZE),
-                      originPosition=(int(MAX_WIDTH / 5), int(MAX_HEIGHT / 12) - 2))
+                      originPosition=(levelOriginX, levelOriginY))
     elif game == "2":
         level = Level(layoutFilename='Levels/level2.txt', wallSize=(CELL_SIZE, CELL_SIZE),
-                      originPosition=(int(MAX_WIDTH / 5), int(MAX_HEIGHT / 12) - 2))
+                      originPosition=(levelOriginX, levelOriginY))
     else:
         # call level parser to create custom level object
         level = LevelEditor.parseCustomLevel(game)
@@ -236,19 +238,19 @@ def game(game="1"):
 
         # create blue ghost object
         blueGhostImages = loadImages(path='BlueGhostSprites')
-        blueGhost = Ghost('blue', position=(500, 390), size=(2 * CELL_SIZE, 2 * CELL_SIZE), images=blueGhostImages,
+        blueGhost = Ghost('blue', position=(504, 390), size=(2 * CELL_SIZE, 2 * CELL_SIZE), images=blueGhostImages,
                           pathingGridController=pathingGrid)
         ghosts.append(blueGhost)
 
         # create orange ghost object
         orangeGhostImages = loadImages(path='OrangeGhostSprites')
-        orangeGhost = Ghost('orange', position=(465, 390), size=(2 * CELL_SIZE, 2 * CELL_SIZE),images=orangeGhostImages,
+        orangeGhost = Ghost('orange', position=(464, 390), size=(2 * CELL_SIZE, 2 * CELL_SIZE),images=orangeGhostImages,
                             pathingGridController=pathingGrid)
         ghosts.append(orangeGhost)
 
         # create pink ghost object
         pinkGhostImages = loadImages(path='PinkGhostSprites')
-        pinkGhost = Ghost('pink', position=(430, 390), size=(2 * CELL_SIZE, 2 * CELL_SIZE), images=pinkGhostImages,
+        pinkGhost = Ghost('pink', position=(434, 390), size=(2 * CELL_SIZE, 2 * CELL_SIZE), images=pinkGhostImages,
                           pathingGridController=pathingGrid)
         ghosts.append(pinkGhost)
 
@@ -257,6 +259,8 @@ def game(game="1"):
         redGhost = Ghost('red', position=(465, 320), size=(2 * CELL_SIZE, 2 * CELL_SIZE), images=redGhostImages,
                          pathingGridController=pathingGrid)
         ghosts.append(redGhost)
+        print(pinkGhost.pathingController.gridContents[pinkGhost.cellY][pinkGhost.cellX])
+        pathingGrid.drawGrid(background)
     else:
         pacMan = level.pacmanAndGhost[0]
         blueGhost = level.pacmanAndGhost[1]
@@ -312,8 +316,9 @@ def game(game="1"):
         # This list contains every wall that pacMan is colliding with, but may also contain some he doesn't.
         potentialCollidingWalls = pacManCollisionRect.collidelistall(level.walls)
         greenColor = Color(0, 255, 0, a=100)
-        for wall in level.walls:
-            pygame.draw.rect(background, greenColor, wall.rect)
+
+        #for wall in level.walls:
+            #pygame.draw.rect(background, greenColor, wall.rect)
 
         for wallIndex in potentialCollidingWalls:
             if pacMan.rect.colliderect(level.walls[wallIndex]):
@@ -351,9 +356,13 @@ def game(game="1"):
         whiteColor = Color(255, 255, 255, a=100)
         # pygame.draw.rect(background, redColor, pacMan.rect)
         # pygame.draw.rect(background, whiteColor, pacManCollisionRect)
+
         if potentialCollidingWalls != -1 and potentialCollidingWalls != []:
             for wallIndex in potentialCollidingWalls:
                 pygame.draw.rect(background, purpleColor, level.walls[wallIndex].rect)
+
+        #for ghost in ghosts:
+            #pygame.draw.rect(background, purpleColor, ghost.rect)
 
         if collidingWallRight:
             pacMan.velocity.x = min(0, max(pacMan.velocity.x, (-pacMan.baseMoveSpeed) * pacMan.powerUp))
@@ -404,7 +413,7 @@ def game(game="1"):
         window.blit(background, (0, 0))
         manager.draw_ui(window)
         # ADDED TO RESET SCREEN
-        pygame.draw.rect(screen, BACKGROUND_COLOR, (0, 0, 800, 1000))
+        # pygame.draw.rect(screen, BACKGROUND_COLOR, (0, 0, 800, 1000))
         # display the health bar at the bottom
         if pacMan.startingHealth - 1 == 2:
             window.blit(healthBar, (20, MAX_HEIGHT - 50))
