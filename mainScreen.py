@@ -264,6 +264,10 @@ def game(game="1"):
     # health bar at the top of the screen
     healthBar = pygame.transform.scale(images[2], (int(24), int(24)))
 
+    # portals to go to other side of screen
+    leftPortal = pygame.Rect(160, 200, 40, 500)
+    rightPortal = pygame.Rect(760, 200, 40, 500)
+
     allSprites = pygame.sprite.Group(pacMan, blueGhost, orangeGhost, pinkGhost, redGhost, level.walls)
 
     # clock used for framerate
@@ -274,8 +278,9 @@ def game(game="1"):
     backgroundMusic = pygame.mixer.Sound("Music/PacManBeginning.wav")
     backgroundMusic.play(0)
 
-    powermode = False
     count = 0
+    # initial wait until game starts
+    pygame.time.delay(2000)
     while isRunning:
         # times per second this loop runs
         time_delta = clock.tick_busy_loop(60) / 1000.0
@@ -283,8 +288,7 @@ def game(game="1"):
         screen.fill(BACKGROUND_COLOR)
         # determine if a wall is colliding
 
-        # Create a new rect to detect collisions with pacMan that is slightly larger than pacMan's rect,
-        # because the collidelistall function tests if rects overlap, not if they touch.
+        # check if pacman is running into any walls
         pacMan.checkMotion(level)
 
         # handles events
@@ -309,15 +313,17 @@ def game(game="1"):
 
         if pygame.sprite.spritecollide(pacMan, ghosts, False):
             if not pacMan.powerUp:
-                pacManDeath = pygame.mixer.Sound("Music/PacManDeath.wav")
-                pacManDeath.play(0)
-                pacMan.deathAnimation()
+                if not pacMan.death:
+                    pacManDeath = pygame.mixer.Sound("Music/PacManDeath.wav")
+                    pacManDeath.play(0)
+                    pacMan.deathAnimation()
             else:
                 pacManEatGhost = pygame.mixer.Sound("Music/PacManEatGhost.wav")
-                pacManEatGhost.play(0)
                 for x in ghosts:
                     if pacMan.rect.colliderect(x.rect):
-                        pacMan.eatGhost(x)
+                        if not x.eaten:
+                            pacManEatGhost.play(0)
+                            pacMan.eatGhost(x)
 
         if pygame.sprite.spritecollide(pacMan, pillGroup, False):
             pacManChomp = pygame.mixer.Sound("Music/PacManChomp.wav")
@@ -342,6 +348,12 @@ def game(game="1"):
             for ghost in ghosts:
                 ghost.setPowerUpMode()
 
+        # pacMan portal code
+        if pacMan.collisionRectRight.right == leftPortal.right and pacMan.collisionRect.colliderect(leftPortal):
+            pacMan.rect.right = rightPortal.centerx
+        elif pacMan.collisionRectLeft.left == rightPortal.left and pacMan.collisionRect.colliderect(rightPortal):
+            pacMan.rect.left = leftPortal.centerx
+
         # manager.update(time_delta)
         window.blit(background, (0, 0))
         manager.draw_ui(window)
@@ -357,10 +369,6 @@ def game(game="1"):
             displayGameOver(pacMan, window, game)
         # display score
         window.blit(pacMan.renderScore(32), (10, 10))
-
-        # inefficient collision for testing, should be handled in PacMan movement code instead
-        # for wall in level1.walls:
-        #     wall.collision(pacMan)
 
         # ensures that the pacMan and ghosts won't go off screen
         pacMan.rect.clamp_ip(windowRect)
@@ -380,6 +388,8 @@ def game(game="1"):
             # TODO: Not the best way to cover up old game
             pygame.draw.rect(screen, BACKGROUND_COLOR, (0, 100, 202, 620))
             pygame.draw.rect(screen, BACKGROUND_COLOR, (800, 200, 100, 300))
+        pygame.draw.rect(screen, (0, 0, 0), leftPortal)
+        pygame.draw.rect(screen, (0, 0, 0), rightPortal)
         pygame.display.update()
 
     pygame.mixer.music.stop()

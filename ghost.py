@@ -31,6 +31,7 @@ class Ghost(pygame.sprite.Sprite):
         self.changeDirection = False
         self.moving = True
         self.drag = False
+        self.eaten = False
 
         # set speed of the ghost
         self.velocity = pygame.math.Vector2()
