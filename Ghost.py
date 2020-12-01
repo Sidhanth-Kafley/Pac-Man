@@ -101,11 +101,19 @@ class Ghost(pygame.sprite.Sprite):
                 return True
         return False
 
+    # helper function for pathfindToPoint for searching through a list
+    def getPrevClosedCellIndex(self, list, element):
+        for i in range(len(list)):
+            if element[2] == list[i][0] and element[3] == list[i][1]:
+                return i
+        return -1
+
     # use A* to pathfind to a given cell in the grid
     def pathfindToPoint(self, targetCellX, targetCellY):
         self.isPathing = True
         self.closedCells.clear()
         self.openCells.clear()
+        self.pathCells.clear()
         openCellsHistory = []
 
         # re-initialize currentPathCell
@@ -182,6 +190,19 @@ class Ghost(pygame.sprite.Sprite):
             if test == 100:
             #if test == len(pathingGrid) * len(pathingGrid[0]):
                 self.isPathing = False
+
+        # retrace the path through the closed cells
+        self.pathCells.append(self.closedCells[len(self.closedCells) - 1])
+        for i in range(len(self.closedCells) - 1):
+            prevIndex = self.getPrevClosedCellIndex(self.closedCells, self.pathCells[i])
+            self.pathCells.append(self.closedCells[prevIndex])
+
+            # break once the starting cell is reached
+            if self.closedCells[prevIndex] == self.closedCells[0]:
+                break
+
+        print(len(self.closedCells))
+        print(len(self.pathCells))
 
     # get the color of the ghost
     def getGhostColor(self):
