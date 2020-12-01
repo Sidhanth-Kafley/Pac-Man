@@ -44,6 +44,7 @@ class Ghost(pygame.sprite.Sprite):
         self.currentPathCell = [-1, 0, 0, 0, 0, 0]
         self.closedCells = []
         self.openCells = []
+        self.pathCells = []
 
         # set speed of the ghost
         self.velocity = pygame.math.Vector2()
@@ -105,17 +106,15 @@ class Ghost(pygame.sprite.Sprite):
         self.isPathing = True
         self.closedCells.clear()
         self.openCells.clear()
+        openCellsHistory = []
 
         # re-initialize currentPathCell
-        if self.currentPathCell[0] == -1:
-            self.currentPathCell = [self.cellX, self.cellY, self.cellX, self.cellY, 0, 0]
+
+        self.currentPathCell = [self.cellX, self.cellY, self.cellX, self.cellY, 0, 0]
 
         test = 0
-
         while self.isPathing:
-
             test += 1
-
             # check if target cell has been reached
             if abs(self.currentPathCell[0] - targetCellX) <= 1 and abs(self.currentPathCell[1] - targetCellY) <= 1:
                 self.isPathing = False
@@ -139,34 +138,37 @@ class Ghost(pygame.sprite.Sprite):
             cpc = self.currentPathCell
 
             # check neighboring cells, add free neighbor cells to openCells list
-            if pathingGrid[cpc[1]-1][cpc[0]] == 0 and not self.isInOpenCells(self.openCells, [cpc[0], cpc[1]-1]):
+            if pathingGrid[cpc[1]-1][cpc[0]] == 0 and not self.isInOpenCells(openCellsHistory, [cpc[0], cpc[1]-1]):
                 tempGScore = math.sqrt(pow(self.cellX - cpc[0], 2) + pow(self.cellY - cpc[1]-1, 2))
                 tempHScore = math.sqrt(pow(cpc[0] - targetCellX, 2) + pow(cpc[1]-1 - targetCellY, 2))
                 tempFScore = tempGScore + tempHScore
                 self.openCells.append([cpc[0], cpc[1]-1, cpc[0], cpc[1], tempFScore])
+                openCellsHistory.append([cpc[0], cpc[1]-1, cpc[0], cpc[1], tempFScore])
 
-            if pathingGrid[cpc[1]][cpc[0]+1] == 0 and self.isInOpenCells(self.openCells, [cpc[0]+1, cpc[1]]):
+            if pathingGrid[cpc[1]][cpc[0]+1] == 0 and not self.isInOpenCells(openCellsHistory, [cpc[0]+1, cpc[1]]):
                 tempGScore = math.sqrt(pow(self.cellX - cpc[0]+1, 2) + pow(self.cellY - cpc[1], 2))
                 tempHScore = math.sqrt(pow(cpc[0]+1 - targetCellX, 2) + pow(cpc[1] - targetCellY, 2))
                 tempFScore = tempGScore + tempHScore
                 self.openCells.append([cpc[0]+1, cpc[1], cpc[0], cpc[1], tempFScore])
+                openCellsHistory.append([cpc[0]+1, cpc[1], cpc[0], cpc[1], tempFScore])
 
-            if pathingGrid[cpc[1]+1][cpc[0]] == 0 and not self.isInOpenCells(self.openCells, [cpc[0], cpc[1]+1]):
+            if pathingGrid[cpc[1]+1][cpc[0]] == 0 and not self.isInOpenCells(openCellsHistory, [cpc[0], cpc[1]+1]):
                 tempGScore = math.sqrt(pow(self.cellX - cpc[0], 2) + pow(self.cellY - cpc[1]+1, 2))
                 tempHScore = math.sqrt(pow(cpc[0] - targetCellX, 2) + pow(cpc[1]+1 - targetCellY, 2))
                 tempFScore = tempGScore + tempHScore
                 self.openCells.append([cpc[0], cpc[1]+1, cpc[0], cpc[1], tempFScore])
+                openCellsHistory.append([cpc[0], cpc[1]+1, cpc[0], cpc[1], tempFScore])
 
-            if pathingGrid[cpc[1]][cpc[0]-1] == 0 and not self.isInOpenCells(self.openCells, [cpc[0]-1, cpc[1]]):
+            if pathingGrid[cpc[1]][cpc[0]-1] == 0 and not self.isInOpenCells(openCellsHistory, [cpc[0]-1, cpc[1]]):
                 tempGScore = math.sqrt(pow(self.cellX - cpc[0]-1, 2) + pow(self.cellY - cpc[1], 2))
                 tempHScore = math.sqrt(pow(cpc[0]-1 - targetCellX, 2) + pow(cpc[1] - targetCellY, 2))
                 tempFScore = tempGScore + tempHScore
                 self.openCells.append([cpc[0]-1, cpc[1], cpc[0], cpc[1], tempFScore])
+                openCellsHistory.append([cpc[0]-1, cpc[1], cpc[0], cpc[1], tempFScore])
 
             # identify the open cell with the lowest f score, update currentPathCell
             # TODO: optimize this with a priority queue
             cpcPrevIndex = self.currentPathCell[5]
-            #print(self.openCells)
             for i in range(len(self.openCells)):
                 if self.openCells[i][4] < minFScore:
                     minFScore = self.openCells[i][4]
@@ -177,8 +179,8 @@ class Ghost(pygame.sprite.Sprite):
 
             # add neighboring cell with smallest f score to closedCells
             self.closedCells.append(self.currentPathCell)
-
-            if test == len(pathingGrid) * len(pathingGrid[0]):
+            if test == 100:
+            #if test == len(pathingGrid) * len(pathingGrid[0]):
                 self.isPathing = False
 
     # get the color of the ghost

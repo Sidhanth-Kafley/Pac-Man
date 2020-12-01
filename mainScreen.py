@@ -234,7 +234,7 @@ def game(game="1"):
         pathingGrid = PathingGridController(level, CELL_SIZE, CELL_SIZE, MAX_WIDTH, MAX_HEIGHT)
 
         # create pacman object
-        pacMan = PacMan(position=(MAX_WIDTH / 5, (MAX_HEIGHT / 2)), size=(2 * CELL_SIZE, 2 * CELL_SIZE), images=images)
+        pacMan = PacMan(position=(MAX_WIDTH - CELL_SIZE, 320), size=(2 * CELL_SIZE, 2 * CELL_SIZE), images=images)
 
         # create blue ghost object
         blueGhostImages = loadImages(path='BlueGhostSprites')
@@ -295,7 +295,9 @@ def game(game="1"):
         # activate ghost pathfinding
         pacCellX = math.floor(pacMan.rect.x / pathingGrid.cellWidth)
         pacCellY = math.floor(pacMan.rect.y / pathingGrid.cellHeight)
+
         ghosts[3].pathfindToPoint(pacCellX, pacCellY)
+        pathingGrid.drawCellsList(background, ghosts[3].closedCells, (255, 255, 0))
 
         # determine if a wall is colliding
         collidingWallTop = False

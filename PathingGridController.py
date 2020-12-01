@@ -52,3 +52,7 @@ class PathingGridController(pygame.sprite.Sprite):
             for j in range(len(self.gridContents[i])):
                 if self.gridContents[i][j] == 1:
                     pygame.draw.rect(background, (255, 0, 0), pygame.Rect(j * self.cellWidth, i * self.cellHeight, self.cellWidth, self.cellHeight))
+
+    def drawCellsList(self, background, cellsList, color):
+        for i in range(len(cellsList)):
+            pygame.draw.rect(background, color, pygame.Rect(cellsList[i][0] * self.cellWidth, cellsList[i][1] * self.cellHeight, self.cellWidth, self.cellHeight))
