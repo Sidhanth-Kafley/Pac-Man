@@ -176,19 +176,15 @@ class Ghost(pygame.sprite.Sprite):
 
             # identify the open cell with the lowest f score, update currentPathCell
             # TODO: optimize this with a priority queue
-            cpcPrevIndex = self.currentPathCell[5]
             for i in range(len(self.openCells)):
                 if self.openCells[i][4] < minFScore:
                     minFScore = self.openCells[i][4]
                     self.currentPathCell = self.openCells[i].copy()
             self.openCells.remove(self.currentPathCell)
-            self.currentPathCell.append(len(self.closedCells))
-            self.currentPathCell.append(cpcPrevIndex)
 
             # add neighboring cell with smallest f score to closedCells
             self.closedCells.append(self.currentPathCell)
-            if test == 100:
-            #if test == len(pathingGrid) * len(pathingGrid[0]):
+            if test == len(pathingGrid) * len(pathingGrid[0]):
                 self.isPathing = False
 
         # retrace the path through the closed cells
@@ -201,8 +197,6 @@ class Ghost(pygame.sprite.Sprite):
             if self.closedCells[prevIndex] == self.closedCells[0]:
                 break
 
-        print(len(self.closedCells))
-        print(len(self.pathCells))
 
     # get the color of the ghost
     def getGhostColor(self):

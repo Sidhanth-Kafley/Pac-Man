@@ -234,7 +234,7 @@ def game(game="1"):
         pathingGrid = PathingGridController(level, CELL_SIZE, CELL_SIZE, MAX_WIDTH, MAX_HEIGHT)
 
         # create pacman object
-        pacMan = PacMan(position=(MAX_WIDTH - CELL_SIZE, 320), size=(2 * CELL_SIZE, 2 * CELL_SIZE), images=images)
+        pacMan = PacMan(position=(MAX_WIDTH / 5, MAX_HEIGHT / 2), size=(2 * CELL_SIZE, 2 * CELL_SIZE), images=images)
 
         # create blue ghost object
         blueGhostImages = loadImages(path='BlueGhostSprites')
@@ -259,7 +259,7 @@ def game(game="1"):
         redGhost = Ghost('red', position=(465, 320), size=(2 * CELL_SIZE, 2 * CELL_SIZE), images=redGhostImages,
                          pathingGridController=pathingGrid)
         ghosts.append(redGhost)
-        pathingGrid.drawGrid(background)
+        #pathingGrid.drawGrid(background)
     else:
         pacMan = level.pacmanAndGhost[0]
         blueGhost = level.pacmanAndGhost[1]
@@ -296,8 +296,10 @@ def game(game="1"):
         pacCellX = math.floor(pacMan.rect.x / pathingGrid.cellWidth)
         pacCellY = math.floor(pacMan.rect.y / pathingGrid.cellHeight)
 
-        ghosts[3].pathfindToPoint(pacCellX, pacCellY)
-        pathingGrid.drawCellsList(background, ghosts[3].closedCells, (255, 255, 0))
+        if pacMan.velocity.x != 0 or pacMan.velocity.y != 0:
+            ghosts[3].pathfindToPoint(pacCellX, pacCellY)
+            #pathingGrid.drawCellsList(background, ghosts[3].closedCells, (255, 255, 0))
+            pathingGrid.drawCellsList(background, ghosts[3].pathCells, (0, 255, 255))
 
         # determine if a wall is colliding
         collidingWallTop = False
@@ -413,7 +415,7 @@ def game(game="1"):
         window.blit(background, (0, 0))
         manager.draw_ui(window)
         # ADDED TO RESET SCREEN
-        # pygame.draw.rect(screen, BACKGROUND_COLOR, (0, 0, 800, 1000))
+        #pygame.draw.rect(screen, BACKGROUND_COLOR, (0, 0, 800, 1000))
         # display the health bar at the bottom
         if pacMan.startingHealth - 1 == 2:
             window.blit(healthBar, (20, MAX_HEIGHT - 50))
