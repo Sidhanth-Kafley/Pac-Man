@@ -164,7 +164,7 @@ def loadImages(path):
                     images[3] = image
     return images
 
-
+# Function to show who contributed to this project
 def credits():
     isRunning = True
     click = False
@@ -384,11 +384,10 @@ def game(game="1"):
 
     pygame.mixer.music.stop()
     sys.exit(0)
-    # mainClock.tick(10)
 
 
 def displayGameOver(pacMan, window, msg):
-    # display button to play again
+
     click = False
     isRunning = True
     highScoreInputBox = InputBox(365, 150, 140, 32, pacMan.getTotalPoints(), "scores")
@@ -397,10 +396,10 @@ def displayGameOver(pacMan, window, msg):
         screen.fill(BACKGROUND_COLOR)
         drawText('GameOver', titleFont, (255, 255, 255), screen, 340, 250)
         drawText('Please enter your initials to record your score', font, (255, 255, 255), screen, 70, 80)
-        window.blit(pacMan.renderScore(100), (440, 380))
+        window.blit(pacMan.renderScore(100), (370, 350))
         mousePosition = pygame.mouse.get_pos()
         button = pygame.Rect(340, 500, 250, 50)
-
+        # display button to play again
         if button.collidepoint(mousePosition[0], mousePosition[1]):
             if click:
                 game(msg)
@@ -535,7 +534,7 @@ def levels():
     isRunning = True
     while isRunning:
         screen.fill(BACKGROUND_COLOR)
-        drawText('Select Difficulty', titleFont, (255, 255, 255), screen, 300, 50)
+        drawText('Select Difficulty', titleFont, (255, 255, 255), screen, 260, 150)
         mousePosition = pygame.mouse.get_pos()
 
         button5 = pygame.Rect(int(MAX_HEIGHT / 2.5), int(MAX_WIDTH / 3.0), 250, 50)
