@@ -348,6 +348,7 @@ def saveLevel(borderSprites, specialSprites, specialpillSprites, pacman, blue, r
     level.pills = []
     for pill in specialpillSprites:
         level.pills.append(pill)
+    level.pacmanAndGhost = []
     level.pacmanAndGhost.append(pacman)
     level.pacmanAndGhost.append(blue)
     level.pacmanAndGhost.append(red)

@@ -32,6 +32,7 @@ background = pygame.Surface((MAX_WIDTH, MAX_HEIGHT))
 background.fill(BACKGROUND_COLOR)
 manager = pygame_gui.UIManager((MAX_WIDTH, MAX_HEIGHT))
 
+
 # function to draw text onto the screen
 def drawText(text, font, color, surface, x, y):
     textObj = font.render(text, 1, color)
@@ -164,12 +165,13 @@ def loadImages(path):
                     images[3] = image
     return images
 
+
 # Function to show who contributed to this project
 def credits():
     isRunning = True
     click = False
     while isRunning:
-        screen.fill((BACKGROUND_COLOR))
+        screen.fill(BACKGROUND_COLOR)
         drawText('Game made by', titleFont, (255, 255, 255), screen, 300, 250)
         drawText('Jaden Varin', font, (255, 255, 255), screen, 350, 340)
         drawText('Michelle Wehrle', font, (255, 255, 255), screen, 350, 380)
@@ -324,6 +326,7 @@ def game(game="1"):
                         if not x.eaten:
                             pacManEatGhost.play(0)
                             pacMan.eatGhost(x)
+                            pygame.time.delay(400)
 
         if pygame.sprite.spritecollide(pacMan, pillGroup, False):
             pacManChomp = pygame.mixer.Sound("Music/PacManChomp.wav")
@@ -339,10 +342,10 @@ def game(game="1"):
         if len(pillGroup) == 0:
             displayGameOver(pacMan, window, game)
 
-        # only run the powerup for 600 loops
+        # only run the powerup for 700 loops
         if pacMan.powerUp:
             count += 1
-        if count == 600:
+        if count == 700:
             count = 0
             pacMan.setPowerUp()
             for ghost in ghosts:
@@ -409,17 +412,26 @@ def displayGameOver(pacMan, window, msg):
         window.blit(pacMan.renderScore(100), (370, 350))
         mousePosition = pygame.mouse.get_pos()
         button = pygame.Rect(340, 500, 250, 50)
+        button1 = pygame.Rect(340, 600, 250, 50)
         # display button to play again
         if button.collidepoint(mousePosition[0], mousePosition[1]):
             if click:
                 game(msg)
+        if button1.collidepoint(mousePosition[0], mousePosition[1]):
+            if click:
+                mainMenu()
 
         if 340 + 250 > mousePosition[0] > 340 and 500 + 50 > mousePosition[1] > 500:
             pygame.draw.rect(screen, (0, 190, 0), button)
         else:
             pygame.draw.rect(screen, (0, 255, 0), button)
+        if 340 + 250 > mousePosition[0] > 340 and 600 + 50 > mousePosition[1] > 600:
+            pygame.draw.rect(screen, (0, 190, 0), button1)
+        else:
+            pygame.draw.rect(screen, (0, 255, 0), button1)
 
         drawText('Play again', font, (255, 255, 255), screen, 360, 515)
+        drawText('Main Menu', font, (255, 255, 255), screen, 360, 615)
 
         click = False
         for event in pygame.event.get():
