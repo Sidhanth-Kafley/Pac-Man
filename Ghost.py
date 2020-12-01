@@ -45,7 +45,6 @@ class Ghost(pygame.sprite.Sprite):
         self.closedCells = []
         self.openCells = []
 
-
         # set speed of the ghost
         self.velocity = pygame.math.Vector2()
 
@@ -95,9 +94,9 @@ class Ghost(pygame.sprite.Sprite):
         self.image = self.images[self.index]
 
     # helper function for pathfindToPoint for searching through a list
-    def isInList(self, list, element):
+    def isInOpenCells(self, list, element):
         for item in list:
-            if element == item:
+            if element[0] == item[0] and element[1] == item[1]:
                 return True
         return False
 
@@ -139,27 +138,26 @@ class Ghost(pygame.sprite.Sprite):
             tempFScore = tempGScore + tempHScore
             cpc = self.currentPathCell
 
-            # TODO: Prevent duplicate open cells
             # check neighboring cells, add free neighbor cells to openCells list
-            if pathingGrid[cpc[0]][cpc[1]-1] == 0:
+            if pathingGrid[cpc[1]-1][cpc[0]] == 0 and not self.isInOpenCells(self.openCells, [cpc[0], cpc[1]-1]):
                 tempGScore = math.sqrt(pow(self.cellX - cpc[0], 2) + pow(self.cellY - cpc[1]-1, 2))
                 tempHScore = math.sqrt(pow(cpc[0] - targetCellX, 2) + pow(cpc[1]-1 - targetCellY, 2))
                 tempFScore = tempGScore + tempHScore
                 self.openCells.append([cpc[0], cpc[1]-1, cpc[0], cpc[1], tempFScore])
 
-            if pathingGrid[cpc[0]+1][cpc[1]] == 0:
+            if pathingGrid[cpc[1]][cpc[0]+1] == 0 and self.isInOpenCells(self.openCells, [cpc[0]+1, cpc[1]]):
                 tempGScore = math.sqrt(pow(self.cellX - cpc[0]+1, 2) + pow(self.cellY - cpc[1], 2))
                 tempHScore = math.sqrt(pow(cpc[0]+1 - targetCellX, 2) + pow(cpc[1] - targetCellY, 2))
                 tempFScore = tempGScore + tempHScore
                 self.openCells.append([cpc[0]+1, cpc[1], cpc[0], cpc[1], tempFScore])
 
-            if pathingGrid[cpc[0]][cpc[1]+1] == 0:
+            if pathingGrid[cpc[1]+1][cpc[0]] == 0 and not self.isInOpenCells(self.openCells, [cpc[0], cpc[1]+1]):
                 tempGScore = math.sqrt(pow(self.cellX - cpc[0], 2) + pow(self.cellY - cpc[1]+1, 2))
                 tempHScore = math.sqrt(pow(cpc[0] - targetCellX, 2) + pow(cpc[1]+1 - targetCellY, 2))
                 tempFScore = tempGScore + tempHScore
                 self.openCells.append([cpc[0], cpc[1]+1, cpc[0], cpc[1], tempFScore])
 
-            if pathingGrid[cpc[0]-1][cpc[1]] == 0:
+            if pathingGrid[cpc[1]][cpc[0]-1] == 0 and not self.isInOpenCells(self.openCells, [cpc[0]-1, cpc[1]]):
                 tempGScore = math.sqrt(pow(self.cellX - cpc[0]-1, 2) + pow(self.cellY - cpc[1], 2))
                 tempHScore = math.sqrt(pow(cpc[0]-1 - targetCellX, 2) + pow(cpc[1] - targetCellY, 2))
                 tempFScore = tempGScore + tempHScore
@@ -167,20 +165,20 @@ class Ghost(pygame.sprite.Sprite):
 
             # identify the open cell with the lowest f score, update currentPathCell
             # TODO: optimize this with a priority queue
-            cpcPrevIndex = self.currentPathCell[4]
+            cpcPrevIndex = self.currentPathCell[5]
+            #print(self.openCells)
             for i in range(len(self.openCells)):
                 if self.openCells[i][4] < minFScore:
                     minFScore = self.openCells[i][4]
-                    self.currentPathCell = self.openCells[i]
-                    print(self.openCells[i])
+                    self.currentPathCell = self.openCells[i].copy()
+            self.openCells.remove(self.currentPathCell)
             self.currentPathCell.append(len(self.closedCells))
             self.currentPathCell.append(cpcPrevIndex)
-
 
             # add neighboring cell with smallest f score to closedCells
             self.closedCells.append(self.currentPathCell)
 
-            if test == 3:
+            if test == len(pathingGrid) * len(pathingGrid[0]):
                 self.isPathing = False
 
     # get the color of the ghost

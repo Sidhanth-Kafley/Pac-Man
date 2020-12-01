@@ -33,7 +33,7 @@ class PathingGridController(pygame.sprite.Sprite):
         for i in range(self.gridHeight):
             self.gridContents.append([])
             for j in range(self.gridWidth):
-                self.gridContents[i].append([0])
+                self.gridContents[i].append(0)
 
         # populate gridContents with wall cells
         for i in range(len(self.currentLevel.walls)):
