@@ -325,7 +325,7 @@ def game(game="1"):
 
     # start main background music
     backgroundMusic = pygame.mixer.Sound("Music/PacManBeginning.wav")
-    #backgroundMusic.play(0)
+    backgroundMusic.play(0)
 
     count = 0
     # initial wait until game starts
