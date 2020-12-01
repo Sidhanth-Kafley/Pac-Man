@@ -1,5 +1,6 @@
 import pygame
 import random
+import os
 
 
 class Ghost(pygame.sprite.Sprite):
@@ -23,8 +24,15 @@ class Ghost(pygame.sprite.Sprite):
         self.imagesUp = [self.images[3]]
         self.image = self.images[0]
 
+        # eaten images
+        self.eatenUp = None
+        self.eatenDown = None
+        self.eatenLeft = None
+        self.eatenRight = None
+
         # initialize variables
         self.rect = pygame.Rect(position, size)
+        self.size = size
         self.moveX = 0
         self.moveY = 0
         self.direction = 'up'
@@ -56,19 +64,32 @@ class Ghost(pygame.sprite.Sprite):
             self.index = 1
         # ghost moving down
         elif self.moveX == 0 and self.moveY > 0:
-            self.index = 0
+            if self.eaten:
+                self.image = self.eatenDown
+            else:
+                self.index = 0
         # ghost moving left
         elif self.moveX < 0 and self.moveY == 0:
-            self.index = 1
+            if self.eaten:
+                self.image = self.eatenLeft
+            else:
+                self.index = 1
         # ghost moving right
         elif self.moveX > 0 and self.moveY == 0:
-            self.index = 2
+            if self.eaten:
+                self.image = self.eatenRight
+            else:
+                self.index = 2
         # ghost moving up
         elif self.moveX == 0 and self.moveY < 0:
-            self.index = 3
+            if self.eaten:
+                self.image = self.eatenUp
+            else:
+                self.index = 3
 
         # update the image of ghost
-        self.image = self.images[self.index]
+        if not self.eaten:
+            self.image = self.images[self.index]
 
     # get the color of the ghost
     def getGhostColor(self):
@@ -102,6 +123,7 @@ class Ghost(pygame.sprite.Sprite):
     # pac-man is in power-up mode and can eat the ghosts
     def setPowerUpMode(self):
         self.powerUpMode = not self.powerUpMode
+        self.eaten = False
 
     # move ghosts in maze in the selected direction
     def moveGhosts(self):
@@ -124,3 +146,18 @@ class Ghost(pygame.sprite.Sprite):
     def chooseDirection(self):
         self.direction = random.choice(['right', 'left', 'down', 'up'])
         return self.direction
+
+    def eat(self):
+        self.eaten = True
+        path = "EyeSprites"
+        for file in os.listdir(path):
+            image = pygame.image.load(path + os.sep + file).convert_alpha()
+            image = pygame.transform.scale(image, self.size)
+            if "Up" in file:
+                self.eatenUp = image
+            elif "Down" in file:
+                self.eatenDown = image
+            elif "Left" in file:
+                self.eatenLeft = image
+            elif "Right" in file:
+                self.eatenRight = image
