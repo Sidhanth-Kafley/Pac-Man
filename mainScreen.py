@@ -277,6 +277,7 @@ def game(game="1"):
     # start main background music
     backgroundMusic = pygame.mixer.Sound("Music/PacManBeginning.wav")
     backgroundMusic.play(0)
+    backgroundMusic.set_volume(0.25)
 
     count = 0
     # initial wait until game starts
@@ -315,6 +316,7 @@ def game(game="1"):
             if not pacMan.powerUp:
                 if not pacMan.death:
                     pacManDeath = pygame.mixer.Sound("Music/PacManDeath.wav")
+                    pacManDeath.set_volume(0.25)
                     pacManDeath.play(0)
                     pacMan.deathAnimation()
             else:
@@ -322,11 +324,13 @@ def game(game="1"):
                 for x in ghosts:
                     if pacMan.rect.colliderect(x.rect):
                         if not x.eaten:
+                            pacManEatGhost.set_volume(0.25)
                             pacManEatGhost.play(0)
                             pacMan.eatGhost(x)
 
         if pygame.sprite.spritecollide(pacMan, pillGroup, False):
             pacManChomp = pygame.mixer.Sound("Music/PacManChomp.wav")
+            pacManChomp.set_volume(0.25)
             pacManChomp.play(0)
             for x in pillGroup:
                 if pacMan.rect.colliderect(x.rect):
@@ -406,6 +410,7 @@ def displayGameOver(pacMan, window, msg):
         screen.fill(BACKGROUND_COLOR)
         drawText('GameOver', titleFont, (255, 255, 255), screen, 340, 250)
         drawText('Please enter your initials to record your score', font, (255, 255, 255), screen, 70, 80)
+        drawText('then press the enter key', font, (255, 255, 255), screen, 250, 110)
         window.blit(pacMan.renderScore(100), (370, 350))
         mousePosition = pygame.mouse.get_pos()
         button = pygame.Rect(340, 500, 250, 50)
