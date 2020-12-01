@@ -62,7 +62,12 @@ def mainEditor():
     pill.append(pll)
     pillSpriteGroup.add(pll)
 
-    pathingGrid = PathingGridController(mainScreen.level, mainScreen.CELL_SIZE, mainScreen.CELL_SIZE, mainScreen.MAX_WIDTH,
+    levelOriginX = int(mainScreen.MAX_WIDTH / 5) + int(mainScreen.MAX_WIDTH / 5) % mainScreen.CELL_SIZE
+    levelOriginY = int(mainScreen.MAX_HEIGHT / 12) - int(mainScreen.MAX_HEIGHT / 12) % mainScreen.CELL_SIZE
+    defaultLevel = Level(layoutFilename='Levels/level1alt.txt', wallSize=(mainScreen.CELL_SIZE, mainScreen.CELL_SIZE),
+                  originPosition=(levelOriginX, levelOriginY))
+
+    pathingGrid = PathingGridController(defaultLevel, mainScreen.CELL_SIZE, mainScreen.CELL_SIZE, mainScreen.MAX_WIDTH,
                                         mainScreen.MAX_HEIGHT)
 
     # create ghost objects

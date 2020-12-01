@@ -261,6 +261,7 @@ def game(game="1"):
         ghosts.append(redGhost)
         #pathingGrid.drawGrid(background)
     else:
+        pathingGrid = PathingGridController(level, CELL_SIZE, CELL_SIZE, MAX_WIDTH, MAX_HEIGHT)
         pacMan = level.pacmanAndGhost[0]
         blueGhost = level.pacmanAndGhost[1]
         redGhost = level.pacmanAndGhost[2]
