@@ -295,19 +295,19 @@ def game(game="1"):
 
         # create orange ghost object
         orangeGhostImages = loadImages(path='OrangeGhostSprites')
-        orangeGhost = Ghost('orange', position=(464, 390), moveSpeed=1.25, size=(CELL_SIZE, CELL_SIZE), images=orangeGhostImages,
+        orangeGhost = Ghost('orange', position=(464, 390), moveSpeed=1, size=(CELL_SIZE, CELL_SIZE), images=orangeGhostImages,
                             pathingGridController=pathingGrid)
         ghosts.append(orangeGhost)
 
         # create pink ghost object
         pinkGhostImages = loadImages(path='PinkGhostSprites')
-        pinkGhost = Ghost('pink', position=(434, 390), moveSpeed=2, size=(CELL_SIZE, CELL_SIZE), images=pinkGhostImages,
+        pinkGhost = Ghost('pink', position=(434, 390), moveSpeed=1, size=(CELL_SIZE, CELL_SIZE), images=pinkGhostImages,
                           pathingGridController=pathingGrid)
         ghosts.append(pinkGhost)
 
         # create red ghost object
         redGhostImages = loadImages(path='RedGhostSprites')
-        redGhost = Ghost('red', position=(494, 390), moveSpeed=1.5, size=(CELL_SIZE, CELL_SIZE), images=redGhostImages,
+        redGhost = Ghost('red', position=(494, 390), moveSpeed=1, size=(CELL_SIZE, CELL_SIZE), images=redGhostImages,
                          pathingGridController=pathingGrid)
         ghosts.append(redGhost)
     else:
@@ -378,23 +378,22 @@ def game(game="1"):
             manager.process_events(event)
 
         if pygame.sprite.spritecollide(pacMan, ghosts, False):
-            if not pacMan.powerUp:
-                if not pacMan.death:
-                    pacManDeath = pygame.mixer.Sound("Music/PacManDeath.wav")
-                    pacManDeath.set_volume(0.25)
-                    pacManDeath.play(0)
-                    for ghost in ghosts:
-                        ghost.resetGhost()
-                    pacMan.deathAnimation()
-            else:
-                pacManEatGhost = pygame.mixer.Sound("Music/PacManEatGhost.wav")
-                for ghost in ghosts:
-                    if pacMan.rect.colliderect(ghost.rect):
-                        if not ghost.eaten:
-                            pacManEatGhost.set_volume(0.25)
-                            pacManEatGhost.play(0)
-                            pacMan.eatGhost(ghost)
-                            pygame.time.delay(400)
+            pacManEatGhost = pygame.mixer.Sound("Music/PacManEatGhost.wav")
+            for ghost in ghosts:
+                if pacMan.rect.colliderect(ghost.rect) and ghost.powerUpMode:
+                    if not ghost.eaten and ghost.powerUpMode:
+                        pacManEatGhost.set_volume(0.25)
+                        pacManEatGhost.play(0)
+                        pacMan.eatGhost(ghost)
+                        pygame.time.delay(400)
+                elif pacMan.rect.colliderect(ghost.rect) and not ghost.powerUpMode:
+                    if not pacMan.death:
+                        pacManDeath = pygame.mixer.Sound("Music/PacManDeath.wav")
+                        pacManDeath.set_volume(0.25)
+                        pacManDeath.play(0)
+                        for ghost in ghosts:
+                            ghost.resetGhost()
+                        pacMan.deathAnimation()
 
         if pygame.sprite.spritecollide(pacMan, pillGroup, False):
             pacManChomp = pygame.mixer.Sound("Music/PacManChomp.wav")
