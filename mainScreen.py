@@ -215,7 +215,7 @@ def credits():
 def pauseGame():
     pause = True
     click = False
-    
+
     while pause:
         screen.fill((BACKGROUND_COLOR))
         drawText('Game Paused', titleFont, (255, 255, 255), screen, 300, 250)
