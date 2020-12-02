@@ -11,6 +11,7 @@ FONT_COLOR_ACTIVE = pygame.Color('blue')
 
 
 class InputBox:
+    # initialize all variables
     def __init__(self, xCoord, yCoord, width, height, score, typeOfBox, text=''):
         self.xCoord = xCoord
         self.yCoord = yCoord
@@ -30,11 +31,13 @@ class InputBox:
         self.cursorColor = FONT_COLOR
         self.cursor = pygame.Rect((self.xCoord, self.yCoord), (3, self.height))
 
+    # update the textbox to fit any length of text
     def update(self):
         # determine if size of input box is too small
         widthOfBox = max(200, self.textSurface.get_width()+10)
         self.rect.w = widthOfBox
 
+    # handles events (if mouse or keys are pressed)
     def handleEvent(self, event):
         # if the user has already entered their initials, input box is inactive
         if not self.appear:
@@ -82,6 +85,7 @@ class InputBox:
                     self.cursor.x += width
                 self.textSurface = FONT.render(self.text, True, self.color)
 
+    # draw the input box onto the screen
     def draw(self, screen):
         # draw the input box on the screen
         screen.blit(self.textSurface, (self.rect.x, self.rect.y))
