@@ -385,7 +385,6 @@ def game(game="1"):
                         pacManEatGhost.set_volume(0.25)
                         pacManEatGhost.play(0)
                         pacMan.eatGhost()
-                        ghost.powerUpMode = False
                         ghost.eat()
                         pygame.time.delay(400)
                 elif pacMan.rect.colliderect(ghost.rect) and not ghost.powerUpMode:

@@ -117,14 +117,7 @@ class Ghost(pygame.sprite.Sprite):
         if not self.eaten:
             self.image = self.images[self.index]
         else:
-            if self.index == 0:
-                self.image = self.eatenDown
-            elif self.index == 1:
-                self.image = self.eatenLeft
-            elif self.index == 2:
-                self.image = self.eatenRight
-            elif self.index == 3:
-                self.image = self.eatenUp
+            self.image = self.eatenDown
 
 
     def moveToPoint(self, targetX, targetY, magnitude):
