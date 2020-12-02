@@ -30,6 +30,24 @@ def mainEditor():
     wallSprites = []
     specialSprites = []
 
+    i = 0
+    j = 0
+    placeBlocks = []
+    prevx = int(mainScreen.MAX_WIDTH / 5) - 5
+    prevy = int(mainScreen.MAX_HEIGHT / 12) + 5
+    while i < 41:
+        col = []
+        while j < 33:
+            rect = pygame.Rect(prevx + 16, prevy, 16, 16)
+            prevx += 16
+            col.append(rect)
+            j += 1
+        placeBlocks.append(col)
+        prevy += 16
+        prevx = int(mainScreen.MAX_WIDTH / 5) - 5
+        j = 0
+        i += 1
+
     otherwallsprites = []
     allWalls = []
 
@@ -50,13 +68,13 @@ def mainEditor():
 
     # load Pacman object
     imgs = mainScreen.loadImages(path="PacManSprites")
-    pcmn = PacMan(position=(810, 250), size=(SPRITE_SIZE, SPRITE_SIZE), images=imgs)
+    pcmn = PacMan(position=(800, 200), size=(SPRITE_SIZE, SPRITE_SIZE), images=imgs)
     characterSpriteGroup.add(pcmn)
     ghostsAndPacman.append(pcmn)
 
     powerPillImage = pygame.image.load("PowerUpPointPill.png").convert_alpha()
     powerPillImage = pygame.transform.scale(powerPillImage, (24, 24))
-    pll = Pill(True, powerPillImage, (813, 503))
+    pll = Pill(True, powerPillImage, (803, 480))
     pll.rect.size = (24, 24)
     pill.append(pll)
     pillSpriteGroup.add(pll)
@@ -89,6 +107,7 @@ def mainEditor():
     characterSpriteGroup.add(pinkGhost)
 
     redGhostImages = mainScreen.loadImages(path='RedGhostSprites')
+
     redGhost = Ghost('red', position=(800, 400), moveSpeed=1, size=(SPRITE_SIZE, SPRITE_SIZE),
                      images=redGhostImages, pathingGridController=pathingGrid)
     ghostsAndPacman.append(redGhost)
@@ -227,6 +246,12 @@ def mainEditor():
                         for wall in group:
                             if not checker1:
                                 if wall.drag:
+                                    if not wall.rect.colliderect(placeableArea) and group in specialSprites:
+                                        specialSprites.remove(group)
+                                        for x in group:
+                                            allWallSprites.remove(x)
+                                        checker1 = True
+                                    wall = snap(wall, placeBlocks)
                                     if collisionDetection(wall, specialSprites):
                                         wall.drag = False
                                         specialSprites.remove(group)
@@ -234,11 +259,6 @@ def mainEditor():
                                             allWallSprites.remove(x)
                                         checker1 = True
                                 wall.drag = False
-                                if not wall.rect.colliderect(placeableArea) and group in specialSprites:
-                                    specialSprites.remove(group)
-                                    for x in group:
-                                        allWallSprites.remove(x)
-                                    checker1 = True
                     for character in characterSpriteGroup:
                         if character.drag:
                             character.drag = False
@@ -296,6 +316,11 @@ def mainEditor():
         characterSpriteGroup.draw(window)
         pillSpriteGroup.draw(window)
 
+        # for x in placeBlocks:
+        #     for y in x:
+        #         pygame.draw.rect(background, (100, 0, 0), y)
+
+
         # Buttons
         buttonplace4x = 200
         buttonplace6x = 500
@@ -309,7 +334,7 @@ def mainEditor():
                 tf = False
         if button6.collidepoint(mousePosition[0], mousePosition[1]):
             if click:
-                saveLevel(borderSprites, specialSprites, specialpillSprites, pcmn, blueGhost, redGhost,
+                saveLevel(placeBlocks, borderSprites, specialSprites, specialpillSprites, pcmn, blueGhost, redGhost,
                           pinkGhost, orangeGhost)
                 tf = False
 
@@ -331,6 +356,23 @@ def mainEditor():
         pygame.display.update()
 
 
+def snap(wall, placeBlocks):
+    closest = None
+    totalDist = 10000
+    for x in placeBlocks:
+        for y in x:
+            if closest is not None:
+                dist = math.sqrt(math.pow((y.centerx - wall.rect.centerx), 2) + math.pow((y.centery - wall.rect.centery), 2))
+                if dist < totalDist:
+                    totalDist = dist
+                    closest = y
+            else:
+                closest = y
+    wall.rect.center = closest.center
+    wall.collideRect.center = closest.center
+    return wall
+
+
 def collisionDetection(rect, othersprites):
     newGroup = []
     for wall in othersprites:
@@ -343,7 +385,7 @@ def collisionDetection(rect, othersprites):
     return False
 
 
-def saveLevel(borderSprites, specialSprites, specialpillSprites, pacman, blue, red, pink, orange):
+def saveLevel(placeBlocks, borderSprites, specialSprites, specialpillSprites, pacman, blue, red, pink, orange):
     path = 'Levels'
     file = 'blank'
     level = Level(layoutFilename=path + os.sep + file, wallSize=(mainScreen.CELL_SIZE, mainScreen.CELL_SIZE),
@@ -357,6 +399,35 @@ def saveLevel(borderSprites, specialSprites, specialpillSprites, pacman, blue, r
     level.pills = []
     for pill in specialpillSprites:
         level.pills.append(pill)
+
+    pillImage = pygame.image.load("PointPill.png").convert_alpha()
+    pillImage = pygame.transform.scale(pillImage, (int(Level.wallSize[0]), int(Level.wallSize[1])))
+    tf1 = 1
+    tf2 = 0
+    for group in placeBlocks:
+        if tf1 % 2 == 0:
+            for block in group:
+                if tf2 % 2 == 0:
+                    for gr in specialSprites:
+                        maxx = 0
+                        minx = 10000
+                        maxy = 10000
+                        miny = 0
+                        for x in gr:
+                            if x.rect.top < maxy:
+                                maxy = x.rect.top
+                            if x.rect.bottom > miny:
+                                miny = x.rect.bottom
+                            if x.rect.right > maxx:
+                                maxx = x.rect.right
+                            if x.rect.left < minx:
+                                minx = x.rect.left
+                        if not minx <= block.centerx <= maxx and not maxy <= block.centery <= miny:
+                            level.pills.append(Pill(False, pillImage, block.center))
+                tf2 += 1
+        tf1 += 1
+        tf2 = 0
+
     level.pacmanAndGhost = []
     level.pacmanAndGhost.append(pacman)
     level.pacmanAndGhost.append(blue)
@@ -414,28 +485,28 @@ def saveLevel(borderSprites, specialSprites, specialpillSprites, pacman, blue, r
             connection.commit()
             i += 1
 
-        for group in specialSprites:
-            maxx = 0
-            minx = 10000
-            maxy = 10000
-            miny = 0
-            for x in group:
-                if x.rect.top < maxy:
-                    maxy = x.rect.top
-                if x.rect.bottom > miny:
-                    miny = x.rect.bottom
-                if x.rect.right > maxx:
-                    maxx = x.rect.right
-                if x.rect.left < minx:
-                    minx = x.rect.left
-
-            Tuple = (
-            index, message, maxx, minx, maxy, miny)
-            Array = [Tuple]
-            cursor.executemany(
-                "INSERT INTO savedBlankSpace (idx, id, xmax, xmin, ymax, ymin) VALUES (?, ?, ?, ?, ?, ?);",
-                Array)
-            connection.commit()
+        # for group in specialSprites:
+        #     maxx = 0
+        #     minx = 10000
+        #     maxy = 10000
+        #     miny = 0
+        #     for x in group:
+        #         if x.rect.top < maxy:
+        #             maxy = x.rect.top
+        #         if x.rect.bottom > miny:
+        #             miny = x.rect.bottom
+        #         if x.rect.right > maxx:
+        #             maxx = x.rect.right
+        #         if x.rect.left < minx:
+        #             minx = x.rect.left
+        #
+        #     Tuple = (
+        #     index, message, maxx, minx, maxy, miny)
+        #     Array = [Tuple]
+        #     cursor.executemany(
+        #         "INSERT INTO savedBlankSpace (idx, id, xmax, xmin, ymax, ymin) VALUES (?, ?, ?, ?, ?, ?);",
+        #         Array)
+        #     connection.commit()
 
         connection.close()
 
@@ -519,12 +590,12 @@ def connectDatabase():
         cursor.execute(
             "CREATE TABLE IF NOT EXISTS savedCharacters (idx INTEGER, id VARCHAR[64], characterType VARCHAR[64], xpos INTEGER, ypos INTEGER)")
 
-        # create character sprites table in the database
-        cursor.execute('''SELECT count(name) FROM sqlite_master WHERE type='table' AND name='savedBlankSpace' ''')
-
-        # add the character sprites and position to the table
-        cursor.execute(
-            "CREATE TABLE IF NOT EXISTS savedBlankSpace (idx INTEGER, id VARCHAR[64], xmax INTEGER, xmin INTEGER, ymax INTEGER, ymin INTEGER)")
+        # # create character sprites table in the database
+        # cursor.execute('''SELECT count(name) FROM sqlite_master WHERE type='table' AND name='savedBlankSpace' ''')
+        #
+        # # add the character sprites and position to the table
+        # cursor.execute(
+        #     "CREATE TABLE IF NOT EXISTS savedBlankSpace (idx INTEGER, id VARCHAR[64], xmax INTEGER, xmin INTEGER, ymax INTEGER, ymin INTEGER)")
 
         # commit databases
         connection.commit()
@@ -555,9 +626,9 @@ def parseCustomLevel(message):
             "SELECT characterType, xpos, ypos FROM savedCharacters WHERE id LIKE '" + message + "'")
         characterData = cursor.fetchall()
 
-        cursor.execute(
-            "SELECT xmax, xmin, ymax, ymin FROM savedBlankSpace WHERE id LIKE '" + message + "'")
-        blankData = cursor.fetchall()
+        # cursor.execute(
+        #     "SELECT xmax, xmin, ymax, ymin FROM savedBlankSpace WHERE id LIKE '" + message + "'")
+        # blankData = cursor.fetchall()
 
         connection.close()
 
@@ -610,6 +681,7 @@ def parseCustomLevel(message):
             elif 'PinkGhost' in charType:
                 images = mainScreen.loadImages(path='PinkGhostSprites')
                 pinkGhost = Ghost('pink', position=(xpos, ypos),  moveSpeed=1,
+
                                   size=(mainScreen.CELL_SIZE, mainScreen.CELL_SIZE), images=images,
                                   pathingGridController=pathingGrid)
             elif 'OrangeGhost' in charType:
@@ -621,17 +693,17 @@ def parseCustomLevel(message):
 
         level.pacmanAndGhost = [pacman, blueGhost, redGhost, pinkGhost, orangeGhost]
 
-        for data in blankData:
-            xmax = data[0]
-            xmin = data[1]
-            ymax = data[2]
-            ymin = data[3]
-            delta = 10
-            group = level.pills
-            for x in group:
-                if xmin - delta <= x.rect.centerx <= xmax + delta and ymax - delta <= x.rect.centery <= ymin + delta:
-                    level.pills.remove(x)
-                    del x
+        # for data in blankData:
+        #     xmax = data[0]
+        #     xmin = data[1]
+        #     ymax = data[2]
+        #     ymin = data[3]
+        #     delta = 10
+        #     group = level.pills
+        #     for x in group:
+        #         if xmin - delta <= x.rect.centerx <= xmax + delta and ymax - delta <= x.rect.centery <= ymin + delta:
+        #             level.pills.remove(x)
+        #             del x
 
     except Error as error:
         print('Cannot connect to database. The following error occurred: ', error)

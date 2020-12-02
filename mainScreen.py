@@ -285,7 +285,7 @@ def game(game="1"):
         pathingGrid = PathingGridController(level, CELL_SIZE, CELL_SIZE, MAX_WIDTH, MAX_HEIGHT)
 
         # create pacman object
-        pacMan = PacMan(position=(MAX_WIDTH / 3, MAX_HEIGHT / 2), size=(2 * CELL_SIZE, 2 * CELL_SIZE), images=images)
+        pacMan = PacMan(position=(475, 575), size=(2 * CELL_SIZE, 2 * CELL_SIZE), images=images)
 
         # create blue ghost object
         blueGhostImages = loadImages(path='BlueGhostSprites')
@@ -326,8 +326,8 @@ def game(game="1"):
     healthBar = pygame.transform.scale(images[2], (int(24), int(24)))
 
     # portals to go to other side of screen
-    leftPortal = pygame.Rect(160, 200, 40, 500)
-    rightPortal = pygame.Rect(760, 200, 40, 500)
+    leftPortal = pygame.Rect(168, 200, 40, 500)
+    rightPortal = pygame.Rect(768, 200, 40, 500)
 
     allSprites = pygame.sprite.Group(pacMan, blueGhost, orangeGhost, pinkGhost, redGhost, level.walls)
 
@@ -362,16 +362,16 @@ def game(game="1"):
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT and pacMan.checkMove("left", level):
                     pacMan.velocity.y = 0
-                    pacMan.velocity.x = (-1.5)
+                    pacMan.velocity.x = (-1)
                 elif event.key == pygame.K_RIGHT and pacMan.checkMove("right", level):
                     pacMan.velocity.y = 0
-                    pacMan.velocity.x = 1.5
+                    pacMan.velocity.x = 1
                 elif event.key == pygame.K_UP and pacMan.checkMove("up", level):
                     pacMan.velocity.x = 0
-                    pacMan.velocity.y = (-1.5)
+                    pacMan.velocity.y = (-1)
                 elif event.key == pygame.K_DOWN and pacMan.checkMove("down", level):
                     pacMan.velocity.x = 0
-                    pacMan.velocity.y = 1.5
+                    pacMan.velocity.y = 1
                 elif event.key == pygame.K_ESCAPE:
                     pauseGame()
 
@@ -384,7 +384,9 @@ def game(game="1"):
                     if not ghost.eaten and ghost.powerUpMode:
                         pacManEatGhost.set_volume(0.25)
                         pacManEatGhost.play(0)
-                        pacMan.eatGhost(ghost)
+                        pacMan.eatGhost()
+                        ghost.powerUpMode = False
+                        ghost.eat()
                         pygame.time.delay(400)
                 elif pacMan.rect.colliderect(ghost.rect) and not ghost.powerUpMode:
                     if not pacMan.death:
@@ -419,6 +421,7 @@ def game(game="1"):
             count = 0
             pacMan.setPowerUp()
             for ghost in ghosts:
+                ghost.eaten = False
                 ghost.powerUpMode = False
 
         # activate ghost pathfinding
@@ -667,6 +670,7 @@ def levels():
         if button8.collidepoint((mousePosition[0], mousePosition[1])):
             if click:
                 isRunning = False
+                mainMenu()
 
         # draw buttons and add hover effect
         # got logic for button hovering from pythonprogramming.net
@@ -733,6 +737,7 @@ def renderCustomLevels():
             if index % 5 == 0:
                 ycount += 1
                 xcount = 0
+                index = 1
             xpos = int(MAX_HEIGHT / 5.5) + (200 * xcount)
             ypos = int(MAX_WIDTH / 5.5) + (200 * ycount)
             button = pygame.Rect(xpos, ypos, 150, 150)
