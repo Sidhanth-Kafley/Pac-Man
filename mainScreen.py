@@ -132,6 +132,7 @@ def mainMenu():
         pygame.display.update()
 
 
+# loads all the sprite images
 def loadImages(path):
     images = []
     if path == 'PacManSprites':
@@ -257,6 +258,8 @@ def pauseGame():
 
         pygame.display.update()
 
+
+# sets up the game based on the level the user selected
 def game(game="1"):
     # Initiate game and window
     pygame.init()
@@ -473,9 +476,9 @@ def game(game="1"):
         # update the image on screen
         allSprites.draw(window)
         pathingGrid.update()
+
         # used in custom level
         if customLevel:
-            # TODO: Not the best way to cover up old game
             pygame.draw.rect(screen, BACKGROUND_COLOR, (0, 100, 202, 620))
             pygame.draw.rect(screen, BACKGROUND_COLOR, (800, 200, 100, 300))
         pygame.draw.rect(screen, (0, 0, 0), leftPortal)
@@ -486,6 +489,7 @@ def game(game="1"):
     sys.exit(0)
 
 
+# displays user's score and allows them to record their score in the database
 def displayGameOver(pacMan, window, msg):
 
     click = False
@@ -495,12 +499,15 @@ def displayGameOver(pacMan, window, msg):
     while isRunning:
         screen.fill(BACKGROUND_COLOR)
         drawText('GameOver', titleFont, (255, 255, 255), screen, 340, 250)
+        # display text for user to enter their initials
         drawText('Please enter your initials to record your score', font, (255, 255, 255), screen, 70, 80)
         drawText('then press the enter key', font, (255, 255, 255), screen, 250, 110)
+
         window.blit(pacMan.renderScore(100), (370, 350))
         mousePosition = pygame.mouse.get_pos()
         button = pygame.Rect(340, 500, 250, 50)
         button1 = pygame.Rect(340, 600, 250, 50)
+
         # display button to play again
         if button.collidepoint(mousePosition[0], mousePosition[1]):
             if click:
@@ -535,6 +542,7 @@ def displayGameOver(pacMan, window, msg):
 
             highScoreInputBox.handleEvent(event)
 
+        # input box will display for user to enter their score
         highScoreInputBox.update()
         highScoreInputBox.draw(screen)
         message = highScoreInputBox.getMessage()
@@ -544,6 +552,7 @@ def displayGameOver(pacMan, window, msg):
         mainClock.tick(10)
 
 
+# the user can create their own level
 def creativeMode():
     click = False
     isRunning = True
@@ -579,6 +588,7 @@ def creativeMode():
         mainClock.tick(10)
 
 
+# displays the top 5 high scores (from the database)
 def leaderBoards():
     click = False
     isRunning = True
@@ -640,6 +650,7 @@ def leaderBoards():
         mainClock.tick(10)
 
 
+# determines the level the user selected
 def levels():
     click = False
     isRunning = True
@@ -720,6 +731,7 @@ def levels():
         pygame.display.update()
 
 
+# renders the custom level that the user selected
 def renderCustomLevels():
     click = False
     isRunning = True
