@@ -44,6 +44,7 @@ class PacMan(pygame.sprite.Sprite):
         # sets the current image (closed circle to start)
         self.image = self.images[1]
         self.loadDeathImages()
+        self.imagesDeath = self.deathRight
         self.drag = False
         self.timer = 0
 
@@ -108,6 +109,9 @@ class PacMan(pygame.sprite.Sprite):
         self.powerUp = not self.powerUp
 
     def eatGhost(self, ghost):
+        # ghost.hit()
+        ghost.resetGhost()
+        ghost.powerUpMode = False
         self.totalPoints += self.ghostPoints
         self.ghostPoints = self.ghostPoints*2
         ghost.eat()
