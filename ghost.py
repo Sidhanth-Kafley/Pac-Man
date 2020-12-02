@@ -1,6 +1,7 @@
 import pygame
 import random
 import math
+import os
 from PathingGridController import PathingGridController
 
 class Ghost(pygame.sprite.Sprite):
@@ -24,6 +25,12 @@ class Ghost(pygame.sprite.Sprite):
         self.imagesRight = [self.images[2]]
         self.imagesUp = [self.images[3]]
         self.image = self.images[0]
+
+        # eaten images
+        self.eatenUp = None
+        self.eatenDown = None
+        self.eatenLeft = None
+        self.eatenRight = None
 
         # initialize variables
         position = (position[0] + position[0] % pathingGridController.cellWidth,
@@ -52,6 +59,7 @@ class Ghost(pygame.sprite.Sprite):
         self.nextPathCellIterator = 1
         self.targetCellX = self.cellX
         self.targetCellY = self.cellY
+        self.eaten = False
 
         # set speed of the ghost
         self.velocity = pygame.math.Vector2()
@@ -81,18 +89,31 @@ class Ghost(pygame.sprite.Sprite):
             self.index = 4
         elif not self.powerUpMode:
             self.index = 1
+            
         # ghost moving down
         elif self.velocity.x == 0 and self.velocity.y > 0:
-            self.index = 0
+            if self.eaten:
+                self.image = self.eatenDown
+            else:
+                self.index = 0
         # ghost moving left
         elif self.velocity.x < 0 and self.velocity.y == 0:
-            self.index = 1
+            if self.eaten:
+                self.image = self.eatenLeft
+            else:
+                self.index = 1
         # ghost moving right
         elif self.velocity.x > 0 and self.velocity.y == 0:
-            self.index = 2
+            if self.eaten:
+                self.image = self.eatenRight
+            else:
+                self.index = 2
         # ghost moving up
         elif self.velocity.x == 0 and self.velocity.y < 0:
-            self.index = 3
+            if self.eaten:
+                self.image = self.eatenUp
+            else:
+                self.index = 3
 
         # update location in pathing controller grid, clear past location
         if (self.prevCellX != self.cellX or self.prevCellY != self.cellY) and self.pathingController.gridContents[self.cellY][self.cellX] != 1:
@@ -102,7 +123,8 @@ class Ghost(pygame.sprite.Sprite):
         self.rect.move_ip(*self.velocity)
 
         # update the image of ghost
-        self.image = self.images[self.index]
+        if not self.eaten:
+            self.image = self.images[self.index]
 
     def moveToPoint(self, targetX, targetY, magnitude):
         if self.rect.x > targetX:
@@ -281,6 +303,7 @@ class Ghost(pygame.sprite.Sprite):
     # pac-man is in power-up mode and can eat the ghosts
     def setPowerUpMode(self):
         self.powerUpMode = not self.powerUpMode
+        self.eaten = False
 
     # ghost hit a wall
     def ghostHitWall(self, ghostStopMoving):
@@ -291,3 +314,18 @@ class Ghost(pygame.sprite.Sprite):
     def chooseDirection(self):
         self.direction = random.choice(['right', 'left', 'down', 'up'])
         return self.direction
+
+    def eat(self):
+        self.eaten = True
+        path = "EyeSprites"
+        for file in os.listdir(path):
+            image = pygame.image.load(path + os.sep + file).convert_alpha()
+            image = pygame.transform.scale(image, self.size)
+            if "Up" in file:
+                self.eatenUp = image
+            elif "Down" in file:
+                self.eatenDown = image
+            elif "Left" in file:
+                self.eatenLeft = image
+            elif "Right" in file:
+                self.eatenRight = image

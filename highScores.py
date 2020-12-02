@@ -111,7 +111,7 @@ class HighScores:
             sizeOfArray = len(scoresData)
             # if there is nothing in the database, then say "no scores"
             if sizeOfArray == 0:
-                top5HighScores["No Scores"] = 0
+                top5HighScores["1"] = (1, "No Scores", 0)
 
             elif sizeOfArray == 1:
                 highScore1 = scoresData[0]
