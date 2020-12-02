@@ -108,13 +108,9 @@ class PacMan(pygame.sprite.Sprite):
     def setPowerUp(self):
         self.powerUp = not self.powerUp
 
-    def eatGhost(self, ghost):
-        # ghost.hit()
-        ghost.resetGhost()
-        ghost.powerUpMode = False
+    def eatGhost(self):
         self.totalPoints += self.ghostPoints
         self.ghostPoints = self.ghostPoints*2
-        ghost.eat()
 
     def resetGhostPoints(self):
         self.ghostPoints = 200

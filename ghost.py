@@ -4,6 +4,7 @@ import math
 import os
 from PathingGridController import PathingGridController
 
+
 class Ghost(pygame.sprite.Sprite):
 
     def __init__(self, color, position, moveSpeed, size, images, pathingGridController):
@@ -13,6 +14,7 @@ class Ghost(pygame.sprite.Sprite):
         self.powerUpMode = False
         self.hitPacMan = False
         self.position = position
+        self.size = size
         self.moveSpeed = moveSpeed
 
         # index for looping through images
@@ -36,6 +38,7 @@ class Ghost(pygame.sprite.Sprite):
         position = (position[0] + position[0] % pathingGridController.cellWidth,
                     position[1] + position[1] % pathingGridController.cellHeight)
         self.rect = pygame.Rect(position, size)
+        self.size = size
         self.direction = 'up'
         self.changeDirection = False
         self.moving = True
@@ -71,6 +74,8 @@ class Ghost(pygame.sprite.Sprite):
         self.prevCellY = self.cellY
         self.cellX = math.floor(self.rect.x / self.pathingController.cellWidth)
         self.cellY = math.floor(self.rect.y / self.pathingController.cellHeight)
+        spawnCellX = math.floor(self.spawnX / self.pathingController.cellWidth)
+        spawnCellY = math.floor(self.spawnY / self.pathingController.cellWidth)
         cw = self.pathingController.cellWidth
         ch = self.pathingController.cellHeight
 
@@ -78,6 +83,10 @@ class Ghost(pygame.sprite.Sprite):
             self.nextPathCell = self.pathCells[len(self.pathCells) - self.nextPathCellIterator]
             if self.moveToPoint(self.nextPathCell[0] * cw, self.nextPathCell[1] * ch, self.moveSpeed):
                 self.nextPathCellIterator += 1
+
+            if self.powerUpMode and abs(self.cellX - spawnCellX) < 2 and abs(self.cellY - spawnCellY) < 2:
+                self.eaten = False
+                self.powerUpMode = False
 
             if self.rect.x == self.pathCells[0][0] * cw and self.rect.y == self.pathCells[0][1] * ch:
                 self.nextPathCell = []
@@ -92,28 +101,16 @@ class Ghost(pygame.sprite.Sprite):
             
         # ghost moving down
         elif self.velocity.x == 0 and self.velocity.y > 0:
-            if self.eaten:
-                self.image = self.eatenDown
-            else:
-                self.index = 0
+            self.index = 0
         # ghost moving left
         elif self.velocity.x < 0 and self.velocity.y == 0:
-            if self.eaten:
-                self.image = self.eatenLeft
-            else:
-                self.index = 1
+            self.index = 1
         # ghost moving right
         elif self.velocity.x > 0 and self.velocity.y == 0:
-            if self.eaten:
-                self.image = self.eatenRight
-            else:
-                self.index = 2
+            self.index = 2
         # ghost moving up
         elif self.velocity.x == 0 and self.velocity.y < 0:
-            if self.eaten:
-                self.image = self.eatenUp
-            else:
-                self.index = 3
+            self.index = 3
 
         # update location in pathing controller grid, clear past location
         if (self.prevCellX != self.cellX or self.prevCellY != self.cellY) and self.pathingController.gridContents[self.cellY][self.cellX] != 1:
@@ -125,6 +122,9 @@ class Ghost(pygame.sprite.Sprite):
         # update the image of ghost
         if not self.eaten:
             self.image = self.images[self.index]
+        else:
+            self.image = self.eatenDown
+
 
     def moveToPoint(self, targetX, targetY, magnitude):
         if self.rect.x > targetX:
@@ -143,6 +143,8 @@ class Ghost(pygame.sprite.Sprite):
             return True
 
     def resetGhost(self):
+        self.powerUpMode = False
+        self.eaten = False
         self.rect.x = self.spawnX
         self.rect.y = self.spawnY
         self.velocity.x = 0
@@ -299,16 +301,6 @@ class Ghost(pygame.sprite.Sprite):
     def hitPacMan(self):
         # pac-man loses a life
         self.hitPacMan = True
-
-    # pac-man is in power-up mode and can eat the ghosts
-    def setPowerUpMode(self):
-        self.powerUpMode = not self.powerUpMode
-        self.eaten = False
-
-    # ghost hit a wall
-    def ghostHitWall(self, ghostStopMoving):
-        self.moving = ghostStopMoving
-        self.changeDirection = True
 
     # ghost needs to choose a new direction
     def chooseDirection(self):
