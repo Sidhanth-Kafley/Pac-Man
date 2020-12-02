@@ -4,6 +4,7 @@ import math
 import os
 from PathingGridController import PathingGridController
 
+
 class Ghost(pygame.sprite.Sprite):
 
     def __init__(self, color, position, moveSpeed, size, images, pathingGridController):
@@ -36,6 +37,7 @@ class Ghost(pygame.sprite.Sprite):
         position = (position[0] + position[0] % pathingGridController.cellWidth,
                     position[1] + position[1] % pathingGridController.cellHeight)
         self.rect = pygame.Rect(position, size)
+        self.size = size
         self.direction = 'up'
         self.changeDirection = False
         self.moving = True
@@ -92,28 +94,16 @@ class Ghost(pygame.sprite.Sprite):
             
         # ghost moving down
         elif self.velocity.x == 0 and self.velocity.y > 0:
-            if self.eaten:
-                self.image = self.eatenDown
-            else:
-                self.index = 0
+            self.index = 0
         # ghost moving left
         elif self.velocity.x < 0 and self.velocity.y == 0:
-            if self.eaten:
-                self.image = self.eatenLeft
-            else:
-                self.index = 1
+            self.index = 1
         # ghost moving right
         elif self.velocity.x > 0 and self.velocity.y == 0:
-            if self.eaten:
-                self.image = self.eatenRight
-            else:
-                self.index = 2
+            self.index = 2
         # ghost moving up
         elif self.velocity.x == 0 and self.velocity.y < 0:
-            if self.eaten:
-                self.image = self.eatenUp
-            else:
-                self.index = 3
+            self.index = 3
 
         # update location in pathing controller grid, clear past location
         if (self.prevCellX != self.cellX or self.prevCellY != self.cellY) and self.pathingController.gridContents[self.cellY][self.cellX] != 1:
@@ -125,6 +115,16 @@ class Ghost(pygame.sprite.Sprite):
         # update the image of ghost
         if not self.eaten:
             self.image = self.images[self.index]
+        else:
+            if self.index == 0:
+                self.image = self.eatenDown
+            elif self.index == 1:
+                self.image = self.eatenLeft
+            elif self.index == 2:
+                self.image = self.eatenRight
+            elif self.index == 3:
+                self.image = self.eatenUp
+
 
     def moveToPoint(self, targetX, targetY, magnitude):
         if self.rect.x > targetX:
