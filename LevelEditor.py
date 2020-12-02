@@ -597,22 +597,22 @@ def parseCustomLevel(message):
                                 images=images)
             elif 'BlueGhost' in charType:
                 images = mainScreen.loadImages(path='BlueGhostSprites')
-                blueGhost = Ghost('blue', position=(xpos, ypos),
+                blueGhost = Ghost('blue', position=(xpos, ypos),  moveSpeed=1,
                                   size=(mainScreen.CELL_SIZE, mainScreen.CELL_SIZE), images=images,
                                   pathingGridController=pathingGrid)
             elif 'RedGhost' in charType:
                 images = mainScreen.loadImages(path='RedGhostSprites')
-                redGhost = Ghost('red', position=(xpos, ypos),
+                redGhost = Ghost('red', position=(xpos, ypos),  moveSpeed=2,
                                  size=(mainScreen.CELL_SIZE, mainScreen.CELL_SIZE), images=images,
                                  pathingGridController=pathingGrid)
             elif 'PinkGhost' in charType:
                 images = mainScreen.loadImages(path='PinkGhostSprites')
-                pinkGhost = Ghost('pink', position=(xpos, ypos),
+                pinkGhost = Ghost('pink', position=(xpos, ypos),  moveSpeed=2,
                                   size=(mainScreen.CELL_SIZE, mainScreen.CELL_SIZE), images=images,
                                   pathingGridController=pathingGrid)
             elif 'OrangeGhost' in charType:
                 images = mainScreen.loadImages(path='OrangeGhostSprites')
-                orangeGhost = Ghost('orange', position=(xpos, ypos),
+                orangeGhost = Ghost('orange', position=(xpos, ypos),  moveSpeed=1,
                                     size=(mainScreen.CELL_SIZE, mainScreen.CELL_SIZE),
                                     images=images,
                                     pathingGridController=pathingGrid)

@@ -238,25 +238,25 @@ def game(game="1"):
 
         # create blue ghost object
         blueGhostImages = loadImages(path='BlueGhostSprites')
-        blueGhost = Ghost('blue', position=(504, 390), size=(CELL_SIZE, CELL_SIZE), images=blueGhostImages,
+        blueGhost = Ghost('blue', position=(524, 390), moveSpeed=1, size=(CELL_SIZE, CELL_SIZE), images=blueGhostImages,
                           pathingGridController=pathingGrid)
         ghosts.append(blueGhost)
 
         # create orange ghost object
         orangeGhostImages = loadImages(path='OrangeGhostSprites')
-        orangeGhost = Ghost('orange', position=(464, 390), size=(CELL_SIZE, CELL_SIZE),images=orangeGhostImages,
+        orangeGhost = Ghost('orange', position=(464, 390), moveSpeed=1, size=(CELL_SIZE, CELL_SIZE), images=orangeGhostImages,
                             pathingGridController=pathingGrid)
         ghosts.append(orangeGhost)
 
         # create pink ghost object
         pinkGhostImages = loadImages(path='PinkGhostSprites')
-        pinkGhost = Ghost('pink', position=(434, 390), size=(CELL_SIZE, CELL_SIZE), images=pinkGhostImages,
+        pinkGhost = Ghost('pink', position=(434, 390), moveSpeed=2, size=(CELL_SIZE, CELL_SIZE), images=pinkGhostImages,
                           pathingGridController=pathingGrid)
         ghosts.append(pinkGhost)
 
         # create red ghost object
         redGhostImages = loadImages(path='RedGhostSprites')
-        redGhost = Ghost('red', position=(465, 320), size=(CELL_SIZE, CELL_SIZE), images=redGhostImages,
+        redGhost = Ghost('red', position=(494, 390), moveSpeed=2, size=(CELL_SIZE, CELL_SIZE), images=redGhostImages,
                          pathingGridController=pathingGrid)
         ghosts.append(redGhost)
         #pathingGrid.drawGrid(background)
@@ -287,6 +287,7 @@ def game(game="1"):
 
     powermode = False
     count = 0
+    pathfindingTimer = 0
     while isRunning:
         # times per second this loop runs
         time_delta = clock.tick_busy_loop(60) / 1000.0
@@ -309,28 +310,19 @@ def game(game="1"):
 
         # This list contains every wall that pacMan is colliding with, but may also contain some he doesn't.
         potentialCollidingWalls = pacManCollisionRect.collidelistall(level.walls)
-        greenColor = Color(0, 255, 0, a=100)
-
-        #for wall in level.walls:
-            #pygame.draw.rect(background, greenColor, wall.rect)
 
         for wallIndex in potentialCollidingWalls:
             if pacMan.rect.colliderect(level.walls[wallIndex]):
                 if pacMan.velocity.x < 0:
                     pacMan.rect.left = level.walls[wallIndex].rect.right
-                    collidingWallLeft = True
                 if pacMan.velocity.x > 0:
                     pacMan.rect.right = level.walls[wallIndex].rect.left
-                    collidingWallRight = True
                 if pacMan.velocity.y < 0:
                     pacMan.rect.top = level.walls[wallIndex].rect.bottom
-                    collidingWallTop = True
                 if pacMan.velocity.y > 0:
                     pacMan.rect.bottom = level.walls[wallIndex].rect.top
-                    collidingWallBottom = True
 
         # handles events
-
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 isRunning = False
@@ -413,11 +405,15 @@ def game(game="1"):
         pacCellX = math.floor(pacMan.rect.x / pathingGrid.cellWidth)
         pacCellY = math.floor(pacMan.rect.y / pathingGrid.cellHeight)
         pathingGrid.drawGrid(background)
-        for ghost in ghosts:
-            if pacMan.powerUp == 1:
-                ghost.pathfindToPoint(pacCellX, pacCellY)
-            else:
-                ghost.pathfindToPoint(math.floor(ghost.spawnX / pathingGrid.cellWidth), math.floor(ghost.spawnY / pathingGrid.cellHeight))
+
+        pathfindingTimer += 1
+        if pathfindingTimer == 30:
+            pathfindingTimer = 0
+            for ghost in ghosts:
+                if pacMan.powerUp == 1:
+                    ghost.pathfindToPoint(pacCellX, pacCellY)
+                else:
+                    ghost.pathfindToPoint(math.floor(ghost.spawnX / pathingGrid.cellWidth), math.floor(ghost.spawnY / pathingGrid.cellHeight))
         #pathingGrid.drawCellsList(background, ghosts[3].closedCells, (255, 255, 0))
         #pathingGrid.drawCellsList(background, ghosts[3].pathCells, (0, 255, 255))
 

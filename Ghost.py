@@ -5,13 +5,14 @@ from PathingGridController import PathingGridController
 
 class Ghost(pygame.sprite.Sprite):
 
-    def __init__(self, color, position, size, images, pathingGridController):
+    def __init__(self, color, position, moveSpeed, size, images, pathingGridController):
         # initialize super class
         super(Ghost, self).__init__()
         self.color = color
         self.powerUpMode = False
         self.hitPacMan = False
         self.position = position
+        self.moveSpeed = moveSpeed
 
         # index for looping through images
         self.index = 1
@@ -25,9 +26,9 @@ class Ghost(pygame.sprite.Sprite):
         self.image = self.images[0]
 
         # initialize variables
+        position = (position[0] + position[0] % pathingGridController.cellWidth,
+                    position[1] + position[1] % pathingGridController.cellHeight)
         self.rect = pygame.Rect(position, size)
-        self.moveX = 0
-        self.moveY = 0
         self.direction = 'up'
         self.changeDirection = False
         self.moving = True
@@ -72,7 +73,7 @@ class Ghost(pygame.sprite.Sprite):
 
         if len(self.pathCells) > 1:
             self.nextPathCell = self.pathCells[len(self.pathCells) - self.nextPathCellIterator]
-            if self.moveToPoint(self.nextPathCell[0] * cw, self.nextPathCell[1] * ch, 1):
+            if self.moveToPoint(self.nextPathCell[0] * cw, self.nextPathCell[1] * ch, self.moveSpeed):
                 self.nextPathCellIterator += 1
 
             if self.rect.x == self.pathCells[0][0] * cw and self.rect.y == self.pathCells[0][1] * ch:
