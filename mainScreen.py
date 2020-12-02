@@ -43,10 +43,12 @@ def drawText(text, font, color, surface, x, y):
     surface.blit(textObj, textRect)
 
 
+# calls the main menu function
 def main():
     mainMenu()
 
 
+# displays the main menu options that the user can select
 def mainMenu():
     running = True
     global click
@@ -209,11 +211,11 @@ def credits():
         mainClock.tick(10)
 
 
+# pauses the game by hitting the escape key
 def pauseGame():
-
     pause = True
-
     click = False
+    
     while pause:
         screen.fill((BACKGROUND_COLOR))
         drawText('Game Paused', titleFont, (255, 255, 255), screen, 300, 250)
@@ -622,6 +624,7 @@ def leaderBoards():
                 scoreYCoord += 75
 
         mousePosition = pygame.mouse.get_pos()
+        # button to return to main menu
         button4 = pygame.Rect(700, 700, 250, 50)
 
         if button4.collidepoint(mousePosition[0], mousePosition[1]):
@@ -633,7 +636,7 @@ def leaderBoards():
         else:
             pygame.draw.rect(screen, (0, 255, 0), button4)
 
-        drawText('Main menu', font, (255, 255, 255), screen, 750, 150)
+        drawText('Main menu', font, (255, 255, 255), screen, 730, 710)
         click = False
         for event in pygame.event.get():
             if event.type == QUIT:
