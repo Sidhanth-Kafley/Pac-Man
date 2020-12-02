@@ -55,16 +55,16 @@ def mainMenu():
     while running:
 
         screen.fill(BACKGROUND_COLOR)
-        drawText('main menu', titleFont, (255, 255, 255), screen, MAX_HEIGHT / 2.5, MAX_WIDTH / 4)
+        drawText('main menu', titleFont, (255, 255, 255), screen, MAX_WIDTH / 2.8, 150)
 
         # get mousePosition for collision detection
         mousePosition = pygame.mouse.get_pos()
 
         # create buttons
-        button1 = pygame.Rect(int(MAX_HEIGHT / 2.5), int(MAX_WIDTH / 3.0), 250, 50)
-        button3 = pygame.Rect(int(MAX_HEIGHT / 2.5), int(MAX_WIDTH / 2.4), 250, 50)
-        button2 = pygame.Rect(int(MAX_HEIGHT / 2.5), int(MAX_WIDTH / 2.0), 250, 50)
-        button4 = pygame.Rect(int(MAX_HEIGHT / 2.5), int(MAX_WIDTH / 1.7), 250, 50)
+        button1 = pygame.Rect(int(MAX_WIDTH / 2.75), int(MAX_WIDTH / 3.0), 250, 50)
+        button3 = pygame.Rect(int(MAX_WIDTH / 2.75), int(MAX_WIDTH / 2.4), 250, 50)
+        button2 = pygame.Rect(int(MAX_WIDTH / 2.75), int(MAX_WIDTH / 2.0), 250, 50)
+        button4 = pygame.Rect(int(MAX_WIDTH / 2.75), int(MAX_WIDTH / 1.7), 250, 50)
 
         # if button is clicked call corresponding functions
         if button2.collidepoint((mousePosition[0], mousePosition[1])):
@@ -87,35 +87,35 @@ def mainMenu():
         # got logic for button hovering from pythonprogramming.net
         if MAX_HEIGHT / 2.5 + 250 > mousePosition[0] > MAX_HEIGHT / 2.5 and MAX_WIDTH / 3.0 + 50 > mousePosition[
             1] > MAX_WIDTH / 3.0:
-            pygame.draw.rect(screen, (0, 190, 0), button1)
+            pygame.draw.rect(screen, (0, 0, 190), button1)
         else:
-            pygame.draw.rect(screen, (0, 255, 0), button1)
+            pygame.draw.rect(screen, (0, 0, 255), button1)
 
-        drawText('start game', font, (255, 255, 255), screen, MAX_HEIGHT / 2.3, MAX_WIDTH / 2.9)
+        drawText('start game', font, (255, 255, 255), screen, MAX_WIDTH / 2.55, MAX_WIDTH / 2.9)
 
         if MAX_HEIGHT / 2.5 + 250 > mousePosition[0] > MAX_HEIGHT / 2.5 and MAX_WIDTH / 2.4 + 50 > mousePosition[
             1] > MAX_WIDTH / 2.4:
-            pygame.draw.rect(screen, (0, 190, 0), button3)
+            pygame.draw.rect(screen, (0, 0, 190), button3)
         else:
-            pygame.draw.rect(screen, (0, 255, 0), button3)
+            pygame.draw.rect(screen, (0, 0, 255), button3)
 
-        drawText('Creative Mode', font, (255, 255, 255), screen, MAX_HEIGHT / 2.5, MAX_WIDTH / 2.32)
+        drawText('Creative Mode', font, (255, 255, 255), screen, MAX_WIDTH / 2.75, MAX_WIDTH / 2.32)
 
         if MAX_HEIGHT / 2.5 + 250 > mousePosition[0] > MAX_HEIGHT / 2.5 and MAX_WIDTH / 2.0 + 50 > mousePosition[
             1] > MAX_WIDTH / 2.0:
-            pygame.draw.rect(screen, (0, 190, 0), button2)
+            pygame.draw.rect(screen, (0, 0, 190), button2)
         else:
-            pygame.draw.rect(screen, (0, 255, 0), button2)
+            pygame.draw.rect(screen, (0, 0, 255), button2)
 
-        drawText('Credits', font, (255, 255, 255), screen, MAX_HEIGHT / 2.2, MAX_WIDTH / 1.95)
+        drawText('Credits', font, (255, 255, 255), screen, MAX_WIDTH / 2.35, MAX_WIDTH / 1.95)
 
         if MAX_HEIGHT / 2.5 + 250 > mousePosition[0] > MAX_HEIGHT / 2.5 and MAX_WIDTH / 1.7 + 50 > mousePosition[
             1] > MAX_WIDTH / 1.7:
-            pygame.draw.rect(screen, (0, 190, 0), button4)
+            pygame.draw.rect(screen, (0, 0, 190), button4)
         else:
-            pygame.draw.rect(screen, (0, 255, 0), button4)
+            pygame.draw.rect(screen, (0, 0, 255), button4)
 
-        drawText('Leaderboards', font, (255, 255, 255), screen, MAX_HEIGHT / 2.5, MAX_WIDTH / 1.67)
+        drawText('Leaderboards', font, (255, 255, 255), screen, MAX_WIDTH / 2.75, MAX_WIDTH / 1.67)
 
         click = False
         for event in pygame.event.get():
@@ -387,7 +387,7 @@ def game(game="1"):
                         pacMan.eatGhost()
                         ghost.eat()
                         pygame.time.delay(400)
-                elif pacMan.rect.colliderect(ghost.rect) and not ghost.powerUpMode:
+                elif pacMan.rect.colliderect(ghost.rect) and not ghost.powerUpMode and not ghost.eaten:
                     if not pacMan.death:
                         pacManDeath = pygame.mixer.Sound("Music/PacManDeath.wav")
                         pacManDeath.set_volume(0.25)
@@ -428,7 +428,7 @@ def game(game="1"):
         pacCellY = math.floor(pacMan.rect.y / pathingGrid.cellHeight)
 
         pathfindingTimer += 1
-        if pathfindingTimer == 30:
+        if pathfindingTimer == 60:
             pathfindingTimer = 0
             for ghost in ghosts:
                 if not ghost.powerUpMode:
@@ -549,7 +549,7 @@ def creativeMode():
     isRunning = True
     while isRunning:
         screen.fill(BACKGROUND_COLOR)
-        drawText('Creative Mode', titleFont, (255, 255, 255), screen, 300, 50)
+        drawText('Creative Mode', titleFont, (255, 255, 255), screen, 350, 50)
         mousePosition = pygame.mouse.get_pos()
         button4 = pygame.Rect(700, 700, 250, 50)
 
@@ -623,7 +623,7 @@ def leaderBoards():
         else:
             pygame.draw.rect(screen, (0, 255, 0), button4)
 
-        drawText('Main menu', font, (255, 255, 255), screen, 725, 715)
+        drawText('Main menu', font, (255, 255, 255), screen, 750, 150)
         click = False
         for event in pygame.event.get():
             if event.type == QUIT:
@@ -645,13 +645,13 @@ def levels():
     isRunning = True
     while isRunning:
         screen.fill(BACKGROUND_COLOR)
-        drawText('Select Difficulty', titleFont, (255, 255, 255), screen, 260, 150)
+        drawText('Select Level', titleFont, (255, 255, 255), screen, 330, 150)
         mousePosition = pygame.mouse.get_pos()
 
-        button5 = pygame.Rect(int(MAX_HEIGHT / 2.5), int(MAX_WIDTH / 3.0), 250, 50)
-        button6 = pygame.Rect(int(MAX_HEIGHT / 2.5), int(MAX_WIDTH / 2.4), 250, 50)
-        button7 = pygame.Rect(int(MAX_HEIGHT / 2.5), int(MAX_WIDTH / 2.0), 250, 50)
-        button8 = pygame.Rect(int(MAX_HEIGHT / 2.5), int(MAX_WIDTH / 1.7), 250, 50)
+        button5 = pygame.Rect(int(MAX_WIDTH / 2.75), int(MAX_WIDTH / 3.0), 250, 50)
+        button6 = pygame.Rect(int(MAX_WIDTH / 2.75), int(MAX_WIDTH / 2.4), 250, 50)
+        button7 = pygame.Rect(int(MAX_WIDTH / 2.75), int(MAX_WIDTH / 2.0), 250, 50)
+        button8 = pygame.Rect(int(MAX_WIDTH / 2.75), int(MAX_WIDTH / 1.7), 250, 50)
 
         # if button is clicked call corresponding functions
         if button5.collidepoint((mousePosition[0], mousePosition[1])):
@@ -675,35 +675,35 @@ def levels():
         # got logic for button hovering from pythonprogramming.net
         if MAX_HEIGHT / 2.5 + 250 > mousePosition[0] > MAX_HEIGHT / 2.5 and MAX_WIDTH / 3.0 + 50 > mousePosition[
             1] > MAX_WIDTH / 3.0:
-            pygame.draw.rect(screen, (0, 190, 0), button5)
+            pygame.draw.rect(screen, (0, 0, 190), button5)
         else:
-            pygame.draw.rect(screen, (0, 255, 0), button5)
+            pygame.draw.rect(screen, (0, 0, 255), button5)
 
-        drawText('Level1', font, (255, 255, 255), screen, MAX_HEIGHT / 2.1, MAX_WIDTH / 2.9)
+        drawText('Level1', font, (255, 255, 255), screen, MAX_WIDTH / 2.3, MAX_WIDTH / 2.9)
 
         if MAX_HEIGHT / 2.5 + 250 > mousePosition[0] > MAX_HEIGHT / 2.5 and MAX_WIDTH / 2.4 + 50 > mousePosition[
             1] > MAX_WIDTH / 2.4:
-            pygame.draw.rect(screen, (0, 190, 0), button6)
+            pygame.draw.rect(screen, (0, 0, 190), button6)
         else:
-            pygame.draw.rect(screen, (0, 255, 0), button6)
+            pygame.draw.rect(screen, (0, 0, 255), button6)
 
-        drawText('Level2', font, (255, 255, 255), screen, MAX_HEIGHT / 2.1, MAX_WIDTH / 2.32)
+        drawText('Level2', font, (255, 255, 255), screen, MAX_WIDTH / 2.3, MAX_WIDTH / 2.32)
 
         if MAX_HEIGHT / 2.5 + 250 > mousePosition[0] > MAX_HEIGHT / 2.5 and MAX_WIDTH / 2.0 + 50 > mousePosition[
             1] > MAX_WIDTH / 2.0:
-            pygame.draw.rect(screen, (0, 190, 0), button7)
+            pygame.draw.rect(screen, (0, 0, 190), button7)
         else:
-            pygame.draw.rect(screen, (0, 255, 0), button7)
+            pygame.draw.rect(screen, (0, 0, 255), button7)
 
-        drawText('Custom', font, (255, 255, 255), screen, MAX_HEIGHT / 2.1, MAX_WIDTH / 1.95)
+        drawText('Custom', font, (255, 255, 255), screen, MAX_WIDTH / 2.35, MAX_WIDTH / 1.95)
 
         if MAX_HEIGHT / 2.5 + 250 > mousePosition[0] > MAX_HEIGHT / 2.5 and MAX_WIDTH / 1.7 + 50 > mousePosition[
             1] > MAX_WIDTH / 1.7:
-            pygame.draw.rect(screen, (0, 190, 0), button8)
+            pygame.draw.rect(screen, (0, 0, 190), button8)
         else:
-            pygame.draw.rect(screen, (0, 255, 0), button8)
+            pygame.draw.rect(screen, (0, 0, 255), button8)
 
-        drawText('Main Menu', font, (255, 255, 255), screen, MAX_HEIGHT / 2.2, MAX_WIDTH / 1.66)
+        drawText('Main Menu', font, (255, 255, 255), screen, MAX_WIDTH / 2.5, MAX_WIDTH / 1.66)
 
         click = False
         for event in pygame.event.get():
@@ -747,9 +747,9 @@ def renderCustomLevels():
 
             if xpos + 150 > mousePosition[0] > xpos and ypos + 150 > mousePosition[
                 1] > ypos:
-                pygame.draw.rect(screen, (0, 190, 0), button)
+                pygame.draw.rect(screen, (0, 0, 190), button)
             else:
-                pygame.draw.rect(screen, (0, 255, 0), button)
+                pygame.draw.rect(screen, (0, 0, 255), button)
 
             drawText(level, font, (255, 255, 255), screen, xpos + 10, ypos + 25)
             index += 1
