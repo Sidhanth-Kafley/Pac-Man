@@ -295,19 +295,19 @@ def game(game="1"):
 
         # create orange ghost object
         orangeGhostImages = loadImages(path='OrangeGhostSprites')
-        orangeGhost = Ghost('orange', position=(464, 390), moveSpeed=1, size=(CELL_SIZE, CELL_SIZE), images=orangeGhostImages,
+        orangeGhost = Ghost('orange', position=(464, 390), moveSpeed=1.25, size=(CELL_SIZE, CELL_SIZE), images=orangeGhostImages,
                             pathingGridController=pathingGrid)
         ghosts.append(orangeGhost)
 
         # create pink ghost object
         pinkGhostImages = loadImages(path='PinkGhostSprites')
-        pinkGhost = Ghost('pink', position=(434, 390), moveSpeed=2.5, size=(CELL_SIZE, CELL_SIZE), images=pinkGhostImages,
+        pinkGhost = Ghost('pink', position=(434, 390), moveSpeed=2, size=(CELL_SIZE, CELL_SIZE), images=pinkGhostImages,
                           pathingGridController=pathingGrid)
         ghosts.append(pinkGhost)
 
         # create red ghost object
         redGhostImages = loadImages(path='RedGhostSprites')
-        redGhost = Ghost('red', position=(494, 390), moveSpeed=2, size=(CELL_SIZE, CELL_SIZE), images=redGhostImages,
+        redGhost = Ghost('red', position=(494, 390), moveSpeed=1.5, size=(CELL_SIZE, CELL_SIZE), images=redGhostImages,
                          pathingGridController=pathingGrid)
         ghosts.append(redGhost)
     else:
@@ -425,12 +425,6 @@ def game(game="1"):
         # activate ghost pathfinding
         pacCellX = math.floor(pacMan.rect.x / pathingGrid.cellWidth)
         pacCellY = math.floor(pacMan.rect.y / pathingGrid.cellHeight)
-        #pathingGrid.drawGrid(background)
-
-        #for i in range(len(ghosts)):
-            #if len(ghosts[i].nextPathCell) > 0:
-                #pygame.draw.rect(background, (255, 0, 0),
-                                 #pygame.Rect(ghosts[2].nextPathCell[0] * CELL_SIZE, ghosts[2].nextPathCell[1] * CELL_SIZE, CELL_SIZE, CELL_SIZE))
 
         pathfindingTimer += 1
         if pathfindingTimer == 30:

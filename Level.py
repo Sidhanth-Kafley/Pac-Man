@@ -79,7 +79,6 @@ class Level(pygame.sprite.Sprite):
                     self.pills.append(Pill(True, powerPillImage, ((j * self.wallSize[1]) + self.originPosition[0] + 5, (i * self.wallSize[0]) + self.originPosition[1])))
                     self.layout[i].append('&')
 
-
     def appendWall(self, imageFilename, rowIndex, colIndex):
         image = pygame.image.load('WallSprites' + os.sep + imageFilename).convert_alpha()
         tempWall = Wall(position=((colIndex * self.wallSize[0]) + self.originPosition[0], (rowIndex * self.wallSize[1]) + self.originPosition[1]), size=(self.wallSize[0], self.wallSize[1]), image=image, imagePath=imageFilename)

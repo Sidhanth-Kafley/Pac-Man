@@ -71,25 +71,25 @@ def mainEditor():
 
     # create ghost objects
     blueGhostImages = mainScreen.loadImages(path='BlueGhostSprites')
-    blueGhost = Ghost('blue', position=(800, 350), size=(SPRITE_SIZE, SPRITE_SIZE),
+    blueGhost = Ghost('blue', position=(800, 350), moveSpeed=1, size=(SPRITE_SIZE, SPRITE_SIZE),
                       images=blueGhostImages, pathingGridController=pathingGrid)
     ghostsAndPacman.append(blueGhost)
     characterSpriteGroup.add(blueGhost)
 
     orangeGhostImages = mainScreen.loadImages(path='OrangeGhostSprites')
-    orangeGhost = Ghost('orange', position=(800, 300), size=(SPRITE_SIZE, SPRITE_SIZE),
+    orangeGhost = Ghost('orange', position=(800, 300), moveSpeed=1.25, size=(SPRITE_SIZE, SPRITE_SIZE),
                         images=orangeGhostImages, pathingGridController=pathingGrid)
     ghostsAndPacman.append(orangeGhost)
     characterSpriteGroup.add(orangeGhost)
 
     pinkGhostImages = mainScreen.loadImages(path='PinkGhostSprites')
-    pinkGhost = Ghost('pink', position=(800, 250), size=(SPRITE_SIZE, SPRITE_SIZE),
+    pinkGhost = Ghost('pink', position=(800, 250), moveSpeed=2, size=(SPRITE_SIZE, SPRITE_SIZE),
                       images=pinkGhostImages, pathingGridController=pathingGrid)
     ghostsAndPacman.append(pinkGhost)
     characterSpriteGroup.add(pinkGhost)
 
     redGhostImages = mainScreen.loadImages(path='RedGhostSprites')
-    redGhost = Ghost('red', position=(800, 400), size=(SPRITE_SIZE, SPRITE_SIZE),
+    redGhost = Ghost('red', position=(800, 400), moveSpeed=1.5, size=(SPRITE_SIZE, SPRITE_SIZE),
                      images=redGhostImages, pathingGridController=pathingGrid)
     ghostsAndPacman.append(redGhost)
     characterSpriteGroup.add(redGhost)
@@ -604,7 +604,7 @@ def parseCustomLevel(message):
                                   pathingGridController=pathingGrid)
             elif 'RedGhost' in charType:
                 images = mainScreen.loadImages(path='RedGhostSprites')
-                redGhost = Ghost('red', position=(xpos, ypos),  moveSpeed=2,
+                redGhost = Ghost('red', position=(xpos, ypos),  moveSpeed=1.25,
                                  size=(mainScreen.CELL_SIZE, mainScreen.CELL_SIZE), images=images,
                                  pathingGridController=pathingGrid)
             elif 'PinkGhost' in charType:
@@ -614,7 +614,7 @@ def parseCustomLevel(message):
                                   pathingGridController=pathingGrid)
             elif 'OrangeGhost' in charType:
                 images = mainScreen.loadImages(path='OrangeGhostSprites')
-                orangeGhost = Ghost('orange', position=(xpos, ypos),  moveSpeed=1,
+                orangeGhost = Ghost('orange', position=(xpos, ypos),  moveSpeed=1.5,
                                     size=(mainScreen.CELL_SIZE, mainScreen.CELL_SIZE),
                                     images=images,
                                     pathingGridController=pathingGrid)
