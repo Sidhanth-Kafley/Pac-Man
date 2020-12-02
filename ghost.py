@@ -13,6 +13,7 @@ class Ghost(pygame.sprite.Sprite):
         self.powerUpMode = False
         self.hitPacMan = False
         self.position = position
+        self.size = size
         self.moveSpeed = moveSpeed
 
         # index for looping through images
@@ -143,6 +144,8 @@ class Ghost(pygame.sprite.Sprite):
             return True
 
     def resetGhost(self):
+        self.powerUpMode = False
+        self.eaten = False
         self.rect.x = self.spawnX
         self.rect.y = self.spawnY
         self.velocity.x = 0
@@ -299,16 +302,6 @@ class Ghost(pygame.sprite.Sprite):
     def hitPacMan(self):
         # pac-man loses a life
         self.hitPacMan = True
-
-    # pac-man is in power-up mode and can eat the ghosts
-    def setPowerUpMode(self):
-        self.powerUpMode = not self.powerUpMode
-        self.eaten = False
-
-    # ghost hit a wall
-    def ghostHitWall(self, ghostStopMoving):
-        self.moving = ghostStopMoving
-        self.changeDirection = True
 
     # ghost needs to choose a new direction
     def chooseDirection(self):
