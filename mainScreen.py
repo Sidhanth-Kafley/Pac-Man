@@ -234,7 +234,7 @@ def game(game="1"):
         pathingGrid = PathingGridController(level, CELL_SIZE, CELL_SIZE, MAX_WIDTH, MAX_HEIGHT)
 
         # create pacman object
-        pacMan = PacMan(position=(MAX_WIDTH / 5, MAX_HEIGHT / 2), size=(2 * CELL_SIZE, 2 * CELL_SIZE), images=images)
+        pacMan = PacMan(position=(MAX_WIDTH / 4, MAX_HEIGHT / 2), size=(2 * CELL_SIZE, 2 * CELL_SIZE), images=images)
 
         # create blue ghost object
         blueGhostImages = loadImages(path='BlueGhostSprites')
@@ -259,7 +259,7 @@ def game(game="1"):
         redGhost = Ghost('red', position=(465, 320), size=(CELL_SIZE, CELL_SIZE), images=redGhostImages,
                          pathingGridController=pathingGrid)
         ghosts.append(redGhost)
-        pathingGrid.drawGrid(background)
+        #pathingGrid.drawGrid(background)
     else:
         pathingGrid = PathingGridController(level, CELL_SIZE, CELL_SIZE, MAX_WIDTH, MAX_HEIGHT)
         pacMan = level.pacmanAndGhost[0]
@@ -283,7 +283,7 @@ def game(game="1"):
 
     # start main background music
     backgroundMusic = pygame.mixer.Sound("Music/PacManBeginning.wav")
-    backgroundMusic.play(0)
+    #backgroundMusic.play(0)
 
     powermode = False
     count = 0
@@ -375,6 +375,8 @@ def game(game="1"):
             if pacMan.powerUp == 1:
                 pacManDeath = pygame.mixer.Sound("Music/PacManDeath.wav")
                 pacManDeath.play(0)
+                for ghost in ghosts:
+                    ghost.resetGhost()
                 pacMan.deathAnimation()
             else:
                 pacManEatGhost = pygame.mixer.Sound("Music/PacManEatGhost.wav")
@@ -386,7 +388,7 @@ def game(game="1"):
         if pygame.sprite.spritecollide(pacMan, pillGroup, False):
             # pygame.sprite.
             pacManChomp = pygame.mixer.Sound("Music/PacManChomp.wav")
-            pacManChomp.play(0)
+            #pacManChomp.play(0)
             for x in pillGroup:
                 if pacMan.rect.colliderect(x.rect):
                     if pacMan.eatPill(x):
@@ -411,10 +413,10 @@ def game(game="1"):
         pacCellX = math.floor(pacMan.rect.x / pathingGrid.cellWidth)
         pacCellY = math.floor(pacMan.rect.y / pathingGrid.cellHeight)
         pathingGrid.drawGrid(background)
-        if not collidingWallRight and not collidingWallBottom and not collidingWallLeft and not collidingWallTop:
-            ghosts[3].pathfindToPoint(pacCellX, pacCellY)
-            # pathingGrid.drawCellsList(background, ghosts[3].closedCells, (255, 255, 0))
-            pathingGrid.drawCellsList(background, ghosts[3].pathCells, (0, 255, 255))
+        for ghost in ghosts:
+            ghost.pathfindToPoint(pacCellX, pacCellY)
+        #pathingGrid.drawCellsList(background, ghosts[3].closedCells, (255, 255, 0))
+        pathingGrid.drawCellsList(background, ghosts[3].pathCells, (0, 255, 255))
 
         # manager.update(time_delta)
         window.blit(background, (0, 0))
