@@ -316,11 +316,6 @@ def mainEditor():
         characterSpriteGroup.draw(window)
         pillSpriteGroup.draw(window)
 
-        # for x in placeBlocks:
-        #     for y in x:
-        #         pygame.draw.rect(background, (100, 0, 0), y)
-
-
         # Buttons
         buttonplace4x = 200
         buttonplace6x = 500
@@ -402,28 +397,37 @@ def saveLevel(placeBlocks, borderSprites, specialSprites, specialpillSprites, pa
 
     pillImage = pygame.image.load("PointPill.png").convert_alpha()
     pillImage = pygame.transform.scale(pillImage, (int(Level.wallSize[0]), int(Level.wallSize[1])))
+
+    nogo = []
+    for gr in specialSprites:
+        maxx = 0
+        minx = 10000
+        maxy = 10000
+        miny = 0
+        for x in gr:
+            if x.rect.top < maxy:
+                maxy = x.rect.top
+            if x.rect.bottom > miny:
+                miny = x.rect.bottom
+            if x.rect.right > maxx:
+                maxx = x.rect.right
+            if x.rect.left < minx:
+                minx = x.rect.left
+        rectum = pygame.Rect(minx, maxy, maxx - minx, miny - maxy)
+        nogo.append(rectum)
+
+    for block in placeBlocks:
+        for x in block:
+            for y in nogo:
+                if x.colliderect(y):
+                    block.remove(x)
     tf1 = 1
     tf2 = 0
     for group in placeBlocks:
         if tf1 % 2 == 0:
             for block in group:
                 if tf2 % 2 == 0:
-                    for gr in specialSprites:
-                        maxx = 0
-                        minx = 10000
-                        maxy = 10000
-                        miny = 0
-                        for x in gr:
-                            if x.rect.top < maxy:
-                                maxy = x.rect.top
-                            if x.rect.bottom > miny:
-                                miny = x.rect.bottom
-                            if x.rect.right > maxx:
-                                maxx = x.rect.right
-                            if x.rect.left < minx:
-                                minx = x.rect.left
-                        if not minx <= block.centerx <= maxx and not maxy <= block.centery <= miny:
-                            level.pills.append(Pill(False, pillImage, block.center))
+                    level.pills.append(Pill(False, pillImage, block.center))
                 tf2 += 1
         tf1 += 1
         tf2 = 0
@@ -484,30 +488,6 @@ def saveLevel(placeBlocks, borderSprites, specialSprites, specialpillSprites, pa
                                Array)
             connection.commit()
             i += 1
-
-        # for group in specialSprites:
-        #     maxx = 0
-        #     minx = 10000
-        #     maxy = 10000
-        #     miny = 0
-        #     for x in group:
-        #         if x.rect.top < maxy:
-        #             maxy = x.rect.top
-        #         if x.rect.bottom > miny:
-        #             miny = x.rect.bottom
-        #         if x.rect.right > maxx:
-        #             maxx = x.rect.right
-        #         if x.rect.left < minx:
-        #             minx = x.rect.left
-        #
-        #     Tuple = (
-        #     index, message, maxx, minx, maxy, miny)
-        #     Array = [Tuple]
-        #     cursor.executemany(
-        #         "INSERT INTO savedBlankSpace (idx, id, xmax, xmin, ymax, ymin) VALUES (?, ?, ?, ?, ?, ?);",
-        #         Array)
-        #     connection.commit()
-
         connection.close()
 
     except Error as error:
@@ -590,13 +570,6 @@ def connectDatabase():
         cursor.execute(
             "CREATE TABLE IF NOT EXISTS savedCharacters (idx INTEGER, id VARCHAR[64], characterType VARCHAR[64], xpos INTEGER, ypos INTEGER)")
 
-        # # create character sprites table in the database
-        # cursor.execute('''SELECT count(name) FROM sqlite_master WHERE type='table' AND name='savedBlankSpace' ''')
-        #
-        # # add the character sprites and position to the table
-        # cursor.execute(
-        #     "CREATE TABLE IF NOT EXISTS savedBlankSpace (idx INTEGER, id VARCHAR[64], xmax INTEGER, xmin INTEGER, ymax INTEGER, ymin INTEGER)")
-
         # commit databases
         connection.commit()
         connection.close()
@@ -625,10 +598,6 @@ def parseCustomLevel(message):
         cursor.execute(
             "SELECT characterType, xpos, ypos FROM savedCharacters WHERE id LIKE '" + message + "'")
         characterData = cursor.fetchall()
-
-        # cursor.execute(
-        #     "SELECT xmax, xmin, ymax, ymin FROM savedBlankSpace WHERE id LIKE '" + message + "'")
-        # blankData = cursor.fetchall()
 
         connection.close()
 
@@ -692,18 +661,6 @@ def parseCustomLevel(message):
                                     pathingGridController=pathingGrid)
 
         level.pacmanAndGhost = [pacman, blueGhost, redGhost, pinkGhost, orangeGhost]
-
-        # for data in blankData:
-        #     xmax = data[0]
-        #     xmin = data[1]
-        #     ymax = data[2]
-        #     ymin = data[3]
-        #     delta = 10
-        #     group = level.pills
-        #     for x in group:
-        #         if xmin - delta <= x.rect.centerx <= xmax + delta and ymax - delta <= x.rect.centery <= ymin + delta:
-        #             level.pills.remove(x)
-        #             del x
 
     except Error as error:
         print('Cannot connect to database. The following error occurred: ', error)
