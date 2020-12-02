@@ -7,7 +7,7 @@ from sqlite3 import Error
 from Level import Level
 from PacMan import PacMan
 from pill import Pill
-from Ghost import Ghost
+from ghost import Ghost
 from inputBox import InputBox
 from Wall import Wall
 from PathingGridController import PathingGridController

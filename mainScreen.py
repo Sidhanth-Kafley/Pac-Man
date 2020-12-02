@@ -5,7 +5,7 @@ import os
 import math
 import LevelEditor
 from PacMan import PacMan
-from Ghost import Ghost
+from ghost import Ghost
 from pygame.locals import *
 from Level import Level
 from PathingGridController import PathingGridController
