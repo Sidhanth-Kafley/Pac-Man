@@ -573,10 +573,11 @@ def leaderBoards():
         for key in dictOfScores:
             initial = dictOfScores[key][1]
             userScore = dictOfScores[key][2]
-            highScoreDisplay = initial + '                      ' + str(userScore)
-            drawText(highScoreDisplay, font2, (255, 255, 255), screen, scoreXCoord, scoreYCoord)
-            # need to make sure scores are spaced out
-            scoreYCoord += 75
+            if initial != 'No Scores':
+                highScoreDisplay = initial + '                      ' + str(userScore)
+                drawText(highScoreDisplay, font2, (255, 255, 255), screen, scoreXCoord, scoreYCoord)
+                # need to make sure scores are spaced out
+                scoreYCoord += 75
 
         mousePosition = pygame.mouse.get_pos()
         button4 = pygame.Rect(700, 700, 250, 50)
