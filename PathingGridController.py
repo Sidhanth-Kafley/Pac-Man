@@ -39,7 +39,8 @@ class PathingGridController(pygame.sprite.Sprite):
         for i in range(len(self.currentLevel.walls)):
             wallCellX = math.floor(self.currentLevel.walls[i].position[0] / self.cellWidth)
             wallCellY = math.floor(self.currentLevel.walls[i].position[1] / self.cellHeight)
-            self.gridContents[wallCellY][wallCellX] = 1
+            if self.currentLevel.walls[i].imagePath != 'Gate.png':
+                self.gridContents[wallCellY][wallCellX] = 1
 
     # function draws grid for debugging and level building
     def drawGrid(self, background):

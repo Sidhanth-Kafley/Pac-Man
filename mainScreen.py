@@ -414,9 +414,12 @@ def game(game="1"):
         pacCellY = math.floor(pacMan.rect.y / pathingGrid.cellHeight)
         pathingGrid.drawGrid(background)
         for ghost in ghosts:
-            ghost.pathfindToPoint(pacCellX, pacCellY)
+            if pacMan.powerUp == 1:
+                ghost.pathfindToPoint(pacCellX, pacCellY)
+            else:
+                ghost.pathfindToPoint(math.floor(ghost.spawnX / pathingGrid.cellWidth), math.floor(ghost.spawnY / pathingGrid.cellHeight))
         #pathingGrid.drawCellsList(background, ghosts[3].closedCells, (255, 255, 0))
-        pathingGrid.drawCellsList(background, ghosts[3].pathCells, (0, 255, 255))
+        #pathingGrid.drawCellsList(background, ghosts[3].pathCells, (0, 255, 255))
 
         # manager.update(time_delta)
         window.blit(background, (0, 0))

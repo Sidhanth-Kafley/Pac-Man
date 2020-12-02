@@ -70,7 +70,7 @@ class Level(pygame.sprite.Sprite):
                 elif rows[i][j] == '╩':
                     self.appendWall('HorizontalIntersectionUp.png', i, j)
                 elif rows[i][j] == '_':
-                    #self.appendWall('Gate.png', i, j)
+                    self.appendWall('Gate.png', i, j)
                     self.layout[i].append('')
                 elif rows[i][j] == '*':
                     self.pills.append(Pill(False, pillImage, ((j * self.wallSize[1]) + self.originPosition[0] + int(wallSize[0]/2), (i * self.wallSize[0]) + self.originPosition[1] + int(self.wallSize[0])/2)))
