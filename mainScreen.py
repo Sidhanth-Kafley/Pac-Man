@@ -631,6 +631,7 @@ def levels():
         if button8.collidepoint((mousePosition[0], mousePosition[1])):
             if click:
                 isRunning = False
+                mainMenu()
 
         # draw buttons and add hover effect
         # got logic for button hovering from pythonprogramming.net

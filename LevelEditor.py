@@ -29,6 +29,24 @@ def mainEditor():
     wallSprites = []
     specialSprites = []
 
+    i = 0
+    j = 0
+    placeBlocks = []
+    prevx = int(mainScreen.MAX_WIDTH / 5)
+    prevy = int(mainScreen.MAX_HEIGHT / 12) - 2
+    while i < 41:
+        col = []
+        while j < 33:
+            rect = pygame.Rect(prevx + 16, prevy, 16, 16)
+            prevx += 16
+            col.append(rect)
+            j += 1
+        placeBlocks.append(col)
+        prevy += 16
+        prevx = int(mainScreen.MAX_WIDTH / 5) + 16
+        j = 0
+        i += 1
+
     otherwallsprites = []
     allWalls = []
 
@@ -286,6 +304,11 @@ def mainEditor():
         allWallSprites.draw(window)
         characterSpriteGroup.draw(window)
         pillSpriteGroup.draw(window)
+
+        for x in placeBlocks:
+            for y in x:
+                pygame.draw.rect(background, (100, 0, 0), y)
+
 
         # Buttons
         buttonplace4x = 200
