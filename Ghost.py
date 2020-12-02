@@ -42,7 +42,7 @@ class Ghost(pygame.sprite.Sprite):
         self.spawnY = position[1]
 
         # initialize pathfinding variables
-        self.pathingController.gridContents[self.cellY][self.cellX] = 1
+        self.pathingController.gridContents[self.cellY][self.cellX] = 2
         self.isPathing = False
         self.currentPathCell = [-1, 0, 0, 0, 0, 0]
         self.closedCells = []
@@ -56,11 +56,6 @@ class Ghost(pygame.sprite.Sprite):
         # set speed of the ghost
         self.velocity = pygame.math.Vector2()
 
-    # reset the ghost to its original position
-    def resetPosition(self):
-        self.rect.x = self.position[0]
-        self.rect.y = self.position[1]
-
     # update the ghost (position, image, etc.)
     def update(self):
 
@@ -71,7 +66,7 @@ class Ghost(pygame.sprite.Sprite):
         cw = self.pathingController.cellWidth
         ch = self.pathingController.cellHeight
 
-        if len(self.pathCells) > 1:
+        if len(self.pathCells) > 1 and self.nextPathCellIterator < len(self.pathCells)+1:
             self.nextPathCell = self.pathCells[len(self.pathCells) - self.nextPathCellIterator]
             if self.moveToPoint(self.nextPathCell[0] * cw, self.nextPathCell[1] * ch, self.moveSpeed):
                 self.nextPathCellIterator += 1
@@ -100,8 +95,8 @@ class Ghost(pygame.sprite.Sprite):
             self.index = 3
 
         # update location in pathing controller grid, clear past location
-        if self.prevCellX != self.cellX or self.prevCellY != self.cellY:
-            self.pathingController.gridContents[self.cellY][self.cellX] = 1
+        if (self.prevCellX != self.cellX or self.prevCellY != self.cellY) and self.pathingController.gridContents[self.cellY][self.cellX] != 1:
+            self.pathingController.gridContents[self.cellY][self.cellX] = 2
             self.pathingController.gridContents[self.prevCellY][self.prevCellX] = 0
 
         self.rect.move_ip(*self.velocity)
@@ -191,33 +186,36 @@ class Ghost(pygame.sprite.Sprite):
             cpc = self.currentPathCell
 
             # check neighboring cells, add free neighbor cells to openCells list
-            if pathingGrid[cpc[1]-1][cpc[0]] == 0 and not self.isInOpenCells(openCellsHistory, [cpc[0], cpc[1]-1]):
-                tempGScore = math.sqrt(pow(self.cellX - cpc[0], 2) + pow(self.cellY - cpc[1]-1, 2))
-                tempHScore = math.sqrt(pow(cpc[0] - targetCellX, 2) + pow(cpc[1]-1 - targetCellY, 2))
-                tempFScore = tempGScore + tempHScore
-                self.openCells.append([cpc[0], cpc[1]-1, cpc[0], cpc[1], tempFScore])
-                openCellsHistory.append([cpc[0], cpc[1]-1, cpc[0], cpc[1], tempFScore])
+            try:
+                if pathingGrid[cpc[1]-1][cpc[0]] == 0 and not self.isInOpenCells(openCellsHistory, [cpc[0], cpc[1]-1]):
+                    tempGScore = math.sqrt(pow(self.cellX - cpc[0], 2) + pow(self.cellY - cpc[1]-1, 2))
+                    tempHScore = math.sqrt(pow(cpc[0] - targetCellX, 2) + pow(cpc[1]-1 - targetCellY, 2))
+                    tempFScore = tempGScore + tempHScore
+                    self.openCells.append([cpc[0], cpc[1]-1, cpc[0], cpc[1], tempFScore])
+                    openCellsHistory.append([cpc[0], cpc[1]-1, cpc[0], cpc[1], tempFScore])
 
-            if pathingGrid[cpc[1]][cpc[0]+1] == 0 and not self.isInOpenCells(openCellsHistory, [cpc[0]+1, cpc[1]]):
-                tempGScore = math.sqrt(pow(self.cellX - cpc[0]+1, 2) + pow(self.cellY - cpc[1], 2))
-                tempHScore = math.sqrt(pow(cpc[0]+1 - targetCellX, 2) + pow(cpc[1] - targetCellY, 2))
-                tempFScore = tempGScore + tempHScore
-                self.openCells.append([cpc[0]+1, cpc[1], cpc[0], cpc[1], tempFScore])
-                openCellsHistory.append([cpc[0]+1, cpc[1], cpc[0], cpc[1], tempFScore])
+                if pathingGrid[cpc[1]][cpc[0]+1] == 0 and not self.isInOpenCells(openCellsHistory, [cpc[0]+1, cpc[1]]):
+                    tempGScore = math.sqrt(pow(self.cellX - cpc[0]+1, 2) + pow(self.cellY - cpc[1], 2))
+                    tempHScore = math.sqrt(pow(cpc[0]+1 - targetCellX, 2) + pow(cpc[1] - targetCellY, 2))
+                    tempFScore = tempGScore + tempHScore
+                    self.openCells.append([cpc[0]+1, cpc[1], cpc[0], cpc[1], tempFScore])
+                    openCellsHistory.append([cpc[0]+1, cpc[1], cpc[0], cpc[1], tempFScore])
 
-            if pathingGrid[cpc[1]+1][cpc[0]] == 0 and not self.isInOpenCells(openCellsHistory, [cpc[0], cpc[1]+1]):
-                tempGScore = math.sqrt(pow(self.cellX - cpc[0], 2) + pow(self.cellY - cpc[1]+1, 2))
-                tempHScore = math.sqrt(pow(cpc[0] - targetCellX, 2) + pow(cpc[1]+1 - targetCellY, 2))
-                tempFScore = tempGScore + tempHScore
-                self.openCells.append([cpc[0], cpc[1]+1, cpc[0], cpc[1], tempFScore])
-                openCellsHistory.append([cpc[0], cpc[1]+1, cpc[0], cpc[1], tempFScore])
+                if pathingGrid[cpc[1]+1][cpc[0]] == 0 and not self.isInOpenCells(openCellsHistory, [cpc[0], cpc[1]+1]):
+                    tempGScore = math.sqrt(pow(self.cellX - cpc[0], 2) + pow(self.cellY - cpc[1]+1, 2))
+                    tempHScore = math.sqrt(pow(cpc[0] - targetCellX, 2) + pow(cpc[1]+1 - targetCellY, 2))
+                    tempFScore = tempGScore + tempHScore
+                    self.openCells.append([cpc[0], cpc[1]+1, cpc[0], cpc[1], tempFScore])
+                    openCellsHistory.append([cpc[0], cpc[1]+1, cpc[0], cpc[1], tempFScore])
 
-            if pathingGrid[cpc[1]][cpc[0]-1] == 0 and not self.isInOpenCells(openCellsHistory, [cpc[0]-1, cpc[1]]):
-                tempGScore = math.sqrt(pow(self.cellX - cpc[0]-1, 2) + pow(self.cellY - cpc[1], 2))
-                tempHScore = math.sqrt(pow(cpc[0]-1 - targetCellX, 2) + pow(cpc[1] - targetCellY, 2))
-                tempFScore = tempGScore + tempHScore
-                self.openCells.append([cpc[0]-1, cpc[1], cpc[0], cpc[1], tempFScore])
-                openCellsHistory.append([cpc[0]-1, cpc[1], cpc[0], cpc[1], tempFScore])
+                if pathingGrid[cpc[1]][cpc[0]-1] == 0 and not self.isInOpenCells(openCellsHistory, [cpc[0]-1, cpc[1]]):
+                    tempGScore = math.sqrt(pow(self.cellX - cpc[0]-1, 2) + pow(self.cellY - cpc[1], 2))
+                    tempHScore = math.sqrt(pow(cpc[0]-1 - targetCellX, 2) + pow(cpc[1] - targetCellY, 2))
+                    tempFScore = tempGScore + tempHScore
+                    self.openCells.append([cpc[0]-1, cpc[1], cpc[0], cpc[1], tempFScore])
+                    openCellsHistory.append([cpc[0]-1, cpc[1], cpc[0], cpc[1], tempFScore])
+            except IndexError:
+                break
 
             # identify the open cell with the lowest f score, update currentPathCell
             # TODO: optimize this with a priority queue
