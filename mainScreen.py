@@ -2,11 +2,13 @@ import pygame
 import pygame_gui
 import sys
 import os
+import math
 import LevelEditor
 from PacMan import PacMan
 from ghost import Ghost
 from pygame.locals import *
 from Level import Level
+from PathingGridController import PathingGridController
 from highScores import HighScores
 from inputBox import InputBox
 
@@ -261,12 +263,14 @@ def game(game="1"):
 
     # create level object
     customLevel = False
+    levelOriginX = int(MAX_WIDTH / 5) + int(MAX_WIDTH / 5) % CELL_SIZE
+    levelOriginY = int(MAX_HEIGHT / 12) - int(MAX_HEIGHT / 12) % CELL_SIZE
     if game == "1":
         level = Level(layoutFilename='Levels/level1alt.txt', wallSize=(CELL_SIZE, CELL_SIZE),
-                      originPosition=(int(MAX_WIDTH / 5), int(MAX_HEIGHT / 12) - 2))
+                      originPosition=(levelOriginX, levelOriginY))
     elif game == "2":
         level = Level(layoutFilename='Levels/level2.txt', wallSize=(CELL_SIZE, CELL_SIZE),
-                      originPosition=(int(MAX_WIDTH / 5), int(MAX_HEIGHT / 12) - 2))
+                      originPosition=(levelOriginX, levelOriginY))
     else:
         # call level parser to create custom level object
         level = LevelEditor.parseCustomLevel(game)
@@ -278,30 +282,36 @@ def game(game="1"):
     ghosts = []
 
     if not customLevel:
+        pathingGrid = PathingGridController(level, CELL_SIZE, CELL_SIZE, MAX_WIDTH, MAX_HEIGHT)
+
         # create pacman object
-        pacMan = PacMan(position=(MAX_WIDTH / 5, (MAX_HEIGHT / 2)), size=(2 * CELL_SIZE, 2 * CELL_SIZE), images=images)
+        pacMan = PacMan(position=(MAX_WIDTH / 3, MAX_HEIGHT / 2), size=(2 * CELL_SIZE, 2 * CELL_SIZE), images=images)
 
         # create blue ghost object
         blueGhostImages = loadImages(path='BlueGhostSprites')
-        blueGhost = Ghost('blue', position=(500, 390), size=(2 * CELL_SIZE, 2 * CELL_SIZE), images=blueGhostImages)
+        blueGhost = Ghost('blue', position=(524, 390), moveSpeed=1, size=(CELL_SIZE, CELL_SIZE), images=blueGhostImages,
+                          pathingGridController=pathingGrid)
         ghosts.append(blueGhost)
 
         # create orange ghost object
         orangeGhostImages = loadImages(path='OrangeGhostSprites')
-        orangeGhost = Ghost('orange', position=(465, 390), size=(2 * CELL_SIZE, 2 * CELL_SIZE),
-                            images=orangeGhostImages)
+        orangeGhost = Ghost('orange', position=(464, 390), moveSpeed=1, size=(CELL_SIZE, CELL_SIZE), images=orangeGhostImages,
+                            pathingGridController=pathingGrid)
         ghosts.append(orangeGhost)
 
         # create pink ghost object
         pinkGhostImages = loadImages(path='PinkGhostSprites')
-        pinkGhost = Ghost('pink', position=(430, 390), size=(2 * CELL_SIZE, 2 * CELL_SIZE), images=pinkGhostImages)
+        pinkGhost = Ghost('pink', position=(434, 390), moveSpeed=2.5, size=(CELL_SIZE, CELL_SIZE), images=pinkGhostImages,
+                          pathingGridController=pathingGrid)
         ghosts.append(pinkGhost)
 
         # create red ghost object
         redGhostImages = loadImages(path='RedGhostSprites')
-        redGhost = Ghost('red', position=(465, 320), size=(2 * CELL_SIZE, 2 * CELL_SIZE), images=redGhostImages)
+        redGhost = Ghost('red', position=(494, 390), moveSpeed=2, size=(CELL_SIZE, CELL_SIZE), images=redGhostImages,
+                         pathingGridController=pathingGrid)
         ghosts.append(redGhost)
     else:
+        pathingGrid = PathingGridController(level, CELL_SIZE, CELL_SIZE, MAX_WIDTH, MAX_HEIGHT)
         pacMan = level.pacmanAndGhost[0]
         blueGhost = level.pacmanAndGhost[1]
         redGhost = level.pacmanAndGhost[2]
@@ -331,6 +341,8 @@ def game(game="1"):
     backgroundMusic.set_volume(0.25)
 
     count = 0
+    pathfindingTimer = 0
+    
     # initial wait until game starts
     pygame.time.delay(2000)
     while isRunning:
@@ -338,8 +350,8 @@ def game(game="1"):
         time_delta = clock.tick_busy_loop(60) / 1000.0
 
         screen.fill(BACKGROUND_COLOR)
-        # determine if a wall is colliding
 
+        # determine if a wall is colliding
         # check if pacman is running into any walls
         pacMan.checkMotion(level)
 
@@ -371,27 +383,30 @@ def game(game="1"):
                     pacManDeath = pygame.mixer.Sound("Music/PacManDeath.wav")
                     pacManDeath.set_volume(0.25)
                     pacManDeath.play(0)
+                    for ghost in ghosts:
+                        ghost.resetGhost()
                     pacMan.deathAnimation()
             else:
                 pacManEatGhost = pygame.mixer.Sound("Music/PacManEatGhost.wav")
-                for x in ghosts:
-                    if pacMan.rect.colliderect(x.rect):
-                        if not x.eaten:
+                for ghost in ghosts:
+                    if pacMan.rect.colliderect(ghost.rect):
+                        if not ghost.eaten:
                             pacManEatGhost.set_volume(0.25)
                             pacManEatGhost.play(0)
-                            pacMan.eatGhost(x)
+                            pacMan.eatGhost(ghost)
                             pygame.time.delay(400)
 
         if pygame.sprite.spritecollide(pacMan, pillGroup, False):
             pacManChomp = pygame.mixer.Sound("Music/PacManChomp.wav")
             pacManChomp.set_volume(0.25)
             pacManChomp.play(0)
+
             for x in pillGroup:
                 if pacMan.rect.colliderect(x.rect):
                     if pacMan.eatPill(x):
                         pacMan.powerUp = True
                         for ghost in ghosts:
-                            ghost.setPowerUpMode()
+                            ghost.powerUpMode = True
                     pillGroup.remove(x)
 
         if len(pillGroup) == 0:
@@ -400,11 +415,33 @@ def game(game="1"):
         # only run the powerup for 700 loops
         if pacMan.powerUp:
             count += 1
+
         if count == 700:
             count = 0
             pacMan.setPowerUp()
             for ghost in ghosts:
-                ghost.setPowerUpMode()
+                ghost.powerUpMode = False
+
+        # activate ghost pathfinding
+        pacCellX = math.floor(pacMan.rect.x / pathingGrid.cellWidth)
+        pacCellY = math.floor(pacMan.rect.y / pathingGrid.cellHeight)
+        #pathingGrid.drawGrid(background)
+
+        #for i in range(len(ghosts)):
+            #if len(ghosts[i].nextPathCell) > 0:
+                #pygame.draw.rect(background, (255, 0, 0),
+                                 #pygame.Rect(ghosts[2].nextPathCell[0] * CELL_SIZE, ghosts[2].nextPathCell[1] * CELL_SIZE, CELL_SIZE, CELL_SIZE))
+
+        pathfindingTimer += 1
+        if pathfindingTimer == 30:
+            pathfindingTimer = 0
+            for ghost in ghosts:
+                if not ghost.powerUpMode:
+                    ghost.pathfindToPoint(pacCellX, pacCellY)
+                else:
+                    ghost.pathfindToPoint(math.floor(ghost.spawnX / pathingGrid.cellWidth), math.floor(ghost.spawnY / pathingGrid.cellHeight))
+        #pathingGrid.drawCellsList(background, ghosts[3].closedCells, (255, 255, 0))
+        #pathingGrid.drawCellsList(background, ghosts[2].pathCells, (0, 255, 255))
 
         # pacMan portal code
         if pacMan.collisionRectRight.right == leftPortal.right and pacMan.collisionRect.colliderect(leftPortal):
@@ -440,7 +477,7 @@ def game(game="1"):
         allSprites.update()
         # update the image on screen
         allSprites.draw(window)
-
+        pathingGrid.update()
         # used in custom level
         if customLevel:
             # TODO: Not the best way to cover up old game
@@ -696,7 +733,6 @@ def renderCustomLevels():
         screen.fill(BACKGROUND_COLOR)
         drawText('Select Level', titleFont, (255, 255, 255), screen, 300, 50)
         mousePosition = pygame.mouse.get_pos()
-
         index = 1
         ycount = 0
         xcount = 0
