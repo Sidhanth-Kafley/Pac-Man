@@ -9,6 +9,7 @@ class HighScores:
         # (if it hasn't already been created)
         self.connectDatabase()
 
+    # create the initial database connection
     def connectDatabase(self):
         try:
             # Start DB connection
@@ -29,6 +30,7 @@ class HighScores:
         except Error as error:
             print('Cannot connect to database. The following error occurred: ', error)
 
+    # add the user's score to the database with their initials
     def addScoreToDB(self, newScore, usersInitial):
         try:
             # create connection to database
@@ -65,6 +67,7 @@ class HighScores:
         except Error as error:
             print('Cannot connect to database. The following error occurred: ', error)
 
+    # access the database to determine the new high score
     def determineNewHighScore(self):
         try:
             # create connection to database
@@ -94,6 +97,7 @@ class HighScores:
         except Error as error:
             print('Cannot connect to database. The following error occurred: ', error)
 
+    # determine the top five high scores from the database
     def getTop5HighScores(self):
         try:
             # connect to the database
@@ -166,6 +170,7 @@ class HighScores:
         except Error as error:
             print('Cannot connect to database. The following error occurred: ', error)
 
+    # determine the highest score from the database (the max)
     def determineTopScore(self, newScore):
         try:
             # create connection to database

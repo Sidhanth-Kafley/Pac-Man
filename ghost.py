@@ -73,6 +73,8 @@ class Ghost(pygame.sprite.Sprite):
         self.prevCellY = self.cellY
         self.cellX = math.floor(self.rect.x / self.pathingController.cellWidth)
         self.cellY = math.floor(self.rect.y / self.pathingController.cellHeight)
+        spawnCellX = math.floor(self.spawnX / self.pathingController.cellWidth)
+        spawnCellY = math.floor(self.spawnY / self.pathingController.cellWidth)
         cw = self.pathingController.cellWidth
         ch = self.pathingController.cellHeight
 
@@ -80,6 +82,10 @@ class Ghost(pygame.sprite.Sprite):
             self.nextPathCell = self.pathCells[len(self.pathCells) - self.nextPathCellIterator]
             if self.moveToPoint(self.nextPathCell[0] * cw, self.nextPathCell[1] * ch, self.moveSpeed):
                 self.nextPathCellIterator += 1
+
+            if self.powerUpMode and abs(self.cellX - spawnCellX) < 2 and abs(self.cellY - spawnCellY) < 2:
+                self.eaten = False
+                self.powerUpMode = False
 
             if self.rect.x == self.pathCells[0][0] * cw and self.rect.y == self.pathCells[0][1] * ch:
                 self.nextPathCell = []
