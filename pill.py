@@ -2,7 +2,8 @@ import pygame
 
 
 class Pill(pygame.sprite.Sprite):
-
+    # class represents one pill in the game
+    # boolean options for powerpill
     def __init__(self, power, image, position):
         super(Pill, self).__init__()
         if not power:

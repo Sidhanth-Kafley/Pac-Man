@@ -34,6 +34,7 @@ class Wall(pygame.sprite.Sprite):
         copy = Wall(self.position, self.size, self.image, self.imagePath)
         return copy
 
+    # calculates the x and y distances from the mouse position
     def calculateDistance(self):
         mouse = pygame.mouse.get_pos()
         x1 = mouse[0]
@@ -43,6 +44,7 @@ class Wall(pygame.sprite.Sprite):
         self.distancex = x1 - x2
         self.distancey = y1 - y2
 
+    # sets the rect around the wall used for ensuring proper placement in level editor
     def setCollideRect(self):
         self.collideRect = pygame.Rect(self.rect.center, (self.size[0] * 3, self.size[1] * 3))
 

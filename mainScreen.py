@@ -47,6 +47,7 @@ def main():
     mainMenu()
 
 
+# display the main menu
 def mainMenu():
     running = True
     global click
@@ -132,6 +133,7 @@ def mainMenu():
         pygame.display.update()
 
 
+# loads the animation images for both Pacman and ghosts
 def loadImages(path):
     images = []
     if path == 'PacManSprites':
@@ -208,6 +210,7 @@ def credits():
         mainClock.tick(10)
 
 
+# displays the pause screen
 def pauseGame():
 
     pause = True
@@ -257,6 +260,8 @@ def pauseGame():
 
         pygame.display.update()
 
+
+# runs the main game loop
 def game(game="1"):
     # Initiate game and window
     pygame.init()
@@ -346,12 +351,8 @@ def game(game="1"):
     # initial wait until game starts
     pygame.time.delay(2000)
     while isRunning:
-        # times per second this loop runs
-        time_delta = clock.tick_busy_loop(60) / 1000.0
-
         screen.fill(BACKGROUND_COLOR)
 
-        # determine if a wall is colliding
         # check if pacman is running into any walls
         pacMan.checkMotion(level)
 
@@ -435,8 +436,6 @@ def game(game="1"):
                     ghost.pathfindToPoint(pacCellX, pacCellY)
                 else:
                     ghost.pathfindToPoint(math.floor(ghost.spawnX / pathingGrid.cellWidth), math.floor(ghost.spawnY / pathingGrid.cellHeight))
-        #pathingGrid.drawCellsList(background, ghosts[3].closedCells, (255, 255, 0))
-        #pathingGrid.drawCellsList(background, ghosts[2].pathCells, (0, 255, 255))
 
         # pacMan portal code
         if pacMan.collisionRectRight.right == leftPortal.right and pacMan.collisionRect.colliderect(leftPortal):
@@ -486,6 +485,7 @@ def game(game="1"):
     sys.exit(0)
 
 
+# displays the game over menu
 def displayGameOver(pacMan, window, msg):
 
     click = False
@@ -544,41 +544,7 @@ def displayGameOver(pacMan, window, msg):
         mainClock.tick(10)
 
 
-def creativeMode():
-    click = False
-    isRunning = True
-    while isRunning:
-        screen.fill(BACKGROUND_COLOR)
-        drawText('Creative Mode', titleFont, (255, 255, 255), screen, 300, 50)
-        mousePosition = pygame.mouse.get_pos()
-        button4 = pygame.Rect(700, 700, 250, 50)
-
-        if button4.collidepoint(mousePosition[0], mousePosition[1]):
-            if click:
-                isRunning = False
-
-        if 700 + 250 > mousePosition[0] > 700 and 700 + 50 > mousePosition[1] > 700:
-            pygame.draw.rect(screen, (0, 190, 0), button4)
-        else:
-            pygame.draw.rect(screen, (0, 255, 0), button4)
-
-        drawText('Main menu', font, (255, 255, 255), screen, 725, 715)
-        click = False
-        for event in pygame.event.get():
-            if event.type == QUIT:
-                pygame.quit()
-                sys.exit()
-            if event.type == KEYDOWN:
-                if event.key == K_ESCAPE:
-                    isRunning = False
-            if event.type == MOUSEBUTTONDOWN:
-                if event.button == 1:
-                    click = True
-
-        pygame.display.update()
-        mainClock.tick(10)
-
-
+# displays the leaderboards page
 def leaderBoards():
     click = False
     isRunning = True
@@ -640,6 +606,7 @@ def leaderBoards():
         mainClock.tick(10)
 
 
+# displays the select a level menu
 def levels():
     click = False
     isRunning = True
@@ -720,6 +687,7 @@ def levels():
         pygame.display.update()
 
 
+# display the screen to choose from the user's custom levels
 def renderCustomLevels():
     click = False
     isRunning = True

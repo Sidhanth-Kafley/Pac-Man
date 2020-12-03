@@ -2,7 +2,6 @@ import pygame
 import random
 import math
 import os
-from PathingGridController import PathingGridController
 
 
 class Ghost(pygame.sprite.Sprite):
@@ -266,7 +265,6 @@ class Ghost(pygame.sprite.Sprite):
 
         # note: ghosts will move automatically to their next path cell in their update function
 
-
     # get the color of the ghost
     def getGhostColor(self):
         return self.color
@@ -301,6 +299,7 @@ class Ghost(pygame.sprite.Sprite):
         self.direction = random.choice(['right', 'left', 'down', 'up'])
         return self.direction
 
+    # loads the image of the eyes for when the ghost gets eaten
     def eat(self):
         self.eaten = True
         path = "EyeSprites"
