@@ -48,6 +48,7 @@ class PacMan(pygame.sprite.Sprite):
         self.drag = False
         self.timer = 0
 
+    # called every main loop to update images and position
     def update(self):
         if not self.death:
             # set the array of images to the appropriate direction
@@ -102,28 +103,32 @@ class PacMan(pygame.sprite.Sprite):
         if self.velocity.x == 0 and self.velocity.y == 0 and not self.death:
             self.image = self.imagesStop[0]
 
+    # decrements PacMan's health upon being hit by a ghost
     def hit(self):
         self.startingHealth -= 1
 
+    # sets the state of the powerup mode
     def setPowerUp(self):
+        self.ghostPoints = 200
         self.powerUp = not self.powerUp
 
+    # adds to the total number of points
     def eatGhost(self):
         self.totalPoints += self.ghostPoints
         self.ghostPoints = self.ghostPoints*2
 
-    def resetGhostPoints(self):
-        self.ghostPoints = 200
-
+    # renders the score at the top of the page
     def renderScore(self, size):
         fontName = pygame.font.match_font('arial')
         font = pygame.font.Font(fontName, size)
         text = font.render(str(self.totalPoints), True, (25, 25, 166))
         return text
 
+    # starts the death animation when pacman is hit
     def deathAnimation(self):
         self.death = True
 
+    # load the images to loop through once pacman has been hit
     def loadDeathImages(self):
         path = "PacManDeath"
         images = [0, 0, 0, 0, 0, 0, 0, 0]
@@ -152,6 +157,7 @@ class PacMan(pygame.sprite.Sprite):
             self.deathDown.append(pygame.transform.rotate(x, 270))
             self.deathRight.append(x)
 
+    # reset pacman to his original position and starting image upon death
     def newLife(self):
         self.death = False
         self.startingHealth -= 1
@@ -159,6 +165,7 @@ class PacMan(pygame.sprite.Sprite):
         self.image = self.images[1]
         self.index = 0
 
+    # increment points for eating pill and set powerup if powerpill
     def eatPill(self, pill):
         if pill.isPower():
             if not self.powerUp:
@@ -168,6 +175,7 @@ class PacMan(pygame.sprite.Sprite):
         del pill
         return False
 
+    # prevents Pacman from being able to turn if there is a wall in that direction
     def checkMove(self, direction, level):
         for wall in level.walls:
             if direction == "up":
@@ -184,6 +192,7 @@ class PacMan(pygame.sprite.Sprite):
                     return False
         return True
 
+    # prevent Pacman from going through walls
     def checkMotion(self, level):
         check = False
         for wall in level.walls:
@@ -204,5 +213,6 @@ class PacMan(pygame.sprite.Sprite):
             self.velocity.x = 0
             self.velocity.y = 0
 
+    # returns the final score of the game
     def getTotalPoints(self):
         return self.totalPoints

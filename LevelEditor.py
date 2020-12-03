@@ -13,6 +13,7 @@ from Wall import Wall
 from PathingGridController import PathingGridController
 
 
+# main display and UI for the Level Creator
 def mainEditor():
     tf = True
 
@@ -351,6 +352,7 @@ def mainEditor():
         pygame.display.update()
 
 
+# moves the walls to the closest 16 x 16 square
 def snap(wall, placeBlocks):
     closest = None
     totalDist = 10000
@@ -368,6 +370,7 @@ def snap(wall, placeBlocks):
     return wall
 
 
+# checks whether or not the edges of teh walls are touching
 def collisionDetection(rect, othersprites):
     newGroup = []
     for wall in othersprites:
@@ -380,6 +383,7 @@ def collisionDetection(rect, othersprites):
     return False
 
 
+# saves the layout of the custom level and characters to a database
 def saveLevel(placeBlocks, borderSprites, specialSprites, specialpillSprites, pacman, blue, red, pink, orange):
     path = 'Levels'
     file = 'blank'
@@ -494,6 +498,7 @@ def saveLevel(placeBlocks, borderSprites, specialSprites, specialpillSprites, pa
         print('Cannot connect to database. The following error occurred: ', error)
 
 
+# display the UI for entering a name for the custom level
 def chooseName():
     click = False
     isRunning = True
@@ -542,6 +547,7 @@ def chooseName():
         mainScreen.mainClock.tick(10)
 
 
+# initialize the required tables for saving the level if they haven't been already
 def connectDatabase():
     try:
         # Start DB connection
@@ -578,6 +584,7 @@ def connectDatabase():
         print('Cannot connect to database. The following error occurred: ', error)
 
 
+# reads the values from the database and creates a playable level out of the information
 def parseCustomLevel(message):
     path = 'Levels'
     file = 'blank'
@@ -667,6 +674,7 @@ def parseCustomLevel(message):
     return level
 
 
+# query run to display the 12 most recently saved levels in the database
 def getSavedLevels():
     levelArray = []
     try:
