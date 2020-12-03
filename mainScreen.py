@@ -191,9 +191,9 @@ def credits():
                 isRunning = False
 
         if 350 + 250 > mousePosition[0] > 350 and 540 + 50 > mousePosition[1] > 540:
-            pygame.draw.rect(screen, (0, 190, 0), button)
+            pygame.draw.rect(screen, (0, 0, 190), button)
         else:
-            pygame.draw.rect(screen, (0, 255, 0), button)
+            pygame.draw.rect(screen, (0, 0, 255), button)
 
         drawText('Main Menu', font, (255, 255, 255), screen, 370, 555)
 
@@ -236,17 +236,17 @@ def pauseGame():
 
         if MAX_HEIGHT / 2.5 + 250 > mousePosition[0] > MAX_HEIGHT / 2.5 and MAX_WIDTH / 3.0 + 50 > mousePosition[
             1] > MAX_WIDTH / 3.0:
-            pygame.draw.rect(screen, (0, 190, 0), button9)
+            pygame.draw.rect(screen, (0, 0, 190), button9)
         else:
-            pygame.draw.rect(screen, (0, 255, 0), button9)
+            pygame.draw.rect(screen, (0, 0, 255), button9)
 
         drawText('Play', font, (255, 255, 255), screen, MAX_HEIGHT / 2.0, MAX_WIDTH / 2.9)
 
         if MAX_HEIGHT / 2.5 + 250 > mousePosition[0] > MAX_HEIGHT / 2.5 and MAX_WIDTH / 2.4 + 50 > mousePosition[
             1] > MAX_WIDTH / 2.4:
-            pygame.draw.rect(screen, (0, 190, 0), button10)
+            pygame.draw.rect(screen, (0, 0, 190), button10)
         else:
-            pygame.draw.rect(screen, (0, 255, 0), button10)
+            pygame.draw.rect(screen, (0, 0, 255), button10)
 
         drawText('Main Menu', font, (255, 255, 255), screen, MAX_HEIGHT / 2.3, MAX_WIDTH / 2.32)
 
@@ -351,6 +351,9 @@ def game(game="1"):
     # initial wait until game starts
     pygame.time.delay(2000)
     while isRunning:
+        # times per second this loop runs
+        time_delta = clock.tick_busy_loop(60) / 1000.0
+
         screen.fill(BACKGROUND_COLOR)
 
         # check if pacman is running into any walls
@@ -513,13 +516,13 @@ def displayGameOver(pacMan, window, msg):
                 mainMenu()
 
         if 340 + 250 > mousePosition[0] > 340 and 500 + 50 > mousePosition[1] > 500:
-            pygame.draw.rect(screen, (0, 190, 0), button)
+            pygame.draw.rect(screen, (0, 0, 190), button)
         else:
-            pygame.draw.rect(screen, (0, 255, 0), button)
+            pygame.draw.rect(screen, (0, 0, 255), button)
         if 340 + 250 > mousePosition[0] > 340 and 600 + 50 > mousePosition[1] > 600:
-            pygame.draw.rect(screen, (0, 190, 0), button1)
+            pygame.draw.rect(screen, (0, 0, 190), button1)
         else:
-            pygame.draw.rect(screen, (0, 255, 0), button1)
+            pygame.draw.rect(screen, (0, 0, 255), button1)
 
         drawText('Play again', font, (255, 255, 255), screen, 360, 515)
         drawText('Main Menu', font, (255, 255, 255), screen, 360, 615)
@@ -590,9 +593,9 @@ def leaderBoards():
                 isRunning = False
 
         if 700 + 250 > mousePosition[0] > 700 and 700 + 50 > mousePosition[1] > 700:
-            pygame.draw.rect(screen, (0, 190, 0), button4)
+            pygame.draw.rect(screen, (0, 0, 190), button4)
         else:
-            pygame.draw.rect(screen, (0, 255, 0), button4)
+            pygame.draw.rect(screen, (0, 0, 255), button4)
 
         drawText('Main menu', font, (255, 255, 255), screen, 730, 710)
         click = False
