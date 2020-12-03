@@ -335,14 +335,14 @@ def mainEditor():
                 tf = False
 
         if buttonplace4x + 250 > mousePosition[0] > buttonplace4x and buttonplacey + 50 > mousePosition[1] > buttonplacey:
-            pygame.draw.rect(mainScreen.screen, (0, 190, 0), button4)
+            pygame.draw.rect(mainScreen.screen, (0, 0, 190), button4)
         else:
-            pygame.draw.rect(mainScreen.screen, (0, 255, 0), button4)
+            pygame.draw.rect(mainScreen.screen, (0, 0, 255), button4)
 
         if buttonplace6x + 250 > mousePosition[0] > buttonplace6x and buttonplacey + 50 > mousePosition[1] > buttonplacey:
-            pygame.draw.rect(mainScreen.screen, (0, 190, 0), button6)
+            pygame.draw.rect(mainScreen.screen, (0, 0, 190), button6)
         else:
-            pygame.draw.rect(mainScreen.screen, (0, 255, 0), button6)
+            pygame.draw.rect(mainScreen.screen, (0, 0, 255), button6)
 
         mainScreen.drawText('Main menu', mainScreen.font, (255, 255, 255), mainScreen.screen, buttonplace4x + 25,
                             buttonplacey + 15)
@@ -519,9 +519,9 @@ def chooseName():
                     return message
 
         if 365 + 200 > mousePosition[0] > 365 and 225 + 50 > mousePosition[1] > 225:
-            pygame.draw.rect(mainScreen.screen, (0, 190, 0), button)
+            pygame.draw.rect(mainScreen.screen, (0, 0, 190), button)
         else:
-            pygame.draw.rect(mainScreen.screen, (0, 255, 0), button)
+            pygame.draw.rect(mainScreen.screen, (0, 0, 255), button)
 
         mainScreen.drawText('Save', mainScreen.font, (255, 255, 255), mainScreen.screen, 425, 240)
 
