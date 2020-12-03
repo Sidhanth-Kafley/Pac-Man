@@ -124,7 +124,7 @@ class Ghost(pygame.sprite.Sprite):
         else:
             self.image = self.eatenDown
 
-
+    # move the ghost to a target x at the given magnitude
     def moveToPoint(self, targetX, targetY, magnitude):
         if self.rect.x > targetX:
             self.velocity.x = -magnitude
@@ -135,12 +135,16 @@ class Ghost(pygame.sprite.Sprite):
         if self.rect.y < targetY:
             self.velocity.y = magnitude
         if abs(self.rect.x - targetX) < magnitude and abs(self.rect.y - targetY) < magnitude:
-            self.rect.x += (self.rect.x % magnitude) * math.copysign(1, targetX - self.rect.x)
-            self.rect.y += (self.rect.y % magnitude) * math.copysign(1, targetY - self.rect.y)
             self.velocity.x = 0
             self.velocity.y = 0
-            return True
+            self.rect.x += targetX - self.rect.x
+            self.rect.y += targetY - self.rect.y
 
+            return True
+        if self.nextPathCell == []:
+            return False
+
+    # move the ghost back to its original spawn point and reset pathing information
     def resetGhost(self):
         self.powerUpMode = False
         self.eaten = False
@@ -261,13 +265,16 @@ class Ghost(pygame.sprite.Sprite):
             self.pathCells.clear()
             self.nextPathCellIterator = 1
             self.pathCells.append(self.closedCells[len(self.closedCells) - 1])
+            prevIndex = -1
             for i in range(len(self.closedCells) - 1):
+                # break once the starting cell is reached
+                if prevIndex != -1:
+                    if self.closedCells[prevIndex] == self.closedCells[0]:
+                        break
                 prevIndex = self.getPrevClosedCellIndex(self.closedCells, self.pathCells[i])
                 self.pathCells.append(self.closedCells[prevIndex])
 
-                # break once the starting cell is reached
-                if self.closedCells[prevIndex] == self.closedCells[0]:
-                    break
+
 
         # note: ghosts will move automatically to their next path cell in their update function
 
