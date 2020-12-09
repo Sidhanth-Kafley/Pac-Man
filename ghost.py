@@ -80,7 +80,7 @@ class Ghost(pygame.sprite.Sprite):
 
         if len(self.pathCells) > 1 and self.nextPathCellIterator < len(self.pathCells)+1:
             self.nextPathCell = self.pathCells[len(self.pathCells) - self.nextPathCellIterator]
-            if self.moveToPoint(self.nextPathCell[0] * cw, self.nextPathCell[1] * ch, self.moveSpeed):
+            if self.moveToPoint((self.nextPathCell[0] * cw), (self.nextPathCell[1] * ch), self.moveSpeed):
                 self.nextPathCellIterator += 1
 
             if self.powerUpMode and abs(self.cellX - spawnCellX) < 2 and abs(self.cellY - spawnCellY) < 2:
@@ -126,15 +126,18 @@ class Ghost(pygame.sprite.Sprite):
 
     # move the ghost to a target x at the given magnitude
     def moveToPoint(self, targetX, targetY, magnitude):
-        if self.rect.x > targetX:
-            self.velocity.x = -magnitude
-        if self.rect.x < targetX:
-            self.velocity.x = magnitude
-        if self.rect.y > targetY:
-            self.velocity.y = -magnitude
-        if self.rect.y < targetY:
-            self.velocity.y = magnitude
-        if abs(self.rect.x - targetX) < magnitude and abs(self.rect.y - targetY) < magnitude:
+
+        if targetX != 0 or targetY != 0:
+            if self.rect.x > targetX:
+                self.velocity.x = -magnitude
+            if self.rect.x < targetX:
+                self.velocity.x = magnitude
+            if self.rect.y > targetY:
+                self.velocity.y = -magnitude
+            if self.rect.y < targetY:
+                self.velocity.y = magnitude
+
+        if abs(self.rect.x - targetX) <= magnitude and abs(self.rect.y - targetY) <= magnitude:
             self.velocity.x = 0
             self.velocity.y = 0
             self.rect.x += targetX - self.rect.x
@@ -266,14 +269,13 @@ class Ghost(pygame.sprite.Sprite):
             self.nextPathCellIterator = 1
             self.pathCells.append(self.closedCells[len(self.closedCells) - 1])
             prevIndex = -1
-            for i in range(len(self.closedCells) - 1):
+            for i in range(len(self.closedCells)):
                 # break once the starting cell is reached
                 if prevIndex != -1:
                     if self.closedCells[prevIndex] == self.closedCells[0]:
                         break
                 prevIndex = self.getPrevClosedCellIndex(self.closedCells, self.pathCells[i])
                 self.pathCells.append(self.closedCells[prevIndex])
-
 
 
         # note: ghosts will move automatically to their next path cell in their update function

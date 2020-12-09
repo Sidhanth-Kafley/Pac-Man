@@ -343,7 +343,7 @@ def game(game="1"):
     # start main background music
     backgroundMusic = pygame.mixer.Sound("Music/PacManBeginning.wav")
     backgroundMusic.play(0)
-    backgroundMusic.set_volume(0.25)
+    backgroundMusic.set_volume(0.1)
 
     count = 0
     pathfindingTimer = 0
@@ -386,7 +386,7 @@ def game(game="1"):
             for ghost in ghosts:
                 if pacMan.rect.colliderect(ghost.rect) and ghost.powerUpMode:
                     if not ghost.eaten and ghost.powerUpMode:
-                        pacManEatGhost.set_volume(0.25)
+                        pacManEatGhost.set_volume(0.1)
                         pacManEatGhost.play(0)
                         pacMan.eatGhost()
                         ghost.eat()
@@ -394,7 +394,7 @@ def game(game="1"):
                 elif pacMan.rect.colliderect(ghost.rect) and not ghost.powerUpMode and not ghost.eaten:
                     if not pacMan.death:
                         pacManDeath = pygame.mixer.Sound("Music/PacManDeath.wav")
-                        pacManDeath.set_volume(0.25)
+                        pacManDeath.set_volume(0.1)
                         pacManDeath.play(0)
                         for ghost in ghosts:
                             ghost.resetGhost()
@@ -402,7 +402,7 @@ def game(game="1"):
 
         if pygame.sprite.spritecollide(pacMan, pillGroup, False):
             pacManChomp = pygame.mixer.Sound("Music/PacManChomp.wav")
-            pacManChomp.set_volume(0.25)
+            pacManChomp.set_volume(0.1)
             pacManChomp.play(0)
 
             for x in pillGroup:
@@ -431,6 +431,7 @@ def game(game="1"):
         pacCellX = math.floor(pacMan.rect.x / pathingGrid.cellWidth)
         pacCellY = math.floor(pacMan.rect.y / pathingGrid.cellHeight)
 
+        # print(ghosts[2].nextPathCell)
         pathfindingTimer += 1
         if pathfindingTimer == 60:
             pathfindingTimer = 0
@@ -439,6 +440,11 @@ def game(game="1"):
                     ghost.pathfindToPoint(pacCellX, pacCellY)
                 else:
                     ghost.pathfindToPoint(math.floor(ghost.spawnX / pathingGrid.cellWidth), math.floor(ghost.spawnY / pathingGrid.cellHeight))
+
+            # print("******************" + str(ghosts[2].nextPathCell))
+        # pathingGrid.drawCellsList(background, ghosts[3].closedCells, (255, 255, 0))
+        # pathingGrid.drawCellsList(background, ghosts[2].pathCells, (0, 255, 255))
+
 
         # pacMan portal code
         if pacMan.collisionRectRight.right == leftPortal.right and pacMan.collisionRect.colliderect(leftPortal):
